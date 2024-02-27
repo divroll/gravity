@@ -1,6 +1,6 @@
 /*
  * Divroll, Platform for Hosting Static Sites
- * Copyright 2020, Divroll, and individual contributors
+ * Copyright 2024, Divroll, and individual contributors
  * as indicated by the @author tags. See the copyright.txt file in the
  * distribution for a full listing of individual contributors.
  *
@@ -17,8 +17,12 @@
 package com.divroll.datafactory;
 
 import com.divroll.datafactory.database.DatabaseManager;
+import com.divroll.datafactory.database.DatabaseManagerProvider;
+import com.divroll.datafactory.database.SerializableDatabaseManagerProvider;
 import com.divroll.datafactory.database.impl.DatabaseManagerImpl;
 import com.divroll.datafactory.exceptions.DataFactoryException;
+import com.divroll.datafactory.indexers.LuceneIndexerProvider;
+import com.divroll.datafactory.indexers.SerializableLuceneIndexerProvider;
 import com.divroll.datafactory.indexers.impl.LuceneIndexerImpl;
 import com.divroll.datafactory.repositories.EntityStore;
 import com.divroll.datafactory.repositories.impl.EntityStoreImpl;
@@ -53,6 +57,12 @@ public class DataFactory {
   private static Registry registry;
   private static String process;
 
+  private static final DatabaseManagerProvider databaseManagerProvider
+          = new SerializableDatabaseManagerProvider();
+
+  private static final LuceneIndexerProvider luceneIndexerProvider
+          = new SerializableLuceneIndexerProvider();
+
   private DataFactory() {
     if (instance != null) {
       throw new RuntimeException("Only one instance of DataFactory is allowed");
@@ -73,31 +83,6 @@ public class DataFactory {
     return instance;
   }
 
-//  public void register() throws RemoteException, NotBoundException {
-//    String host = System.getProperty(Constants.JAVA_RMI_HOST_ENVIRONMENT);
-//    if (host == null) {
-//      System.setProperty(Constants.JAVA_RMI_HOST_ENVIRONMENT, "localhost");
-//    }
-//    String testPort = System.getProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT,
-//        Constants.JAVA_RMI_PORT_DEFAULT);
-//    String port = testPort != null ? testPort :
-//        System.getProperty(Constants.JAVA_RMI_PORT_ENVIRONMENT, Constants.JAVA_RMI_PORT_DEFAULT);
-//    if(registry == null) {
-//      if (port != null) {
-//        registry = LocateRegistry.createRegistry(Integer.valueOf(port));
-//      } else {
-//        registry = LocateRegistry.createRegistry(Integer.valueOf(Constants.JAVA_RMI_PORT_DEFAULT));
-//      }
-//    }
-//    entityStore =
-//        new EntityStoreImpl(DatabaseManagerImpl.getInstance(), LuceneIndexerImpl.getInstance());
-//    if (!Arrays.asList(registry.list()).contains(EntityStore.class.getName())) {
-//      registry.rebind(EntityStore.class.getName(), instance.entityStore);
-//    }
-//    process = ManagementFactory.getRuntimeMXBean().getName();
-//    LOG.info("DataFactory initialized with process id: " + process);
-//  }
-
   public void register() throws RemoteException, NotBoundException {
     String host = System.getProperty(Constants.JAVA_RMI_HOST_ENVIRONMENT, "localhost");
     String port = System.getProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT, Constants.JAVA_RMI_PORT_DEFAULT);
@@ -108,7 +93,7 @@ public class DataFactory {
     }
 
     if (!Arrays.asList(registry.list()).contains(EntityStore.class.getName())) {
-      entityStore = new EntityStoreImpl(DatabaseManagerImpl.getInstance(), LuceneIndexerImpl.getInstance());
+      entityStore = new EntityStoreImpl(databaseManagerProvider, luceneIndexerProvider);
       registry.rebind(EntityStore.class.getName(), entityStore);
     }
 
@@ -125,7 +110,10 @@ public class DataFactory {
       for (int i = 0; i < classNames.length; i++) {
         registry.unbind(classNames[i]);
       }
-      UnicastRemoteObject.unexportObject(entityStore, true);
+      if(entityStore != null) {
+        UnicastRemoteObject.unexportObject(entityStore, true);
+        entityStore = null;
+      }
     }
     DatabaseManagerImpl.getInstance().closeEnvironments();
   }
@@ -144,7 +132,7 @@ public class DataFactory {
     }
     if (entityStore == null) {
       entityStore =
-          new EntityStoreImpl(DatabaseManagerImpl.getInstance(), LuceneIndexerImpl.getInstance());
+          new EntityStoreImpl(databaseManagerProvider, luceneIndexerProvider);
     }
     if (!Arrays.asList(registry.list()).contains(EntityStore.class.getName())) {
       registry.rebind(EntityStore.class.getName(), entityStore);
