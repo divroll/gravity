@@ -147,6 +147,7 @@
     <xtend.version>2.9.1</xtend.version>
     <lucene.version>7.5.0</lucene.version>
     <clover.version>4.4.1</clover.version>
+    <classgraph.version>4.8.104</classgraph.version>
     <junit.version>4.12</junit.version>
     <skipTests>false</skipTests>
   </properties>
@@ -303,6 +304,11 @@
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-analyzers-common</artifactId>
       <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.github.classgraph</groupId>
+      <artifactId>classgraph</artifactId>
+      <version>${classgraph.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openclover</groupId>

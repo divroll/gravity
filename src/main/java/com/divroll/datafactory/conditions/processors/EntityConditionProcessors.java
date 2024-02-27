@@ -1,0 +1,35 @@
+package com.divroll.datafactory.conditions.processors;
+
+import java.util.List;
+
+import com.divroll.datafactory.conditions.processors.core.UnsatisfiedConditionProcessor;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
+
+public class EntityConditionProcessors {
+    private static final List<Class<?>> entityProcessorClasses;
+
+    private static final String PACKAGE_NAME = "com.divroll.datafactory.conditions.processors";
+
+    static {
+        try (ScanResult scanResult = new ClassGraph()
+                .whitelistPackages(PACKAGE_NAME)
+                .scan()) {
+            entityProcessorClasses = scanResult.getClassesImplementing(UnsatisfiedConditionProcessor.class.getName())
+                    .filter(classInfo -> classInfo.getPackageName().equals(PACKAGE_NAME))
+                    .loadClasses(true);
+        }
+    }
+
+    public static List<Class<?>> getEntityProcessorClasses() {
+        return entityProcessorClasses;
+    }
+
+    private List<Class<?>> findClasses(String packageName, Class<?> superClass) {
+        try (ScanResult scanResult = new ClassGraph()
+                .whitelistPackages(packageName)
+                .scan()) {
+            return scanResult.getClassesImplementing(superClass.getName()).loadClasses(true);
+        }
+    }
+}

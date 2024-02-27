@@ -29,7 +29,7 @@ import com.divroll.datafactory.builders.queries.BlobQueryBuilder;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityQueryBuilder;
 import com.divroll.datafactory.conditions.PropertyStartsWithConditionBuilder;
-import com.divroll.datafactory.exceptions.UnsatisfiedConditionException;
+import com.divroll.datafactory.conditions.exceptions.UnsatisfiedConditionException;
 import com.google.common.io.ByteSource;
 import com.healthmarketscience.rmiio.RemoteInputStreamClient;
 import com.healthmarketscience.rmiio.SimpleRemoteInputStream;

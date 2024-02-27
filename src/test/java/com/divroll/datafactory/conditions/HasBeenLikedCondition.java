@@ -16,7 +16,7 @@
  */
 package com.divroll.datafactory.conditions;
 
-import com.divroll.datafactory.exceptions.UnsatisfiedConditionException;
+import com.divroll.datafactory.conditions.exceptions.UnsatisfiedConditionException;
 import jetbrains.exodus.entitystore.Entity;
 
 /**
@@ -25,6 +25,9 @@ import jetbrains.exodus.entitystore.Entity;
  * @since 0-SNAPSHOT
  */
 public class HasBeenLikedCondition implements CustomCondition {
+  public HasBeenLikedCondition() {
+  }
+
   @Override public void execute(Entity entityInContext) throws UnsatisfiedConditionException {
     Comparable likes = entityInContext.getProperty("likes");
     if (likes == null || !Integer.class.isAssignableFrom(likes.getClass())) {

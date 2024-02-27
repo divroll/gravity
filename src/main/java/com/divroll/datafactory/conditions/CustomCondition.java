@@ -16,7 +16,7 @@
  */
 package com.divroll.datafactory.conditions;
 
-import com.divroll.datafactory.exceptions.UnsatisfiedConditionException;
+import com.divroll.datafactory.conditions.exceptions.UnsatisfiedConditionException;
 import jetbrains.exodus.entitystore.Entity;
 
 /**

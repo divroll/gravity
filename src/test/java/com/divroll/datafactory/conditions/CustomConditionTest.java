@@ -21,7 +21,7 @@ import com.divroll.datafactory.TestEnvironment;
 import com.divroll.datafactory.actions.IncrementLikesAction;
 import com.divroll.datafactory.builders.DataFactoryEntity;
 import com.divroll.datafactory.builders.DataFactoryEntityBuilder;
-import com.divroll.datafactory.exceptions.UnsatisfiedConditionException;
+import com.divroll.datafactory.conditions.exceptions.UnsatisfiedConditionException;
 import com.divroll.datafactory.repositories.EntityStore;
 import org.junit.Test;
 

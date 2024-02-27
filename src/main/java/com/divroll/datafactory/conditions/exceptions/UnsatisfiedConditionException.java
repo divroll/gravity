@@ -14,25 +14,22 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.divroll.datafactory.actions;
+package com.divroll.datafactory.conditions.exceptions;
 
-import javax.annotation.Nullable;
-import org.immutables.value.Value;
+import com.divroll.datafactory.conditions.EntityCondition;
+import com.divroll.datafactory.exceptions.DataFactoryException;
 
 /**
- * PropertyRenameAction represents an action to rename a property for an entity.
- *
  * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
  * @version 0-SNAPSHOT
  * @since 0-SNAPSHOT
  */
-@Value.Immutable
-public interface PropertyRenameAction extends EntityPropertyAction {
-  String propertyName();
-  String newPropertyName();
-  @Nullable
-  @Value.Default
-  default Boolean overwrite() {
-    return false;
+public class UnsatisfiedConditionException extends DataFactoryException {
+  public UnsatisfiedConditionException(EntityCondition condition) {
+   super("The condition " + condition.getClass().getName() + " was not satisfied");
   }
+
+    public UnsatisfiedConditionException(EntityCondition condition, Throwable e) {
+        super("The condition " + condition.getClass().getName() + " was not satisfied", e);
+    }
 }

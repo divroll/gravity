@@ -34,6 +34,9 @@ import org.immutables.value.Value;
  * @see CustomCondition
  * @see CustomQueryCondition
  *
+ * 'EntityCondition' is an interface representing a condition or filter applied to entities.
+ * It also provides options to specify how multiple conditions should interact using binary operation types.
+ *
  * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
  * @version 0-SNAPSHOT
  * @since 0-SNAPSHOT

@@ -27,4 +27,8 @@ public class DataFactoryException extends ExodusException {
   public DataFactoryException(String message) {
     super(message);
   }
+
+  public DataFactoryException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }
