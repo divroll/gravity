@@ -25,8 +25,18 @@ import java.util.UUID;
  */
 public class TestEnvironment {
   private static final String TEST_ENVIRONMENT = "/tmp/test/";
+  private static final String PORT = "2099";
+
   public static String getEnvironment() {
-    System.setProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT, "2099");
+    System.setProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT, PORT);
     return TEST_ENVIRONMENT + UUID.randomUUID().toString();
+  }
+
+  public static String getDomain() {
+    return "localhost";
+  }
+
+  public static String getPort() {
+    return PORT;
   }
 }

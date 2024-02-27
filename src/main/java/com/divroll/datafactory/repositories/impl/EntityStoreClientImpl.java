@@ -43,7 +43,7 @@ public class EntityStoreClientImpl implements EntityStore {
   private String host;
 
   private EntityStoreClientImpl() {
-
+    // Prevent instantiation
   }
 
   public EntityStoreClientImpl(String host, Integer port) {
@@ -53,82 +53,59 @@ public class EntityStoreClientImpl implements EntityStore {
 
   @Override public Option<DataFactoryEntity> saveEntity(@NotNull DataFactoryEntity entity)
       throws DataFactoryException, NotBoundException, RemoteException {
-    Registry registry = LocateRegistry.getRegistry(host, port);
-    EntityStore entityStore =
-        (EntityStore) registry.lookup(EntityStore.class.getName());
-    return entityStore.saveEntity(entity);
+    return getEntityStore().saveEntity(entity);
   }
 
   @Override
   public Option<DataFactoryEntities> saveEntities(@NotNull DataFactoryEntity[] entities)
       throws DataFactoryException, NotBoundException, RemoteException {
-    Registry registry = LocateRegistry.getRegistry(host, port);
-    EntityStore entityStore =
-        (EntityStore) registry.lookup(EntityStore.class.getName());
-    return entityStore.saveEntities(entities);
+    return getEntityStore().saveEntities(entities);
   }
 
   @Override public Option<DataFactoryEntity> getEntity(@NotNull EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
-    Registry registry = LocateRegistry.getRegistry(host, port);
-    EntityStore entityStore =
-        (EntityStore) registry.lookup(EntityStore.class.getName());
-    return entityStore.getEntity(query);
+    return getEntityStore().getEntity(query);
   }
 
   @Override public Option<DataFactoryEntities> getEntities(@NotNull EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
-    Registry registry = LocateRegistry.getRegistry(host, port);
-    EntityStore entityStore =
-        (EntityStore) registry.lookup(EntityStore.class.getName());
-    return entityStore.getEntities(query);
+    return getEntityStore().getEntities(query);
   }
 
   @Override public Boolean removeEntity(@NotNull EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
-    Registry registry = LocateRegistry.getRegistry(host, port);
-    EntityStore entityStore =
-        (EntityStore) registry.lookup(EntityStore.class.getName());
-    return entityStore.removeEntity(query);
+    return getEntityStore().removeEntity(query);
   }
 
   @Override public Boolean removeEntities(@NotNull EntityQuery[] queries)
       throws DataFactoryException, NotBoundException, RemoteException {
-    Registry registry = LocateRegistry.getRegistry(host, port);
-    EntityStore entityStore =
-        (EntityStore) registry.lookup(EntityStore.class.getName());
-    return entityStore.removeEntities(queries);
+    return getEntityStore().removeEntities(queries);
   }
 
   @Override public Boolean saveProperty(@NotNull DataFactoryProperty property)
       throws DataFactoryException, NotBoundException, RemoteException {
-    Registry registry = LocateRegistry.getRegistry(host, port);
-    EntityStore entityStore =
-        (EntityStore) registry.lookup(EntityStore.class.getName());
-    return entityStore.saveProperty(property);
+    return getEntityStore().saveProperty(property);
   }
 
   @Override public Boolean removeProperty(@NotNull DataFactoryProperty property)
       throws DataFactoryException, NotBoundException, RemoteException {
-    Registry registry = LocateRegistry.getRegistry(host, port);
-    EntityStore entityStore =
-        (EntityStore) registry.lookup(EntityStore.class.getName());
-    return entityStore.removeProperty(property);
+    return getEntityStore().removeProperty(property);
   }
 
   @Override public Boolean removeEntityType(@NotNull EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
-    Registry registry = LocateRegistry.getRegistry(host, port);
-    EntityStore entityStore =
-        (EntityStore) registry.lookup(EntityStore.class.getName());
-    return entityStore.removeEntityType(query);
+    return getEntityStore().removeEntityType(query);
   }
 
   @Override public Option<DataFactoryEntityTypes> getEntityTypes(EntityTypeQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
-      Registry registry = LocateRegistry.getRegistry(host, port);
-      EntityStore entityStore =
-          (EntityStore) registry.lookup(EntityStore.class.getName());
-      return entityStore.getEntityTypes(query);
+      return getEntityStore().getEntityTypes(query);
+  }
+
+  private EntityStore getEntityStore() throws RemoteException, NotBoundException {
+    Registry registry = LocateRegistry.getRegistry(host, port);
+    EntityStore entityStore =
+            (EntityStore) registry.lookup(EntityStore.class.getName());
+    return entityStore;
   }
 }

@@ -49,7 +49,6 @@ public class DataFactory {
   private static final Logger LOG = LoggerFactory.getLogger(DataFactory.class);
 
   private EntityStore entityStore;
-
   private static DataFactory instance;
   private static Registry registry;
   private static String process;
@@ -74,29 +73,46 @@ public class DataFactory {
     return instance;
   }
 
+//  public void register() throws RemoteException, NotBoundException {
+//    String host = System.getProperty(Constants.JAVA_RMI_HOST_ENVIRONMENT);
+//    if (host == null) {
+//      System.setProperty(Constants.JAVA_RMI_HOST_ENVIRONMENT, "localhost");
+//    }
+//    String testPort = System.getProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT,
+//        Constants.JAVA_RMI_PORT_DEFAULT);
+//    String port = testPort != null ? testPort :
+//        System.getProperty(Constants.JAVA_RMI_PORT_ENVIRONMENT, Constants.JAVA_RMI_PORT_DEFAULT);
+//    if(registry == null) {
+//      if (port != null) {
+//        registry = LocateRegistry.createRegistry(Integer.valueOf(port));
+//      } else {
+//        registry = LocateRegistry.createRegistry(Integer.valueOf(Constants.JAVA_RMI_PORT_DEFAULT));
+//      }
+//    }
+//    entityStore =
+//        new EntityStoreImpl(DatabaseManagerImpl.getInstance(), LuceneIndexerImpl.getInstance());
+//    if (!Arrays.asList(registry.list()).contains(EntityStore.class.getName())) {
+//      registry.rebind(EntityStore.class.getName(), instance.entityStore);
+//    }
+//    process = ManagementFactory.getRuntimeMXBean().getName();
+//    LOG.info("DataFactory initialized with process id: " + process);
+//  }
+
   public void register() throws RemoteException, NotBoundException {
-    String host = System.getProperty(Constants.JAVA_RMI_HOST_ENVIRONMENT);
-    if (host == null) {
-      System.setProperty(Constants.JAVA_RMI_HOST_ENVIRONMENT, "localhost");
-    }
-    String testPort = System.getProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT,
-        Constants.JAVA_RMI_PORT_DEFAULT);
-    String port = testPort != null ? testPort :
-        System.getProperty(Constants.JAVA_RMI_PORT_ENVIRONMENT, Constants.JAVA_RMI_PORT_DEFAULT);
+    String host = System.getProperty(Constants.JAVA_RMI_HOST_ENVIRONMENT, "localhost");
+    String port = System.getProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT, Constants.JAVA_RMI_PORT_DEFAULT);
+    port = port != null ? port : System.getProperty(Constants.JAVA_RMI_PORT_ENVIRONMENT, Constants.JAVA_RMI_PORT_DEFAULT);
+
     if(registry == null) {
-      if (port != null) {
-        registry = LocateRegistry.createRegistry(Integer.valueOf(port));
-      } else {
-        registry = LocateRegistry.createRegistry(Integer.valueOf(Constants.JAVA_RMI_PORT_DEFAULT));
-      }
+      registry = LocateRegistry.createRegistry(Integer.valueOf(port));
     }
-    entityStore =
-        new EntityStoreImpl(DatabaseManagerImpl.getInstance(), LuceneIndexerImpl.getInstance());
+
     if (!Arrays.asList(registry.list()).contains(EntityStore.class.getName())) {
-      registry.rebind(EntityStore.class.getName(), instance.entityStore);
+      entityStore = new EntityStoreImpl(DatabaseManagerImpl.getInstance(), LuceneIndexerImpl.getInstance());
+      registry.rebind(EntityStore.class.getName(), entityStore);
     }
-    process = ManagementFactory.getRuntimeMXBean().getName();
-    LOG.info("DataFactory initialized with process id: " + process);
+
+    LOG.info("DataFactory initialized with process id: " + ManagementFactory.getRuntimeMXBean().getName());
   }
 
   /**
