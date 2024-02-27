@@ -1,6 +1,6 @@
 /*
  * Divroll, Platform for Hosting Static Sites
- * Copyright 2020, Divroll, and individual contributors
+ * Copyright 2024, Divroll, and individual contributors
  * as indicated by the @author tags. See the copyright.txt file in the
  * distribution for a full listing of individual contributors.
  *
@@ -35,8 +35,10 @@ import com.divroll.datafactory.builders.queries.EntityTypeQuery;
 import com.divroll.datafactory.builders.queries.LinkQuery;
 import com.divroll.datafactory.conditions.UnsatisfiedCondition;
 import com.divroll.datafactory.database.DatabaseManager;
+import com.divroll.datafactory.database.DatabaseManagerProvider;
 import com.divroll.datafactory.exceptions.DataFactoryException;
 import com.divroll.datafactory.indexers.LuceneIndexer;
+import com.divroll.datafactory.indexers.LuceneIndexerProvider;
 import com.divroll.datafactory.properties.EmbeddedArrayIterable;
 import com.divroll.datafactory.properties.EmbeddedEntityIterable;
 import com.divroll.datafactory.repositories.EntityStore;
@@ -78,14 +80,14 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
 
   private static final Logger LOG = LoggerFactory.getLogger(EntityStoreImpl.class);
 
-  private DatabaseManager manager;
+  private DatabaseManagerProvider databaseManagerProvider;
 
-  private LuceneIndexer searchIndexer;
+  private LuceneIndexerProvider luceneIndexerProvider;
 
-  public EntityStoreImpl(DatabaseManager databaseManager, LuceneIndexer searchIndexer)
+  public EntityStoreImpl(DatabaseManagerProvider databaseManagerProvider, LuceneIndexerProvider luceneIndexerProvider)
       throws DataFactoryException, NotBoundException, RemoteException {
-    this.manager = databaseManager;
-    this.searchIndexer = searchIndexer;
+    this.databaseManagerProvider = databaseManagerProvider;
+    this.luceneIndexerProvider = luceneIndexerProvider;
   }
 
   @Override public Option<DataFactoryEntity> saveEntity(@NotNull DataFactoryEntity entity)
@@ -103,7 +105,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     while (it.hasNext()) {
       String dir = it.next();
       List<DataFactoryEntity> dataFactoryEntityList = envIdOrderedEntities.get(dir);
-      manager.transactPersistentEntityStore(dir, false, txn -> {
+      getDatabaseManager().transactPersistentEntityStore(dir, false, txn -> {
 
         List<DataFactoryEntity> resultEntities = new ArrayList<>();
         dataFactoryEntityList.forEach(entity -> {
@@ -185,7 +187,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
 
     AtomicReference<Long> count = new AtomicReference<>(0L);
 
-    manager.transactPersistentEntityStore(dir, true, txn -> {
+    getDatabaseManager().transactPersistentEntityStore(dir, true, txn -> {
 
       AtomicReference<EntityIterable> result = new AtomicReference<>();
       if (nameSpace != null && !nameSpace.isEmpty() && entityType.get() != null) {
@@ -198,7 +200,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
       if (query.entityId() == null && entityType.get() == null) {
         throw new IllegalArgumentException("Either entity ID or entity type must be present");
       } else if (query.entityId() == null) {
-        processConditions(searchIndexer, entityType.get(), query.conditions(), result, txn);
+        processConditions(getSearchIndexer(), entityType.get(), query.conditions(), result, txn);
       }
 
       if (query.entityId() != null) {
@@ -264,7 +266,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     while (it.hasNext()) {
       String dir = it.next();
       List<EntityQuery> queryList = dirOrderedQueries.get(dir);
-      manager.transactPersistentEntityStore(dir, false, txn -> {
+      getDatabaseManager().transactPersistentEntityStore(dir, false, txn -> {
         queryList.forEach(query -> {
           String entityType = query.entityType();
           String nameSpace = query.nameSpace();
@@ -320,7 +322,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     String entityType = property.entityType();
     String nameSpace = property.nameSpace();
     AtomicReference<Boolean> updated = new AtomicReference<>(false);
-    manager.transactPersistentEntityStore(dir, false, txn -> {
+    getDatabaseManager().transactPersistentEntityStore(dir, false, txn -> {
       final AtomicReference<EntityIterable> reference = new AtomicReference<>();
       if (nameSpace != null) {
         reference.set(
@@ -359,7 +361,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     String entityType = property.entityType();
     String nameSpace = property.nameSpace();
     AtomicReference<Boolean> removed = new AtomicReference<>(false);
-    manager.transactPersistentEntityStore(dir, false, txn -> {
+    getDatabaseManager().transactPersistentEntityStore(dir, false, txn -> {
       final AtomicReference<EntityIterable> reference = new AtomicReference<>();
       if (nameSpace != null) {
         reference.set(
@@ -395,7 +397,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     String entityType = query.entityType();
     String nameSpace = query.nameSpace();
 
-    manager.transactPersistentEntityStore(dir, false, txn -> {
+    getDatabaseManager().transactPersistentEntityStore(dir, false, txn -> {
       final AtomicReference<EntityIterable> reference = new AtomicReference<>();
       if (nameSpace != null) {
         reference.set(
@@ -429,7 +431,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   @Override public Option<DataFactoryEntityTypes> getEntityTypes(EntityTypeQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
     AtomicReference<DataFactoryEntityTypes> atomicReference = new AtomicReference<>();
-    manager.transactPersistentEntityStore(query.environment(), true, txn -> {
+    getDatabaseManager().transactPersistentEntityStore(query.environment(), true, txn -> {
       List<String> entityTypes = txn.getEntityTypes();
       Long count = null;
       if(query.count()) {
@@ -519,5 +521,13 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
       return comparableHashMap;
     }
     return comparable;
+  }
+
+  private DatabaseManager getDatabaseManager() {
+    return databaseManagerProvider.getDatabaseManager();
+  }
+
+  private LuceneIndexer getSearchIndexer() {
+    return luceneIndexerProvider.getLuceneIndexer();
   }
 }
