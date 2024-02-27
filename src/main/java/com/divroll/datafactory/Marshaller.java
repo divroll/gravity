@@ -40,16 +40,24 @@ import jetbrains.exodus.entitystore.StoreTransaction;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ * The Marshaller class is used to build a DataFactoryEntity for remote transmission.
+ * It provides methods to set the entity, link queries, and blob queries, and a build
+ *
  * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
  * @version 0-SNAPSHOT
  * @since 0-SNAPSHOT
  */
 public class Marshaller {
-
   private Entity entity;
   private List<LinkQuery> linkQueries;
   private List<BlobQuery> blobQueries;
 
+  /**
+   * Adds the provided entity to the marshaller.
+   *
+   * @param entity the entity to add
+   * @return the updated marshaller
+   */
   public Marshaller with(@NotNull Entity entity) {
     if (this.entity != null) {
       throw new IllegalArgumentException("Entity is already set");
@@ -58,6 +66,13 @@ public class Marshaller {
     return this;
   }
 
+  /**
+   * Adds the provided LinkQueries to the Marshaller.
+   *
+   * @param linkQueries an array of LinkQuery objects to add to the Marshaller
+   * @return the updated Marshaller object
+   * @throws IllegalArgumentException if LinkQuery is already set
+   */
   public Marshaller with(@NotNull LinkQuery[] linkQueries) {
     if (this.linkQueries != null) {
       throw new IllegalArgumentException("LinkQuery is already set");
@@ -66,6 +81,12 @@ public class Marshaller {
     return this;
   }
 
+  /**
+   * Adds the provided BlobQueries to the Marshaller.
+   *
+   * @param blobQueries an array of BlobQuery objects to add to the Marshaller
+   * @return the updated Marshaller object
+   */
   public Marshaller with(@NotNull BlobQuery[] blobQueries) {
     if (this.blobQueries != null) {
       throw new IllegalArgumentException("BlobQuery is already set");
@@ -151,5 +172,4 @@ public class Marshaller {
         .links(links)
         .build();
   }
-
 }

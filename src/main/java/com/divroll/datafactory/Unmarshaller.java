@@ -66,21 +66,35 @@ import org.jetbrains.annotations.NotNull;
 import static com.divroll.datafactory.exceptions.Throwing.rethrow;
 
 /**
+ * Unmarshaller for unmarshalling {@linkplain DataFactoryEntity} into {@linkplain Entity} within the
+ *
  * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
  * @version 0-SNAPSHOT
  * @since 0-SNAPSHOT
  */
 public class Unmarshaller {
-
   DataFactoryEntity dataFactoryEntity;
   StoreTransaction txn;
 
+  /**
+   * Set the data factory entity and store transaction for the unmarshaller.
+   *
+   * @param entity The data factory entity to set.
+   * @param txn The store transaction to set.
+   * @return The updated instance of the Unmarshaller.
+   */
   public Unmarshaller with(@NotNull DataFactoryEntity entity, StoreTransaction txn) {
     this.dataFactoryEntity = entity;
     this.txn = txn;
     return this;
   }
 
+  /**
+   * Builds an Entity based on the specified DataFactoryEntity and transaction.
+   *
+   * @return The built Entity.
+   * @throws IllegalArgumentException If the DataFactoryEntity is not set.
+   */
   public Entity build() {
     if (dataFactoryEntity == null) {
       new IllegalArgumentException("Must set RemoteEntity to unmarshall into Entity");
@@ -92,6 +106,15 @@ public class Unmarshaller {
     throw new IllegalArgumentException("Not yet implemented");
   }
 
+  /**
+   * Builds an Entity in the context of the scoped entities based on the namespace of the given DataFactoryEntity.
+   *
+   * @param entity           The DataFactoryEntity to build the Entity from. Cannot be null.
+   * @param referenceToScope The AtomicReference to hold the scoped entities. Cannot be null.
+   * @param txn              The StoreTransaction to use for building the Entity. Cannot be null.
+   * @return The built Entity.
+   * @throws IllegalArgumentException If the specified entity is not found in the scoped entities and the namespace is not null.
+   */
   public static Entity buildContexedEntity(@NotNull DataFactoryEntity entity,
       @NotNull AtomicReference<EntityIterable> referenceToScope, @NotNull StoreTransaction txn) {
 
@@ -116,6 +139,16 @@ public class Unmarshaller {
     return entityInContext;
   }
 
+  /**
+   * Process the list of entity conditions and update the reference to scope based on the given parameters.
+   *
+   * @param indexer The LuceneIndexer used for indexing.
+   * @param entityType The type of the entity being processed.
+   * @param conditions The list of EntityConditions to process.
+   * @param referenceToScope The AtomicReference to hold the scoped entities.
+   * @param txn The StoreTransaction to use for processing the conditions.
+   * @return The updated EntityIterable based on the processed conditions.
+   */
   public static EntityIterable processConditions(@NotNull LuceneIndexer indexer,
       @NotNull String entityType,
       @NotNull List<EntityCondition> conditions,
@@ -336,6 +369,15 @@ public class Unmarshaller {
     }));
   }
 
+  /**
+   * Processes a list of actions on an entity.
+   *
+   * @param dataFactoryEntity The DataFactoryEntity associated with the entity.
+   * @param reference        An AtomicReference to the EntityIterable used for reference.
+   * @param entityInContext  The entity on which the actions are performed.
+   * @param txn              The StoreTransaction associated with the entity.
+   * @return The modified entityInContext after processing the actions.
+   */
   public static Entity processActions(@NotNull DataFactoryEntity dataFactoryEntity,
       @NotNull AtomicReference<EntityIterable> reference, @NotNull Entity entityInContext,
       @NotNull StoreTransaction txn) {
@@ -485,6 +527,15 @@ public class Unmarshaller {
     return entityInContext;
   }
 
+  /**
+   * Filters the given EntityIterable based on the provided TransactionFilters.
+   *
+   * @param reference   AtomicReference to hold the EntityIterable being filtered.
+   * @param filters     List of TransactionFilters to apply.
+   * @param entityType  Type of the entity being filtered.
+   * @param txn         StoreTransaction to use for filtering.
+   * @return The filtered EntityIterable.
+   */
   public static EntityIterable filterContext(AtomicReference<EntityIterable> reference,
       List<TransactionFilter> filters, String entityType, StoreTransaction txn) {
     filters.forEach(transactionFilter -> {
