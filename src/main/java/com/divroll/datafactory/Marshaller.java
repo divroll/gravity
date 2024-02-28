@@ -161,9 +161,15 @@ public class Marshaller {
       });
     });
 
+    String nameSpace = null;
+    Comparable nameSpaceProperty = entity.getProperty(Constants.NAMESPACE_PROPERTY);
+    if(nameSpaceProperty != null) {
+      nameSpace = String.valueOf(nameSpaceProperty);
+    }
+
     return builder
         .environment(entity.getStore().getLocation())
-        .nameSpace(String.valueOf(entity.getProperty(Constants.NAMESPACE_PROPERTY)))
+        .nameSpace(nameSpace)
         .entityType(entity.getType())
         .entityId(entity.getId().toString())
         .blobNames(Iterables.toArray(entity.getBlobNames(), String.class))
