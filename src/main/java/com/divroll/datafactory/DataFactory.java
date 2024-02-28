@@ -40,7 +40,6 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import jetbrains.exodus.bindings.ComparableBinding;
-import lombok.SneakyThrows;
 
 /**
  * DataFactory registers and exposes the repositories for accessing the underlying Xodus database.
@@ -78,7 +77,6 @@ public class DataFactory {
    *
    * @return singleton instance of {@linkplain DataFactory}
    */
-  @SneakyThrows
   public static DataFactory getInstance() {
     if (instance == null) {
       instance = new DataFactory();
@@ -106,19 +104,25 @@ public class DataFactory {
   /**
    * Unbinds all registered classes from RMI registry and close all Xodus environments.
    */
-  @SneakyThrows
   public void release() {
-    if (registry != null) {
-      String[] classNames = registry.list();
-      for (int i = 0; i < classNames.length; i++) {
-        registry.unbind(classNames[i]);
+    try {
+      if (registry != null) {
+        String[] classNames = registry.list();
+        for (int i = 0; i < classNames.length; i++) {
+          registry.unbind(classNames[i]);
+        }
+        if(entityStore != null) {
+          UnicastRemoteObject.unexportObject(entityStore, true);
+          entityStore = null;
+        }
       }
-      if(entityStore != null) {
-        UnicastRemoteObject.unexportObject(entityStore, true);
-        entityStore = null;
-      }
+    } catch (RemoteException e) {
+      throw new RuntimeException(e);
+    } catch (NotBoundException e) {
+      throw new RuntimeException(e);
+    } finally {
+      DatabaseManagerImpl.getInstance().closeEnvironments();
     }
-    DatabaseManagerImpl.getInstance().closeEnvironments();
   }
 
   public <T extends Comparable, B extends ComparableBinding> DataFactory addCustomPropertyType(
