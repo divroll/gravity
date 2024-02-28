@@ -24,15 +24,28 @@ import java.io.Serializable;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents an action to link a new entity.
  */
 @Value.Immutable
 public interface LinkNewEntityAction extends EntityAction, Serializable {
+  /**
+   * Returns the name of the link.
+   *
+   * @return The name of the link.
+   */
   String linkName();
 
+  /**
+   * Returns the new entity to be linked.
+   *
+   * @return The new entity to be linked.
+   */
   DataFactoryEntity newEntity();
 
+  /**
+   * Returns whether the link is set or not.
+   *
+   * @return True if the link is set, false otherwise.
+   */
   Boolean isSet();
 }

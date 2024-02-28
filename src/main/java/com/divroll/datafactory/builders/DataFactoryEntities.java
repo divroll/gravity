@@ -26,25 +26,56 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents a query to retrieve a list of entities.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface DataFactoryEntities extends Serializable {
+  /**
+   *
+   * Returns a list of DataFactoryEntity objects.
+   *
+   * @return the list of DataFactoryEntity objects
+   */
   @Value.Default
   default List<DataFactoryEntity> entities() {
     return new ArrayList<>();
   }
+  /**
+   * Returns the offset value.
+   *
+   * @return the offset value, or null if not set
+   */
   @Nullable
   Integer offset();
+  /**
+   * Returns the maximum value for the 'max' attribute in the DataFactoryEntities class.
+   *
+   * @return the maximum value for the 'max' attribute, or null if not set
+   */
   @Nullable
   Integer max();
+  /**
+   * Retrieves the count value.
+   *
+   * @return the count, or null if not set
+   */
   @Nullable
   Long count();
+  /**
+   * Sorts the data using the specified sorting criteria.
+   *
+   * @return the sorting criteria, or null if not set
+   */
   @Nullable
   String sort();
+  /**
+   * Checks whether the data is sorted in ascending order based on the sorting criteria.
+   *
+   * @return  {@code true} if the data is sorted in ascending order,
+   *          {@code false} if the data is not sorted or sorted in descending order, or
+   *          {@code null} if the sorting criteria is not set
+   */
   @Nullable
   Boolean isAscendingSort();
 }

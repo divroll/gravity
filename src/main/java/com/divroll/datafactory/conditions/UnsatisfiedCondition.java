@@ -22,12 +22,16 @@ package com.divroll.datafactory.conditions;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * UnsatisfiedCondition interface represents a condition for querying entities.
+ * It provides a method to retrieve the EntityCondition object representing the condition for the method.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface UnsatisfiedCondition {
+  /**
+   * Returns the EntityCondition for the given method.
+   *
+   * @return the EntityCondition object representing the condition for the method.
+   */
   EntityCondition condition();
 }

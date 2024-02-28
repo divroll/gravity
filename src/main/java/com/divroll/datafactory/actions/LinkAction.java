@@ -25,23 +25,45 @@ import java.util.List;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents an action to link an entity to another entity.
  */
 @Value.Immutable
 public interface LinkAction extends EntityAction, Serializable {
+  /**
+   * Returns the name of the link.
+   * @return The name of the link.
+   */
   String linkName();
 
+  /**
+   * Returns the ID of the other entity involved in the link action.
+   *
+   * @return The ID of the other entity.
+   */
   String otherEntityId();
 
+  /**
+   * Returns whether the link is set or not.
+   *
+   * @return True if the link is set, false otherwise.
+   */
   Boolean isSet();
 
+  /**
+   * Returns whether the link is removed or not.
+   *
+   * @return True if the link is removed, false otherwise.
+   */
   @Value.Default
   default Boolean isRemove() {
     return false;
   }
 
+  /**
+   * Returns a list of other entity property actions.
+   *
+   * @return A list of other entity property actions.
+   */
   @Value.Default
   default List<EntityPropertyAction> otherEntityPropertyActions() {
     return new ArrayList<>();

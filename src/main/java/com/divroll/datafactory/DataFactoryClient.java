@@ -29,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
  * @since 0-SNAPSHOT
  */
 public class DataFactoryClient {
-
   private static DataFactoryClient instance;
   private static final String DEFAULT_HOST = "localhost";
   private static final String DEFAULT_PORT = "1099";

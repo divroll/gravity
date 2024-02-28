@@ -24,5 +24,10 @@ package com.divroll.datafactory.database;
  * Implementing classes must provide an implementation of the getDatabaseManager method.
  */
 public interface DatabaseManagerProvider {
+    /**
+     * Retrieves an instance of the DatabaseManager.
+     *
+     * @return the DatabaseManager instance
+     */
     DatabaseManager getDatabaseManager();
 }

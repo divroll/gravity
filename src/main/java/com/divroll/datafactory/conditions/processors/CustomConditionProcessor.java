@@ -27,16 +27,45 @@ import jetbrains.exodus.entitystore.StoreTransaction;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The CustomConditionProcessor class is responsible for processing CustomCondition objects.
+ * It extends the UnsatisfiedConditionProcessorBase class and implements the processing logic.
+ */
 public class CustomConditionProcessor extends UnsatisfiedConditionProcessorBase<CustomCondition> {
+    /**
+     * CustomConditionProcessor is a class that extends UnsatisfiedConditionProcessorBase
+     * and implements the processing logic for CustomCondition objects.
+     *
+     * @see UnsatisfiedConditionProcessorBase
+     * @see CustomCondition
+     */
     public CustomConditionProcessor() {
         super(CustomCondition.class);
     }
 
+    /**
+     * Processes the given condition by executing the entityCondition on the entityInContext.
+     *
+     * @param scope The atomic reference to hold the entity iterable.
+     * @param entityCondition The custom condition to execute.
+     * @param entityInContext The entity on which the condition will be executed.
+     * @param txn The store transaction.
+     * @see CustomCondition#execute(Entity)
+     * @since 0-SNAPSHOT
+     */
     @Override
-    protected void processCondition(AtomicReference<EntityIterable> scope, CustomCondition entityCondition, Entity entityInContext, StoreTransaction txn) {
+    protected void processCondition(AtomicReference<EntityIterable> scope,
+                                    CustomCondition entityCondition,
+                                    Entity entityInContext,
+                                    StoreTransaction txn) {
         entityCondition.execute(entityInContext);
     }
 
+    /**
+     * Returns the class type that the processor can handle.
+     *
+     * @return The class type that the processor can handle.
+     */
     @Override
     public Class<?> canProcess() {
         return CustomCondition.class;

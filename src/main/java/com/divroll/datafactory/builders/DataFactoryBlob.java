@@ -25,19 +25,29 @@ import javax.annotation.Nullable;
 import jetbrains.exodus.entitystore.Entity;
 import org.immutables.value.Value;
 
-/**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
- */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface DataFactoryBlob extends Serializable {
+  /**
+   * Retrieves the name of the blob.
+   *
+   * @return The name of the blob.
+   */
   String blobName();
 
+  /**
+   * Retrieves the size of the blob.
+   *
+   * @return The size of the blob, or null if the size is unknown.
+   */
   @Nullable
   Long blobSize();
 
+  /**
+   * Retrieves the remote input stream for the blob.
+   *
+   * @return The remote input stream for the blob.
+   */
   RemoteInputStream blobStream();
 
   /**
@@ -45,7 +55,7 @@ public interface DataFactoryBlob extends Serializable {
    * delete operation this property indicates whether to delete the blob from multiple {@linkplain
    * Entity} matching the query.
    *
-   * @return
+   * @return True if the blob can be set to multiple {@linkplain Entity}, false otherwise
    */
   @Nullable
   @Value.Default
@@ -53,7 +63,11 @@ public interface DataFactoryBlob extends Serializable {
     return false;
   }
 
+  /**
+   * Retrieves the count of a DataFactoryBlob.
+   *
+   * @return The count of the DataFactoryBlob, or null if the count is unknown.
+   */
   @Nullable
   Long count();
-
 }

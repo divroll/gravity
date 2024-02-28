@@ -25,18 +25,35 @@ import java.util.List;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * The OppositeLinkRemoveAction interface represents an action of removing an
+ * opposite link in an entity.
  */
 @Value.Immutable
 public interface OppositeLinkRemoveAction extends EntityAction, Serializable {
+  /**
+   * Returns the name of the link.
+   * @return The name of the link.
+   */
   String linkName();
 
+  /**
+   * Returns the name of the opposite link.
+   * @return The name of the opposite link.
+   */
   String oppositeLinkName();
 
+  /**
+   * Returns the opposite entity type of the OppositeLinkRemoveAction.
+   *
+   * @return The opposite entity type.
+   */
   String oppositeEntityType();
 
+  /**
+   * Returns a default list of EntityPropertyAction objects.
+   *
+   * @return The default list of EntityPropertyAction objects.
+   */
   @Value.Default
   default List<EntityPropertyAction> otherEntityPropertyActions() {
     return new ArrayList<>();

@@ -24,11 +24,15 @@ import com.divroll.datafactory.indexers.impl.LuceneIndexerImpl;
 import java.io.Serializable;
 
 /**
- * The SerializableLuceneIndexerProvider class is an implementation of the LuceneIndexerProvider interface.
- * It provides a method to retrieve a singleton instance of LuceneIndexer using LuceneIndexerImpl.getInstance().
- * This class is Serializable, allowing the LuceneIndexerProvider instance to be serialized and deserialized.
+ * The SerializableLuceneIndexerProvider class is an implementation of the LuceneIndexerProvider interface
+ * that provides a serializable version of a LuceneIndexer instance.
  */
 public class SerializableLuceneIndexerProvider implements LuceneIndexerProvider, Serializable {
+    /**
+     * Retrieves an instance of the LuceneIndexer implementation.
+     *
+     * @return an instance of the LuceneIndexer implementation
+     */
     @Override
     public LuceneIndexer getLuceneIndexer() {
         return LuceneIndexerImpl.getInstance();

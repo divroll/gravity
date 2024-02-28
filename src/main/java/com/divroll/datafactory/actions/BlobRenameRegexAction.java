@@ -22,12 +22,25 @@ package com.divroll.datafactory.actions;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents an action to rename a blob using a regular expression.
  */
 @Value.Immutable
 public interface BlobRenameRegexAction extends EntityAction {
+  /**
+   * Retrieves the replacement string for a BlobRenameRegexAction.
+   * The replacement string is used to replace the matched portion
+   * of the blob name with a new value.
+   *
+   * @return The replacement string.
+   */
   String replacement();
+
+  /**
+   * Retrieves the regular expression pattern for a BlobRenameRegexAction.
+   * The regular expression pattern is used to match the portion of the
+   * blob name that will be replaced with a new value.
+   *
+   * @return The regular expression pattern.
+   */
   String regexPattern();
 }

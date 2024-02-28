@@ -24,9 +24,7 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * TransactionFilter class represents a filter for transactions.
  */
 @Value.Immutable
 public interface TransactionFilter extends Serializable {
@@ -46,22 +44,55 @@ public interface TransactionFilter extends Serializable {
     NOT_EQUAL
   }
 
+  /**
+   * Retrieves the value of the equalityOp attribute in the TransactionFilter class.
+   *
+   * @return The value of the equalityOp attribute
+   */
   EQUALITY_OP equalityOp();
 
+  /**
+   * Retrieves the value of the propertyName attribute.
+   * @return The value of the propertyName attribute
+   */
   String propertyName();
 
+  /**
+   * Returns the value of the {@code propertyValue} attribute.
+   *
+   * @return The value of the {@code propertyValue} attribute.
+   */
   Comparable propertyValue();
 
+  /**
+   * Returns the minimum value associated with this transaction filter.
+   *
+   * @return The minimum value, or null if it is not set
+   */
   @Nullable
   Comparable minValue();
 
+  /**
+   * Returns the maximum value for the {@link TransactionFilter#maxValue() maxValue} attribute.
+   *
+   * @return The maximum value (can be {@code null})
+   */
   @Nullable
   Comparable maxValue();
 
+  /**
+   * Retrieves the value of the operator attribute.
+   *
+   * @return The value of the operator attribute
+   */
   @Nullable
   BINARY_OP operator();
 
+  /**
+   * Retrieves the next {@code TransactionFilter} in the sequence.
+   *
+   * @return The next {@code TransactionFilter} in the sequence, or null if there is no next filter.
+   */
   @Nullable
   TransactionFilter next();
-
 }

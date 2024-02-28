@@ -23,14 +23,28 @@ import java.time.LocalTime;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * PropertyLocalTimeRangeCondition is an interface that represents a condition for querying entities based on a local time range.
+ * It extends the EntityCondition interface and provides methods for retrieving the name of the property, as well as the upper and lower bounds of the time range condition.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface PropertyLocalTimeRangeCondition extends EntityCondition {
+  /**
+   * Gets the name of the property.
+   *
+   * @return The name of the property.
+   */
   String propertyName();
+  /**
+   * Returns the upper bound of the time range for a property value.
+   *
+   * @return The upper bound of the time range.
+   */
   LocalTime upper();
+  /**
+   * Returns the lower bound of the time range condition.
+   *
+   * @return The lower bound of the time range condition.
+   */
   LocalTime lower();
 }

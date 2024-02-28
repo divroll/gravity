@@ -23,10 +23,17 @@ import com.divroll.datafactory.conditions.exceptions.UnsatisfiedConditionExcepti
 import jetbrains.exodus.entitystore.Entity;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * CustomCondition is an interface representing a custom condition applied to entities.
+ * It extends the EntityCondition interface.
+ * Custom conditions can be executed on entities to check if a condition is satisfied.
+ * If the condition is not satisfied, an UnsatisfiedConditionException is thrown.
  */
 public interface CustomCondition extends EntityCondition {
+  /**
+   * Executes the provided custom condition on the given entity in context.
+   *
+   * @param entityInContext The entity on which the condition will be executed.
+   * @throws UnsatisfiedConditionException If the condition is not satisfied.
+   */
   void execute(Entity entityInContext) throws UnsatisfiedConditionException;
 }

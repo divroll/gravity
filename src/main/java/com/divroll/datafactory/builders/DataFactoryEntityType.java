@@ -20,9 +20,18 @@
 package com.divroll.datafactory.builders;
 
 import org.immutables.value.Value;
-
+/**
+ * Represents a data factory entity type.
+ *
+ * <p>An entity type is defined by its name. This class provides a method to retrieve the entity type name.
+ */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface DataFactoryEntityType {
+  /**
+   * Returns the name of the entity type.
+   *
+   * @return the name of the entity type as a String.
+   */
   String entityTypeName();
 }

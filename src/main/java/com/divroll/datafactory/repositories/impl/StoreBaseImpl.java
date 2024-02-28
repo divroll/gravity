@@ -36,18 +36,21 @@ import java.util.TimeZone;
 import util.ComparableLinkedList;
 import util.CustomHashMap;
 
-/**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
- */
 public abstract class StoreBaseImpl<T> extends UnicastRemoteObject {
-
+  /**
+   *
+   */
   private static final Logger LOG = LoggerFactory.getLogger(StoreBaseImpl.class);
 
+  /**
+   *
+   */
   public StoreBaseImpl() throws RemoteException {
   }
 
+  /**
+   *
+   */
   public static <T> void removeDuplicates(ComparableLinkedList<T> list) {
     int size = list.size();
     int out = 0;
@@ -66,6 +69,9 @@ public abstract class StoreBaseImpl<T> extends UnicastRemoteObject {
     }
   }
 
+  /**
+   *
+   */
   public static <T> void removeDuplicates(ArrayList<T> list) {
     int size = list.size();
     int out = 0;
@@ -84,6 +90,9 @@ public abstract class StoreBaseImpl<T> extends UnicastRemoteObject {
     }
   }
 
+  /**
+   *
+   */
   protected static CustomHashMap<String, Comparable> entityToMap(
       jetbrains.exodus.entitystore.Entity entity) {
     CustomHashMap<String, Comparable> comparableMap = new CustomHashMap<>();
@@ -103,6 +112,9 @@ public abstract class StoreBaseImpl<T> extends UnicastRemoteObject {
     return comparableMap;
   }
 
+  /**
+   *
+   */
   protected String getISODate() {
     TimeZone tz = TimeZone.getTimeZone("UTC");
     DateFormat df =
@@ -112,8 +124,10 @@ public abstract class StoreBaseImpl<T> extends UnicastRemoteObject {
     return df.format(new Date());
   }
 
+  /**
+   *
+   */
   protected String dataFactoryDir() {
     return System.getProperty(Constants.DATAFACTORY_DIRECTORY_ENVIRONMENT);
   }
-
 }

@@ -42,19 +42,44 @@ import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The LuceneIndexerImpl class is an implementation of the LuceneIndexer interface.
+ * It provides methods for indexing and searching entities using the Lucene library.
+ */
 public class LuceneIndexerImpl implements LuceneIndexer {
-
+  /**
+   * IndexSearcher is a class in the Lucene library that provides
+   * search functionality on an index.
+   */
   private IndexSearcher searcher;
+  /**
+   * The "writer" variable represents an instance of the "IndexWriter" class.
+   * It is used for indexing documents in the Lucene library.
+   */
   private IndexWriter writer;
 
+  /**
+   * The private static variable instance represents an implementation of the LuceneIndexer interface.
+   */
   private static LuceneIndexerImpl instance;
 
+  /**
+   * Private constructor for LuceneIndexerImpl.
+   * This constructor ensures that only one instance of LuceneIndexerImpl can be created.
+   * It throws a RuntimeException if an attempt is made to create a new instance.
+   */
   private LuceneIndexerImpl() {
     if (instance != null) {
       throw new RuntimeException("Only one instance of LuceneIndexer is allowed");
     }
 }
 
+  /**
+   * Retrieves the instance of the LuceneIndexerImpl class.
+   * If the instance is not yet created, a new instance will be created.
+   *
+   * @return The instance of the LuceneIndexerImpl class.
+   */
   public static LuceneIndexerImpl getInstance() {
     if (instance == null) {
       instance = new LuceneIndexerImpl();
@@ -62,6 +87,16 @@ public class LuceneIndexerImpl implements LuceneIndexer {
     return instance;
   }
 
+  /**
+   * Indexes a document in the given directory with the specified entity ID, longitude, and latitude.
+   *
+   * @param dir       The directory where the index is stored.
+   * @param entityId  The ID of the entity to be indexed.
+   * @param longitude The longitude value of the entity's location.
+   * @param latitude  The latitude value of the entity's location.
+   * @return True if the index operation is successful, false otherwise.
+   * @throws Exception If an error occurs during the indexing process.
+   */
   @Override public Boolean index(String dir, String entityId, Double longitude, Double latitude)
       throws Exception {
     ExodusDirectory exodusDirectory = DatabaseManagerImpl.getInstance().getExodusDirectory(dir);
@@ -85,6 +120,16 @@ public class LuceneIndexerImpl implements LuceneIndexer {
     });
   }
 
+  /**
+   * Indexes the given text in the specified field for a given entity ID.
+   *
+   * @param dir the directory where the index is stored
+   * @param entityId the ID of the entity to index
+   * @param field the name of the field to index
+   * @param text the text to index
+   * @return true if the text was successfully indexed, false otherwise
+   * @throws Exception if an error occurs while indexing the text
+   */
   @Override public Boolean index(String dir, String entityId, String field, String text) throws Exception {
     ExodusDirectory exodusDirectory = DatabaseManagerImpl.getInstance().getExodusDirectory(dir);
     Analyzer analyzer = new StandardAnalyzer();
@@ -105,6 +150,18 @@ public class LuceneIndexerImpl implements LuceneIndexer {
     });
   }
 
+  /**
+   * Searches for neighbors within a given radius of a specified location.
+   *
+   * @param dir      The name of the directory to search in.
+   * @param longitude The longitude coordinate of the center of the search area.
+   * @param latitude  The latitude coordinate of the center of the search area.
+   * @param radius    The radius in which to search for neighbors from the center location.
+   * @param after     A string representing the after parameter. [Additional information about after parameter]
+   * @param hits      The maximum number of neighbors to retrieve.
+   * @return A list of neighbor IDs within the specified radius.
+   * @throws Exception If an error occurs during the search process.
+   */
   @Override
   public List<String> searchNeighbor(String dir, Double longitude, Double latitude, Double radius, String after,
       Integer hits) throws Exception {
@@ -130,6 +187,17 @@ public class LuceneIndexerImpl implements LuceneIndexer {
     });
   }
 
+  /**
+   * Searches for documents in the given directory based on the specified field and query string.
+   *
+   * @param dir            The directory path where the documents are stored.
+   * @param field          The field to search within.
+   * @param queryString    The query string to search for.
+   * @param after          The specific value after which to start the search (optional).
+   * @param hits           The maximum number of search results to retrieve.
+   * @return A list of entity IDs matching the search criteria.
+   * @throws Exception     If an error occurs during the search.
+   */
   @Override public List<String> search(String dir, String field, String queryString, String after, Integer hits)
       throws Exception {
     ExodusDirectory exodusDirectory = DatabaseManagerImpl.getInstance().getExodusDirectory(dir);

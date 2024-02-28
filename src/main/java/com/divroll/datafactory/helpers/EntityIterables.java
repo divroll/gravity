@@ -30,12 +30,17 @@ import util.ComparableHashMap;
 import util.ComparableLinkedList;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Utility class for working with different types of entity iterables.
  */
 @SuppressWarnings("unchecked")
 public class EntityIterables {
+  /**
+   * Casts the given EmbeddedEntityIterable to a Map<String, Comparable>.
+   *
+   * @param embeddedEntityIterable the EmbeddedEntityIterable to be casted
+   * @return a Map<String, Comparable> representation of the EmbeddedEntityIterable,
+   *         or null if the input is null
+   */
   public static Map<String, Comparable> cast(EmbeddedEntityIterable embeddedEntityIterable) {
     if (embeddedEntityIterable == null) {
       return null;
@@ -44,6 +49,12 @@ public class EntityIterables {
     return comparableMap;
   }
 
+  /**
+   * Converts a ComparableLinkedList to an EmbeddedArrayIterable.
+   *
+   * @param comparableList the ComparableLinkedList to convert
+   * @return the EmbeddedArrayIterable created from the comparableList
+   */
   @SuppressWarnings("unchecked")
   public static EmbeddedArrayIterable toEmbeddedArrayIterable(
       ComparableLinkedList<Comparable> comparableList) {
@@ -69,6 +80,12 @@ public class EntityIterables {
     return entityIterable[0];
   }
 
+  /**
+   * Converts a ComparableHashMap to an EmbeddedEntityIterable.
+   *
+   * @param comparableMap the ComparableHashMap to convert
+   * @return the converted EmbeddedEntityIterable
+   */
   @SuppressWarnings("unchecked")
   public static EmbeddedEntityIterable toEmbeddedEntityIterable(
       ComparableHashMap<String, Comparable> comparableMap) {
@@ -89,8 +106,14 @@ public class EntityIterables {
     return entityIterable[0];
   }
 
+  /**
+   * Builds an EntityIterable from a list of Entity objects.
+   *
+   * @param entities the list of Entity objects
+   * @return the EntityIterable
+   * @throws IllegalArgumentException if the method is not yet implemented
+   */
   public static EntityIterable build(List<Entity> entities) {
     throw new IllegalArgumentException("Not yet implemented");
   }
-
 }

@@ -22,10 +22,16 @@ package com.divroll.datafactory.conditions;
 import jetbrains.exodus.entitystore.EntityIterable;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * CustomQueryCondition is an interface that represents a custom query condition.
+ * It extends the EntityCondition interface.
+ * CustomQueryCondition provides a method to execute the query condition against an EntityIterable.
  */
 public interface CustomQueryCondition extends EntityCondition {
+  /**
+   * Executes the given query condition against the provided entity iterable.
+   *
+   * @param context The entity iterable to execute the query condition against.
+   * @return The result of executing the query condition.
+   */
   EntityIterable execute(EntityIterable context);
 }

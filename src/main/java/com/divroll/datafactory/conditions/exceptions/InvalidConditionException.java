@@ -23,11 +23,14 @@ import com.divroll.datafactory.conditions.EntityCondition;
 import com.divroll.datafactory.exceptions.DataFactoryException;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Exception thrown when an invalid condition is encountered.
  */
 public class InvalidConditionException extends DataFactoryException {
+    /**
+     * Exception thrown when an invalid condition is encountered.
+     *
+     * @param condition The invalid condition.
+     */
     public InvalidConditionException(EntityCondition condition) {
         super("The " + condition.getClass().getName() + " is not a valid condition.");
     }

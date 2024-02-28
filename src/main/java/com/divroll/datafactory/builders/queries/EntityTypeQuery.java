@@ -24,27 +24,37 @@ import java.io.Serializable;
 import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
-/**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
- */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface EntityTypeQuery extends Serializable {
-
+  /**
+   * Returns the value of the environment attribute.
+   * If not set, this attribute will have a default value as returned by the initializer of environment.
+   *
+   * @return The value of the environment attribute
+   */
   @Value.Default
   default String environment() {
     return System.getProperty(Constants.DATAFACTORY_DIRECTORY_ENVIRONMENT);
   }
 
+  /**
+   * Returns the value of the entity type attribute.
+   *
+   * @return The entity type, or null if not set.
+   */
   @Nullable
   String entityType();
 
+  /**
+   * Returns the value of the count attribute.
+   * If not set, this attribute will have a default value as returned by the initializer of count.
+   *
+   * @return The value of the count attribute, or null if not set.
+   */
   @Nullable
   @Value.Default
   default Boolean count() {
     return true;
   }
-
 }

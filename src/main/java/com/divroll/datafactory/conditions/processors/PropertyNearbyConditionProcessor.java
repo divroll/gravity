@@ -27,11 +27,31 @@ import jetbrains.exodus.entitystore.StoreTransaction;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The PropertyNearbyConditionProcessor class is a processor that handles the PropertyNearbyCondition.
+ * It extends the UnsatisfiedConditionProcessorBase class and implements the processCondition method.
+ */
 public class PropertyNearbyConditionProcessor extends UnsatisfiedConditionProcessorBase<PropertyNearbyCondition> {
+    /**
+     * The PropertyNearbyConditionProcessor class is a processor that handles the PropertyNearbyCondition.
+     * It extends the UnsatisfiedConditionProcessorBase class and implements the processCondition method.
+     *
+     * @see UnsatisfiedConditionProcessorBase
+     * @see PropertyNearbyCondition
+     */
     public PropertyNearbyConditionProcessor() {
         super(PropertyNearbyCondition.class);
     }
 
+    /**
+     * Process the given PropertyNearbyCondition entity condition.
+     *
+     * @param scope         The atomic reference to hold the entity iterable.
+     * @param entityCondition The PropertyNearbyCondition entity condition to process.
+     * @param entity        The entity in context.
+     * @param txn           The store transaction.
+     * @throws IllegalArgumentException if the method is not yet implemented
+     */
     @Override
     protected void processCondition(AtomicReference<EntityIterable> scope, PropertyNearbyCondition entityCondition, Entity entity, StoreTransaction txn) {
         PropertyNearbyCondition nearbyCondition = (PropertyNearbyCondition) entityCondition;

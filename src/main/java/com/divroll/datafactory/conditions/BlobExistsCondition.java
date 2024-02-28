@@ -22,12 +22,16 @@ package com.divroll.datafactory.conditions;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * The BlobExistsCondition interface represents a condition that checks the existence of a blob.
+ * It extends the EntityCondition interface and provides the method to retrieve the blobName attribute.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface BlobExistsCondition extends EntityCondition {
+  /**
+   * Returns the blobName attribute of the BlobExistsCondition.
+   *
+   * @return The blobName attribute.
+   */
   String blobName();
 }

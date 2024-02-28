@@ -23,17 +23,31 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * LinkCondition is an interface that represents a condition for querying links between entities.
+ * It extends the EntityCondition interface and provides methods for retrieving the link name and the other entity id associated with the link condition.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface LinkCondition extends EntityCondition {
+  /**
+   * Retrieves the link name associated with this link condition.
+   *
+   * @return The link name.
+   */
   String linkName();
 
+  /**
+   * Returns the other entity id of the LinkCondition.
+   *
+   * @return The other entity id.
+   */
   String otherEntityId();
 
+  /**
+   * Checks if the value is set.
+   *
+   * @return Returns true if the value is set, false otherwise.
+   */
   @Nullable
   @Value.Default
   default Boolean isSet() {

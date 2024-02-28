@@ -22,9 +22,7 @@ package com.divroll.datafactory.actions;
 import java.io.Serializable;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents an action to rename a blob.
  */
 public interface EntityAction extends Serializable {
 }

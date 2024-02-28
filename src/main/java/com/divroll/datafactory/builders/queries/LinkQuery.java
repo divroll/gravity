@@ -25,9 +25,7 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents a query to retrieve a link.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
@@ -37,7 +35,7 @@ public interface LinkQuery extends Serializable {
   /**
    * Indicates to include the linked {@linkplain DataFactoryEntity} body in the query response
    *
-   * @return
+   * @return True if the linked entity body will be included in the query response, false otherwise
    */
   @Nullable
   @Value.Default
@@ -45,6 +43,11 @@ public interface LinkQuery extends Serializable {
     return false;
   }
 
+  /**
+   * Retrieves the target entity ID of the LinkQuery.
+   *
+   * @return The target entity ID, or null if not set
+   */
   @Nullable
   String targetEntityId();
 }

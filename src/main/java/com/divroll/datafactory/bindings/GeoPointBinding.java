@@ -28,37 +28,50 @@ import jetbrains.exodus.util.LightOutputStream;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents a binding for a GeoPoint.
  */
 public class GeoPointBinding extends ComparableBinding {
 
+  /**
+   * The binding for a GeoPoint.
+   */
   public static final GeoPointBinding BINDING = new GeoPointBinding();
 
-  @Override public Comparable readObject(@NotNull ByteArrayInputStream stream) {
+  /**
+   * Reads a serialized object from the given ByteArrayInputStream.
+   *
+   * @param stream the ByteArrayInputStream containing the serialized object
+   * @return the deserialized object or null if an error occurred
+   */
+  @Override public Comparable readObject(@NotNull final ByteArrayInputStream stream) {
     return BindingUtils.readObject(stream);
   }
 
-  @Override public void writeObject(@NotNull LightOutputStream output, @NotNull Comparable object) {
+  /**
+   * Writes the specified object to the provided output stream.
+   *
+   * @param output the LightOutputStream to write the object to
+   * @param object the object to be written
+   */
+  @Override public void writeObject(@NotNull final LightOutputStream output, @NotNull final Comparable object) {
     output.write(BindingUtils.writeObject(object));
   }
 
   /**
-   * De-serializes {@linkplain ByteIterable} entry to a {@linkplain LocalTime} value.
+   * Converts a serialized entry into a LocalTime object.
    *
-   * @param entry {@linkplain ByteIterable} instance
-   * @return de-serialized value
+   * @param entry the serialized entry to convert
+   * @return the LocalTime object retrieved from the entry
    */
   public static LocalTime entryToLocalTime(@NotNull final ByteIterable entry) {
     return (LocalTime) BINDING.entryToObject(entry);
   }
 
   /**
-   * Serializes {@linkplain LocalTime} value to the {@linkplain ArrayByteIterable} entry.
+   * Converts a LocalTime object into an ArrayByteIterable object.
    *
-   * @param object value to serialize
-   * @return {@linkplain ArrayByteIterable} entry
+   * @param object the LocalTime object to convert to ArrayByteIterable
+   * @return the ArrayByteIterable object representing the LocalTime object
    */
   public static ArrayByteIterable localTimeToEntry(final LocalTime object) {
     return BINDING.objectToEntry(object);

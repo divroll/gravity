@@ -22,15 +22,22 @@ package com.divroll.datafactory.exceptions;
 import jetbrains.exodus.ExodusException;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Custom exception class that is thrown when there is an error in the data factory.
  */
 public class DataFactoryException extends ExodusException {
+  /**
+   * Exception thrown when there is an error in the data factory.
+   *
+   * @since 0-SNAPSHOT
+   */
   public DataFactoryException(String message) {
     super(message);
   }
 
+  /**
+   * DataFactoryException is an exception class that is thrown when an error occurs in the data factory.
+   * It extends the ExodusException class and provides constructors to set the error message and cause of the exception.
+   */
   public DataFactoryException(String message, Throwable cause) {
     super(message, cause);
   }

@@ -75,30 +75,96 @@ import static com.divroll.datafactory.Unmarshaller.processConditions;
 import static com.divroll.datafactory.Unmarshaller.processUnsatisfiedConditions;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * The EntityStoreImpl class provides an implementation for storing and retrieving entities.
  */
 public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
 
+  /**
+   * The logger is used to log information, warning, and error messages during the execution of the application.
+   */
   private static final Logger LOG = LoggerFactory.getLogger(EntityStoreImpl.class);
 
+  /**
+   * This variable represents a provider for accessing a database manager.
+   *
+   * The DatabaseManagerProvider class is responsible for providing an instance of a DatabaseManager,
+   * which can be used to interact with a database. The DatabaseManagerProvider object encapsulates
+   * the logic for creating and initializing the DatabaseManager instance.
+   *
+   * Usage:
+   * The databaseManagerProvider variable can be used to obtain a DatabaseManager instance by calling
+   * the appropriate methods provided by the DatabaseManagerProvider class.
+   *
+   * Example:
+   * DatabaseManagerProvider databaseManagerProvider = new DatabaseManagerProvider();
+   * // Get a DatabaseManager instance
+   * DatabaseManager databaseManager = databaseManagerProvider.getDatabaseManager();
+   *
+   * Note: It is recommended to use dependency injection or a singleton pattern to ensure
+   *       that only one instance of the DatabaseManagerProvider is used throughout the application.
+   */
   private DatabaseManagerProvider databaseManagerProvider;
 
+  /**
+   * The private variable luceneIndexerProvider is an instance of the LuceneIndexerProvider interface.
+   *
+   * This variable is used to retrieve a LuceneIndexer instance, which provides functionality for indexing and searching data.
+   *
+   * To retrieve a LuceneIndexer instance, use the getLuceneIndexer() method provided by the LuceneIndexerProvider interface.
+   *
+   * Example usage:
+   *
+   * LuceneIndexerProvider provider = luceneIndexerProvider;
+   * LuceneIndexer indexer = provider.getLuceneIndexer();
+   */
   private LuceneIndexerProvider luceneIndexerProvider;
 
+  /**
+   * EntityStoreImpl is a class that provides implementation for storing and retrieving entities in a data factory system.
+   *
+   * @param databaseManagerProvider The provider for retrieving an instance of DatabaseManager.
+
+   * @param luceneIndexerProvider The provider for retrieving an instance of LuceneIndexer.
+
+   *
+
+   * @throws DataFactoryException If there is an error in the data factory.
+
+   * @throws NotBoundException If a remote object is not bound to the specified name in the registry.
+
+   * @throws RemoteException If a remote communication error occurs.
+
+   */
   public EntityStoreImpl(DatabaseManagerProvider databaseManagerProvider, LuceneIndexerProvider luceneIndexerProvider)
       throws DataFactoryException, NotBoundException, RemoteException {
     this.databaseManagerProvider = databaseManagerProvider;
     this.luceneIndexerProvider = luceneIndexerProvider;
   }
 
+  /**
+   * Saves a DataFactoryEntity and returns an Option of the saved entity.
+   *
+   * @param entity The DataFactoryEntity to be saved. Cannot be null.
+   * @return An Option of the saved DataFactoryEntity. Returns None if the entity could not be saved.
+   * @throws DataFactoryException   if there is an error in the data factory.
+   * @throws NotBoundException      if a remote object is not bound to the specified name in the registry.
+   * @throws RemoteException        if a remote communication error occurs.
+   */
   @Override public Option<DataFactoryEntity> saveEntity(@NotNull DataFactoryEntity entity)
       throws DataFactoryException, NotBoundException, RemoteException {
     DataFactoryEntities dataFactoryEntities = saveEntities(new DataFactoryEntity[] {entity}).get();
     return Option.of(dataFactoryEntities.entities().stream().findFirst().get());
   }
 
+  /**
+   * Saves an array of DataFactoryEntities.
+   *
+   * @param entities the array of DataFactoryEntities to be saved
+   * @return an Option containing a DataFactoryEntities object if the save operation was successful, otherwise an empty Option
+   * @throws DataFactoryException if an error occurs during the save operation
+   * @throws NotBoundException if the entity store is not bound
+   * @throws RemoteException if a remote communication error occurs
+   */
   @Override
   public Option<DataFactoryEntities> saveEntities(@NotNull DataFactoryEntity[] entities)
       throws DataFactoryException, NotBoundException, RemoteException {
@@ -168,6 +234,15 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     return Option.of(finalResult.get());
   }
 
+  /**
+   * Retrieves an entity from the DataFactory system based on the provided entity query.
+   *
+   * @param query The entity query used to retrieve the entity.
+   * @return An Option object containing the retrieved DataFactoryEntity if it exists, otherwise an empty Option object.
+   * @throws DataFactoryException If there was an error retrieving the entity.
+   * @throws NotBoundException if the entity is not bound.
+   * @throws RemoteException if a communication error occurred during the remote call.
+   */
   @Override public Option<DataFactoryEntity> getEntity(@NotNull EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
     Option<DataFactoryEntities> optional = getEntities(query);
@@ -178,6 +253,15 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     }
   }
 
+  /**
+   * Retrieves entities from the data factory based on the provided query parameters.
+   *
+   * @param query The query object containing the parameters for retrieving entities.
+   * @return An Option wrapping a DataFactoryEntities object that contains the retrieved entities.
+   * @throws DataFactoryException if an error occurs while retrieving the entities.
+   * @throws NotBoundException if the data factory is not bound.
+   * @throws RemoteException if a network error occurs during the remote communication.
+   */
   @Override
   public Option<DataFactoryEntities> getEntities(@NotNull EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
@@ -255,11 +339,23 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
         .build());
   }
 
+  /**
+   *
+   */
   @Override public Boolean removeEntity(@NotNull EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
     return removeEntities(new EntityQuery[] {query});
   }
 
+  /**
+   * Removes entities matching the given queries from the persistent store.
+   *
+   * @param queries The array of EntityQuery objects representing the queries to filter the entities to remove.
+   * @return true if the entities were successfully removed, false otherwise.
+   * @throws DataFactoryException if an error occurs during the removal process.
+   * @throws NotBoundException if the persistent store is not bound.
+   * @throws RemoteException if there is a remote communication error.
+   */
   @Override public Boolean removeEntities(@NotNull EntityQuery[] queries)
       throws DataFactoryException, NotBoundException, RemoteException {
     final boolean[] success = {false};
@@ -329,6 +425,15 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     return success[0];
   }
 
+  /**
+   * Saves a DataFactoryProperty.
+   *
+   * @param property The DataFactoryProperty to be saved.
+   * @return true if the property was successfully saved, false otherwise.
+   * @throws DataFactoryException If there is an error in the data factory.
+   * @throws NotBoundException If the data factory is not bound.
+   * @throws RemoteException If a remote connection error occurs.
+   */
   @Override public Boolean saveProperty(@NotNull DataFactoryProperty property)
       throws DataFactoryException, NotBoundException, RemoteException {
     String dir = property.environment();
@@ -368,6 +473,15 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     return updated.get();
   }
 
+  /**
+   * Removes the specified property from the DataFactory.
+   *
+   * @param property The property to be removed.
+   * @return {@code true} if the property is successfully removed, {@code false} otherwise.
+   * @throws DataFactoryException if there is an error in the data factory.
+   * @throws NotBoundException if the DataFactory is not bound.
+   * @throws RemoteException if there is a remote communication error.
+   */
   @Override public Boolean removeProperty(@NotNull DataFactoryProperty property)
       throws DataFactoryException, NotBoundException, RemoteException {
     String dir = property.environment();
@@ -401,6 +515,14 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     return removed.get();
   }
 
+  /**
+   * Removes entities of a specific type based on the provided query.
+   *
+   * @param query The query representing the entity type and optional namespace to remove.
+   * @return True if the entities were successfully removed, otherwise false.
+   * @throws RemoteException If a remote exception occurs.
+   * @throws NotBoundException If the entity store is not bound.
+   */
   @Override
   public Boolean removeEntityType(@NotNull EntityQuery query)
       throws RemoteException, NotBoundException {
@@ -441,6 +563,9 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     return success[0];
   }
 
+  /**
+   *
+   */
   @Override public Option<DataFactoryEntityTypes> getEntityTypes(EntityTypeQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
     AtomicReference<DataFactoryEntityTypes> atomicReference = new AtomicReference<>();
@@ -490,8 +615,8 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   /**
    * Sort an array of {@linkplain DataFactoryEntity} by Application ID.
    *
-   * @param entities
-   * @return
+   * @param entities the array of DataFactoryEntity objects to be sorted
+   * @return a Map object containing the sorted entities mapped to their respective directories
    */
   private static Map<String, List<DataFactoryEntity>> sort(DataFactoryEntity[] entities) {
     Map<String, List<DataFactoryEntity>> dirOrderedEntities = new HashMap<>();
@@ -507,6 +632,9 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     return dirOrderedEntities;
   }
 
+  /**
+   *
+   */
   private static Map<String, List<EntityQuery>> sort(EntityQuery[] entities) {
     Map<String, List<EntityQuery>> dirOrderedQueries = new HashMap<>();
     Arrays.asList(entities).forEach(remoteEntity -> {
@@ -521,6 +649,13 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     return dirOrderedQueries;
   }
 
+  /**
+   * Converts an instance of EmbeddedEntityIterable to Comparable.
+   *
+   * @param entityIterable The EmbeddedEntityIterable instance to convert.
+   * @return A Comparable instance representing the converted entityIterable,
+   *         or the original entityIterable if it cannot be converted.
+   */
   private Comparable asObject(EmbeddedEntityIterable entityIterable) {
     Comparable comparable = entityIterable.asObject();
     if (comparable instanceof ComparableHashMap) {
@@ -537,10 +672,20 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
     return comparable;
   }
 
+  /**
+   * Retrieves the DatabaseManager instance from the provider.
+   *
+   * @return The DatabaseManager instance.
+   */
   private DatabaseManager getDatabaseManager() {
     return databaseManagerProvider.getDatabaseManager();
   }
 
+  /**
+   * Retrieves the LuceneIndexer instance used for search indexing.
+   *
+   * @return The LuceneIndexer instance.
+   */
   private LuceneIndexer getSearchIndexer() {
     return luceneIndexerProvider.getLuceneIndexer();
   }

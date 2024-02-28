@@ -23,12 +23,21 @@ import java.io.Serializable;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents an action to rename a blob.
  */
 @Value.Immutable
 public interface BlobRenameAction extends EntityAction, Serializable {
+  /**
+   * Returns the name of the blob.
+   *
+   * @return The name of the blob.
+   */
   String blobName();
+
+  /**
+   * Generates a new name for a blob.
+   *
+   * @return The new name for the blob.
+   */
   String newBlobName();
 }

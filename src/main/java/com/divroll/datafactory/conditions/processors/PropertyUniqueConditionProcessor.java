@@ -28,11 +28,39 @@ import jetbrains.exodus.entitystore.StoreTransaction;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * This class is a processor for handling the PropertyUniqueCondition.
+ * It extends the UnsatisfiedConditionProcessorBase class and implements the UnsatisfiedConditionProcessor interface.
+ *
+ * @param <T> The type of the condition that this processor can handle.
+ *
+ * @see PropertyUniqueCondition
+ * @see UnsatisfiedConditionProcessorBase
+ * @see UnsatisfiedConditionProcessor
+ */
 public class PropertyUniqueConditionProcessor extends UnsatisfiedConditionProcessorBase<PropertyUniqueCondition> {
+    /**
+     * This class is a processor for handling the PropertyUniqueCondition.
+     * It extends the UnsatisfiedConditionProcessorBase class and implements the UnsatisfiedConditionProcessor interface.
+     *
+     * @see PropertyUniqueCondition
+     * @see UnsatisfiedConditionProcessorBase
+     * @see UnsatisfiedConditionProcessor
+     */
     public PropertyUniqueConditionProcessor() {
         super(PropertyUniqueCondition.class);
     }
 
+    /**
+     * Processes the given condition by intersecting the scope with the entities in the store that satisfy the condition.
+     * If any entities are found, it throws an UnsatisfiedConditionException.
+     *
+     * @param scope              The atomic reference to hold the entity iterable.
+     * @param entityCondition    The property unique condition to process.
+     * @param entityInContext    The entity in context.
+     * @param txn                The store transaction.
+     * @throws UnsatisfiedConditionException if any entities are found that satisfy the condition
+     */
     @Override
     protected void processCondition(AtomicReference<EntityIterable> scope, PropertyUniqueCondition entityCondition,
                                     Entity entityInContext, StoreTransaction txn) {

@@ -22,10 +22,13 @@ package com.divroll.datafactory.actions;
 import jetbrains.exodus.entitystore.Entity;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents an action to rename a blob.
  */
 public interface CustomAction extends EntityAction {
+  /**
+   * Executes the custom action.
+   *
+   * @param entityInContext The entity in context.
+   */
   void execute(Entity entityInContext);
 }

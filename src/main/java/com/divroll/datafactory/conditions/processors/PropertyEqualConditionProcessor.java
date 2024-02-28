@@ -28,11 +28,32 @@ import jetbrains.exodus.entitystore.StoreTransaction;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The PropertyEqualConditionProcessor class is a processor for handling unsatisfied PropertyEqualCondition instances.
+ *
+ * @see UnsatisfiedConditionProcessorBase
+ * @see PropertyEqualCondition
+ * @see EntityIterable
+ * @see Entity
+ * @see StoreTransaction
+ * @see UnsatisfiedConditionException
+ */
 public class PropertyEqualConditionProcessor extends UnsatisfiedConditionProcessorBase<PropertyEqualCondition> {
+    /**
+     * PropertyEqualConditionProcessor is a processor for handling unsatisfied PropertyEqualCondition instances.
+     */
     public PropertyEqualConditionProcessor() {
         super(PropertyEqualCondition.class);
     }
-
+    /**
+     * Processes the given condition to check if it is satisfied.
+     *
+     * @param scope The reference to hold the entity iterable.
+     * @param entityCondition The condition to process.
+     * @param entityInContext The entity in context.
+     * @param txn The store transaction.
+     * @throws UnsatisfiedConditionException if the condition is not satisfied.
+     */
     @Override
     protected void processCondition(AtomicReference<EntityIterable> scope, PropertyEqualCondition entityCondition, Entity entityInContext, StoreTransaction txn) {
         PropertyEqualCondition equalCondition = (PropertyEqualCondition) entityCondition;

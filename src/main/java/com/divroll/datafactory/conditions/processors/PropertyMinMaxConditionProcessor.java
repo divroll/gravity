@@ -29,11 +29,67 @@ import jetbrains.exodus.entitystore.StoreTransaction;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The PropertyMinMaxConditionProcessor class is responsible for processing
+ * the PropertyMinMaxCondition entity condition. It extends the
+ * UnsatisfiedConditionProcessorBase class and implements the
+ * UnsatisfiedConditionProcessor interface.
+ *
+ * <p>Usage example:</p>
+ * <pre>{@code
+ * PropertyMinMaxConditionProcessor processor = new PropertyMinMaxConditionProcessor();
+ * AtomicReference<EntityIterable> scope = new AtomicReference<>();
+ * PropertyMinMaxCondition condition = new PropertyMinMaxCondition("propertyName", minValue, maxValue);
+ * Entity entity = ...
+ * StoreTransaction txn = ...
+ * processor.process(scope, condition, entity, txn);
+ * }</pre>
+ *
+ * @see UnsatisfiedConditionProcessorBase
+ * @see UnsatisfiedConditionProcessor
+ * @see PropertyMinMaxCondition
+ */
 public class PropertyMinMaxConditionProcessor extends UnsatisfiedConditionProcessorBase<PropertyMinMaxCondition> {
+    /**
+     * The PropertyMinMaxConditionProcessor class is responsible for processing
+     * the PropertyMinMaxCondition entity condition. It extends the
+     * UnsatisfiedConditionProcessorBase class and implements the
+     * UnsatisfiedConditionProcessor interface.
+     *
+     * <p>Usage example:</p>
+     * <pre>{@code
+     * PropertyMinMaxConditionProcessor processor = new PropertyMinMaxConditionProcessor();
+     * AtomicReference<EntityIterable> scope = new AtomicReference<>();
+     * PropertyMinMaxCondition condition = new PropertyMinMaxCondition("propertyName", minValue, maxValue);
+     * Entity entity = ...
+     * StoreTransaction txn = ...
+     * processor.process(scope, condition, entity, txn);
+     * }</pre>
+     *
+     * @see UnsatisfiedConditionProcessorBase
+     * @see UnsatisfiedConditionProcessor
+     * @see PropertyMinMaxCondition
+     */
     public PropertyMinMaxConditionProcessor() {
         super(PropertyMinMaxCondition.class);
     }
 
+    /**
+     * Processes the given condition by checking if the property value of the entity
+     * is within the specified range of minValue and maxValue. If the property value
+     * is not within the range, an UnsatisfiedConditionException is thrown.
+     *
+     * @param scope             The atomic reference to hold the entity iterable.
+     * @param entityCondition   The PropertyMinMaxCondition to process.
+     * @param entityInContext   The entity in context.
+     * @param txn               The store transaction.
+     *
+     * @throws UnsatisfiedConditionException if the property value is not within the specified range.
+     *
+     * @see EntityCondition
+     * @see PropertyMinMaxCondition
+     * @see UnsatisfiedConditionException
+     */
     @Override
     protected void processCondition(AtomicReference<EntityIterable> scope, PropertyMinMaxCondition entityCondition, Entity entityInContext, StoreTransaction txn) {
         PropertyMinMaxCondition minMaxCondition = (PropertyMinMaxCondition) entityCondition;

@@ -22,11 +22,14 @@ package com.divroll.datafactory.actions;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents an action to remove a property from an entity.
  */
 @Value.Immutable
 public interface PropertyRemoveAction extends EntityPropertyAction {
+  /**
+   * Returns the name of the property to be removed.
+   *
+   * @return The name of the property.
+   */
   String propertyName();
 }

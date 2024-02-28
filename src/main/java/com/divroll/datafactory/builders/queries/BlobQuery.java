@@ -24,9 +24,7 @@ import java.io.Serializable;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents a query to rename a blob.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
@@ -36,11 +34,10 @@ public interface BlobQuery extends Serializable {
   /**
    * Indicates to include the blob {@linkplain InputStream} body in the query response
    *
-   * @return
+   * @return True if the blob body will be included in the query response, false otherwise
    */
   @Value.Default
   default Boolean include() {
     return true;
   }
-
 }

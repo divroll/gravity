@@ -32,6 +32,11 @@ import java.io.Serializable;
  * and deserialized.
  */
 public class SerializableDatabaseManagerProvider implements DatabaseManagerProvider, Serializable {
+    /**
+     * Retrieves the DatabaseManager instance.
+     *
+     * @return the DatabaseManager instance
+     */
     @Override
     public DatabaseManager getDatabaseManager() {
         return DatabaseManagerImpl.getInstance();

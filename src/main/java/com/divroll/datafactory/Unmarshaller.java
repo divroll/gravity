@@ -70,11 +70,7 @@ import org.jetbrains.annotations.NotNull;
 import static com.divroll.datafactory.exceptions.Throwing.rethrow;
 
 /**
- * Unmarshaller for unmarshalling {@linkplain DataFactoryEntity} into {@linkplain Entity} within the
- *
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Unmarshaller for unmarshalling {@linkplain DataFactoryEntity} into {@linkplain Entity} within the context of the scoped entities.
  */
 public class Unmarshaller {
   DataFactoryEntity dataFactoryEntity;
@@ -83,9 +79,9 @@ public class Unmarshaller {
   /**
    * Set the data factory entity and store transaction for the unmarshaller.
    *
-   * @param entity The data factory entity to set.
-   * @param txn The store transaction to set.
-   * @return The updated instance of the Unmarshaller.
+   * @param entity  The data factory entity to set.
+   * @param txn     The store transaction to set.
+   * @return        The updated instance of the Unmarshaller.
    */
   public Unmarshaller with(@NotNull DataFactoryEntity entity, StoreTransaction txn) {
     this.dataFactoryEntity = entity;
@@ -96,8 +92,8 @@ public class Unmarshaller {
   /**
    * Builds an Entity based on the specified DataFactoryEntity and transaction.
    *
-   * @return The built Entity.
-   * @throws IllegalArgumentException If the DataFactoryEntity is not set.
+   * @return  The built Entity.
+   * @throws  IllegalArgumentException If the DataFactoryEntity is not set.
    */
   public Entity build() {
     if (dataFactoryEntity == null) {
@@ -266,6 +262,15 @@ public class Unmarshaller {
     }));
   }
 
+  /**
+   * Process conditions without modifying the {@linkplain Entity} with the main function throw a
+   * {@linkplain UnsatisfiedConditionException} when condition is not met with the context of the
+   * {@linkplain Entity}
+   *
+   * @param conditions
+   * @param entityInContext
+   * @throws UnsatisfiedConditionException
+   */
   private static UnsatisfiedConditionProcessor<?> getUnsatisfiedConditionProcessor(Class<?> conditionClass) {
     for (UnsatisfiedConditionProcessor<?> processor : getUnsatisfiedConditionProcessors()) {
       if (processor.canProcess().isAssignableFrom(conditionClass)) {
@@ -483,6 +488,11 @@ public class Unmarshaller {
     return reference.get();
   }
 
+  /**
+   * Gets the list of UnsatisfiedConditionProcessors.
+   *
+   * @return The list of UnsatisfiedConditionProcessors.
+   */
   private static List<UnsatisfiedConditionProcessor<?>> getUnsatisfiedConditionProcessors() {
     List<UnsatisfiedConditionProcessor<?>> entityConditionProcessors = new ArrayList<>();
     try {
@@ -497,6 +507,13 @@ public class Unmarshaller {
     return entityConditionProcessors;
   }
 
+  /**
+   * Finds the entity in the current scope based on the given DataFactoryEntity.
+   *
+   * @param entity           The DataFactoryEntity to find in the current scope.
+   * @param referenceToScope The AtomicReference to hold the scoped entities.
+   * @param txn              The StoreTransaction to use for finding the entity.
+   */
   private static void findEntityInCurrentScope(@NotNull DataFactoryEntity entity,
                                                @NotNull AtomicReference<EntityIterable> referenceToScope, @NotNull StoreTransaction txn) {
     if (entity.nameSpace() != null && entity.entityType() != null) {
@@ -510,10 +527,24 @@ public class Unmarshaller {
     }
   }
 
+  /**
+   * Gets the Entity from the given DataFactoryEntity and StoreTransaction.
+   *
+   * @param entity The DataFactoryEntity to get the Entity from.
+   * @param txn    The StoreTransaction to use for getting the Entity.
+   * @return The Entity from the given DataFactoryEntity and StoreTransaction.
+   */
   private static Entity getEntityFromTransaction(@NotNull DataFactoryEntity entity, @NotNull StoreTransaction txn) {
     return entity.entityId() != null ? txn.getEntity(txn.toEntityId(entity.entityId())) : txn.newEntity(entity.entityType());
   }
 
+  /**
+   * Throws an IllegalArgumentException if the entity is not found in the scoped namespace.
+   *
+   * @param entity           The DataFactoryEntity to check.
+   * @param entityInContext  The Entity to check.
+   * @param entityIterable   The EntityIterable to check.
+   */
   private static void throwIfEntityNotFoundInScopedNamespace(DataFactoryEntity entity, Entity entityInContext, EntityIterable entityIterable) {
     if (entityIterable != null
             && entityIterable.indexOf(entityInContext) == -1

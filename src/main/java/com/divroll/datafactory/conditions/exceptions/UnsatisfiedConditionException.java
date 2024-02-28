@@ -23,16 +23,33 @@ import com.divroll.datafactory.conditions.EntityCondition;
 import com.divroll.datafactory.exceptions.DataFactoryException;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Exception thrown when a given condition is not satisfied.
  */
 public class UnsatisfiedConditionException extends DataFactoryException {
+  /**
+   * Exception thrown when a given condition is not satisfied.
+   */
   public UnsatisfiedConditionException(EntityCondition condition) {
    super("The condition " + condition.getClass().getName() + " was not satisfied");
   }
 
-    public UnsatisfiedConditionException(EntityCondition condition, Throwable e) {
-        super("The condition " + condition.getClass().getName() + " was not satisfied", e);
-    }
+  /**
+   * Exception thrown when a given condition is not satisfied.
+   *
+   * @see EntityCondition
+   * @see LinkCondition
+   * @see OppositeLinkCondition
+   * @see PropertyContainsCondition
+   * @see PropertyEqualCondition
+   * @see PropertyLocalTimeRangeCondition
+   * @see PropertyMinMaxCondition
+   * @see PropertyNearbyCondition
+   * @see PropertyStartsWithCondition
+   * @see PropertyUniqueCondition
+   * @see CustomCondition
+   * @see CustomQueryCondition
+   */
+  public UnsatisfiedConditionException(EntityCondition condition, Throwable e) {
+    super("The condition " + condition.getClass().getName() + " was not satisfied", e);
+  }
 }

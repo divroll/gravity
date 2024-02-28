@@ -19,36 +19,31 @@
  */
 package com.divroll.datafactory;
 
+import com.divroll.datafactory.builders.DataFactoryBlob;
 import com.divroll.datafactory.builders.DataFactoryBlobBuilder;
+import com.divroll.datafactory.builders.DataFactoryEntity;
 import com.divroll.datafactory.builders.DataFactoryEntityBuilder;
 import com.divroll.datafactory.builders.queries.BlobQuery;
 import com.divroll.datafactory.builders.queries.LinkQuery;
-import com.divroll.datafactory.builders.DataFactoryBlob;
-import com.divroll.datafactory.builders.DataFactoryEntity;
 import com.divroll.datafactory.properties.EmbeddedArrayIterable;
 import com.divroll.datafactory.properties.EmbeddedEntityIterable;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import jetbrains.exodus.entitystore.Entity;
 import jetbrains.exodus.entitystore.EntityIterable;
 import jetbrains.exodus.entitystore.StoreTransaction;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * The Marshaller class is used to build a DataFactoryEntity for remote transmission.
  * It provides methods to set the entity, link queries, and blob queries, and a build
- *
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
  */
 public class Marshaller {
   private Entity entity;

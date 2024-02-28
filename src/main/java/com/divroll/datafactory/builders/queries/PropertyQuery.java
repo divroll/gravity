@@ -24,19 +24,37 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents a query to retrieve a property.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface PropertyQuery extends Serializable {
+  /**
+   * Retrieve the environment from the PropertyQuery instance.
+   *
+   * @return The environment value of the PropertyQuery.
+   */
   String environment();
 
+  /**
+   * Retrieves the entityType value of the PropertyQuery.
+   *
+   * @return The entityType value of the PropertyQuery.
+   */
   String entityType();
 
+  /**
+   * Retrieves the value of the nameSpace attribute.
+   *
+   * @return The value of the nameSpace attribute, which can be null.
+   */
   @Nullable
   String nameSpace();
 
+  /**
+   * Retrieves the value of the propertyName attribute.
+   *
+   * @return The value of the propertyName attribute.
+   */
   String propertyName();
 }

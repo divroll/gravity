@@ -24,11 +24,16 @@ import java.util.List;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Immutable class representing a BlobRemoveAction.
+ * A BlobRemoveAction is an {@linkplain EntityAction} that contains
+ * a list of blob names to be removed.
  */
 @Value.Immutable
 public interface BlobRemoveAction extends EntityAction, Serializable {
+  /**
+   * Returns a list of blob names.
+   *
+   * @return A list of blob names.
+   */
   List<String> blobNames();
 }

@@ -27,23 +27,41 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * DataFactoryProperty is an interface that represents a property for the DataFactory class.
+ * It extends the Serializable interface.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface DataFactoryProperty extends Serializable {
-
+  /**
+   * Retrieves the environment for the {@link DataFactoryProperty} instance.
+   *
+   * @return The environment value.
+   */
   @Value.Default
   default String environment() {
     return System.getProperty(Constants.DATAFACTORY_DIRECTORY_ENVIRONMENT);
   }
 
+  /**
+   * Returns the entityType of the DataFactoryProperty instance.
+   *
+   * @return The entityType value.
+   */
   String entityType();
 
+  /**
+   * Retrieves the name space for the DataFactoryProperty instance.
+   *
+   * @return The name space value, or null if not set.
+   */
   @Nullable
   String nameSpace();
 
+  /**
+   * Retrieves the property actions for the DataFactoryProperty instance.
+   *
+   * @return The list of EntityPropertyAction objects.
+   */
   List<EntityPropertyAction> propertyActions();
 }

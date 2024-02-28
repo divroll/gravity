@@ -22,16 +22,30 @@ package com.divroll.datafactory.actions;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * EntityPropertySaveAction is an interface that represents an action
+ * on an entity property. It extends the Serializable interface.
  */
 @Value.Immutable
 public interface EntityPropertySaveAction extends EntityPropertyAction {
+  /**
+   * Retrieves the name of the entity property.
+   *
+   * @return The name of the entity property.
+   */
   String propertyName();
 
+  /**
+   * Retrieves the value of the entity property.
+   *
+   * @return The value of the entity property.
+   */
   Comparable propertyValue();
 
+  /**
+   * Retrieves the overwrite flag of the entity property.
+   *
+   * @return The overwrite flag of the entity property.
+   */
   @Value.Default
   default Boolean overwrite() {
     return true;

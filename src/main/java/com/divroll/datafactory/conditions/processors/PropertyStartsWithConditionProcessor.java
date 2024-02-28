@@ -28,11 +28,29 @@ import jetbrains.exodus.entitystore.StoreTransaction;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The PropertyStartsWithConditionProcessor class is a processor class that handles the PropertyStartsWithCondition.
+ * It extends the UnsatisfiedConditionProcessorBase class and implements the UnsatisfiedConditionProcessor interface.
+ */
 public class PropertyStartsWithConditionProcessor extends UnsatisfiedConditionProcessorBase<PropertyStartsWithCondition> {
+    /**
+     * PropertyStartsWithConditionProcessor is a processor class that handles the PropertyStartsWithCondition.
+     * It extends the UnsatisfiedConditionProcessorBase class and implements the UnsatisfiedConditionProcessor interface.
+     */
     public PropertyStartsWithConditionProcessor() {
         super(PropertyStartsWithCondition.class);
     }
 
+    /**
+     * Process the given condition by checking if the property value of the entity
+     * starts with the specified value.
+     *
+     * @param scope The atomic reference to hold the entity iterable.
+     * @param entityCondition The condition to process, must be an instance of PropertyStartsWithCondition.
+     * @param entityInContext The entity in context.
+     * @param txn The store transaction.
+     * @throws UnsatisfiedConditionException If the condition is not satisfied.
+     */
     @Override
     protected void processCondition(AtomicReference<EntityIterable> scope, PropertyStartsWithCondition entityCondition,
                                     Entity entityInContext, StoreTransaction txn) throws UnsatisfiedConditionException {

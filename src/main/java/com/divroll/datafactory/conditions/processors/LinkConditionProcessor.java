@@ -28,11 +28,33 @@ import jetbrains.exodus.entitystore.StoreTransaction;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The LinkConditionProcessor class is a processor that handles the LinkCondition.
+ * It extends the UnsatisfiedConditionProcessorBase class.
+ *
+ * @see UnsatisfiedConditionProcessorBase
+ * @see LinkCondition
+ */
 public class LinkConditionProcessor extends UnsatisfiedConditionProcessorBase<LinkCondition> {
+    /**
+     * The LinkConditionProcessor class is a processor that handles the LinkCondition.
+     * It extends the UnsatisfiedConditionProcessorBase class.
+     *
+     * @see UnsatisfiedConditionProcessorBase
+     * @see LinkCondition
+     */
     public LinkConditionProcessor() {
         super(LinkCondition.class);
     }
-
+    /**
+     * Processes a given condition for a specified entity within a transaction.
+     *
+     * @param scope            The atomic reference to hold the entity iterable.
+     * @param entityCondition  The condition to be processed.
+     * @param entityInContext  The entity in context.
+     * @param txn              The store transaction.
+     * @throws UnsatisfiedConditionException If the condition is not satisfied.
+     */
     @Override
     protected void processCondition(AtomicReference<EntityIterable> scope, LinkCondition entityCondition, Entity entityInContext, StoreTransaction txn)
             throws UnsatisfiedConditionException {

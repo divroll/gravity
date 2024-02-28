@@ -22,12 +22,18 @@ package com.divroll.datafactory.exceptions;
 import java.util.function.Consumer;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * A functional interface that represents a consumer that can throw checked exceptions.
+ *
+ * @param <T> the type of the input to the consumer
  */
 @FunctionalInterface
 public interface ThrowingConsumer<T> extends Consumer<T>{
+  /**
+   * Accepts an element of type T and applies an action to it. If any checked exception is thrown
+   * during the execution of the action, it is caught and rethrown as an unchecked exception.
+   *
+   * @param e the element to accept and apply the action to
+   */
   @Override
   default void accept(final T e) {
     try {
@@ -36,5 +42,11 @@ public interface ThrowingConsumer<T> extends Consumer<T>{
       Throwing.sneakyThrow(ex);
     }
   }
+  /**
+   * Accepts an input of type T.
+   *
+   * @param t the input of type T
+   * @throws Throwable if an error occurs while accepting the input
+   */
   void accept0(T t) throws Throwable;
 }

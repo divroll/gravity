@@ -22,16 +22,31 @@ package com.divroll.datafactory.helpers;
 import java.time.LocalTime;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * A utility class that provides mathematical helper methods.
  */
 public class MathHelper {
+  /**
+   * Checks if a given pair of time ranges overlap with each other.
+   *
+   * @param upper1 the upper boundary of the first time range
+   * @param lower1 the lower boundary of the first time range
+   * @param upper2 the upper boundary of the second time range
+   * @param lower2 the lower boundary of the second time range
+   * @return true if the time ranges overlap, false otherwise
+   * @throws IllegalArgumentException if the method is not yet implemented
+   */
   public static boolean inRange(LocalTime upper1, LocalTime lower1, LocalTime upper2,
       LocalTime lower2) {
     throw new IllegalArgumentException("Not yet implemented");
   }
 
+  /**
+   * Finds the closest value to a target value in a sorted array.
+   *
+   * @param arr    The sorted array of double values.
+   * @param target The target value to find the closest value to.
+   * @return The closest value to the target value in the array.
+   */
   public static double findClosest(double arr[], double target) {
     int n = arr.length;
     if (target <= arr[0]) {
@@ -63,6 +78,14 @@ public class MathHelper {
     return arr[mid];
   }
 
+  /**
+   * Returns the closest value to the target value from two given values.
+   *
+   * @param val1   the first value
+   * @param val2   the second value
+   * @param target the target value
+   * @return the closest value to the target value
+   */
   public static double getClosest(double val1, double val2,
       double target) {
     if (target - val1 >= val2 - target) {

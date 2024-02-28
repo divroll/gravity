@@ -23,22 +23,23 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 /**
- *
- * Action to copy the property of the first or the last entity
- *
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Action to copy the property of the first or the last entity.
  */
 @Value.Immutable
 public interface PropertyCopyAction extends EntityPropertyAction {
+  /**
+   * Property name to be copied.
+   *
+   * @return The name of the property.
+   */
   String propertyName();
 
   /**
-   * Indicates the copy operation will copy the property of the first entity, defaults to false
-   * which indicates that it will copy the last property
+   * Indicates the copy operation will copy the property of the first entity,
+   * defaults to false which indicates that it will copy the last property.
    *
-   * @return
+   * @return True if the property of the first entity will be copied,
+   * false otherwise
    */
   @Nullable
   @Value.Default

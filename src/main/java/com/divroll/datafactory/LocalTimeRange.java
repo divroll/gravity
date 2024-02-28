@@ -24,9 +24,7 @@ import java.time.LocalTime;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents a range of LocalTime values.
  */
 public class LocalTimeRange implements Comparable<LocalTimeRange>, Serializable {
 
@@ -38,6 +36,13 @@ public class LocalTimeRange implements Comparable<LocalTimeRange>, Serializable 
     setUpper(upper);
   }
 
+  /**
+   * Compares this LocalTimeRange with another LocalTimeRange.
+   *
+   * @param   range the LocalTimeRange to compare with
+   * @return  -1 if this LocalTimeRange is before the given LocalTimeRange, 1 if this LocalTimeRange is
+   * after the given LocalTimeRange, and 0 if the LocalTimeRanges are equal
+   */
   @Override public int compareTo(@NotNull LocalTimeRange range) {
     if ((range.lower.isBefore(lower) && range.upper.isBefore(lower)) && (range.lower.isBefore(upper)
         && range.upper.isBefore(upper))) {
@@ -50,18 +55,38 @@ public class LocalTimeRange implements Comparable<LocalTimeRange>, Serializable 
     return 0;
   }
 
+  /**
+   * Returns the lower bound of this LocalTimeRange.
+   *
+   * @return  the lower bound of this LocalTimeRange
+   */
   public LocalTime getLower() {
     return lower;
   }
 
+  /**
+   * Sets the lower bound of this LocalTimeRange.
+   *
+   * @param   lower the lower bound of this LocalTimeRange
+   */
   public void setLower(LocalTime lower) {
     this.lower = lower;
   }
 
+  /**
+   * Returns the upper bound of this LocalTimeRange.
+   *
+   * @return  the upper bound of this LocalTimeRange
+   */
   public LocalTime getUpper() {
     return upper;
   }
 
+  /**
+   * Sets the upper bound of this LocalTimeRange.
+   *
+   * @param   upper the upper bound of this LocalTimeRange
+   */
   public void setUpper(LocalTime upper) {
     this.upper = upper;
   }

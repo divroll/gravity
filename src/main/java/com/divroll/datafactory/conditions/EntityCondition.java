@@ -24,30 +24,18 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 /**
- *
- * @see LinkCondition
- * @see OppositeLinkCondition
- * @see PropertyContainsCondition
- * @see PropertyEqualCondition
- * @see PropertyLocalTimeRangeCondition
- * @see PropertyMinMaxCondition
- * @see PropertyNearbyCondition
- * @see PropertyStartsWithCondition
- * @see PropertyUniqueCondition
- * @see CustomCondition
- * @see CustomQueryCondition
- *
- * 'EntityCondition' is an interface representing a condition or filter applied to entities.
- * It also provides options to specify how multiple conditions should interact using binary operation types.
- *
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * EntityCondition is an interface that represents a condition for querying entities.
+ * It extends the Serializable interface and provides methods for retrieving and setting the binary operator for the condition.
  */
 public interface EntityCondition extends Serializable {
   enum BINARY_OP {
     INTERSECT, MINUS, UNION, CONCAT
   }
+  /**
+   * Returns the binary operator for the condition. If not set, the default value is BINARY_OP.INTERSECT.
+   *
+   * @return the binary operator for the condition
+   */
   @Nullable
   @Value.Default
   default BINARY_OP binaryOperator() {

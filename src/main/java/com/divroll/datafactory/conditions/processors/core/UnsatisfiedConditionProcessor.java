@@ -24,8 +24,40 @@ import jetbrains.exodus.entitystore.EntityIterable;
 import jetbrains.exodus.entitystore.StoreTransaction;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The UnsatisfiedConditionProcessor interface defines the contract for processors that handle unsatisfied conditions.
+ * It provides a method to process conditions and check if a processor can handle a specific condition.
+ *
+ * @param <EntityCondition> The type of entity condition that the processor can handle.
+ */
 public interface UnsatisfiedConditionProcessor<EntityCondition> {
+    /**
+     * Processes the entity condition and performs the necessary actions based on the condition.
+     *
+     * @param scope             The atomic reference to hold the entity iterable.
+     * @param entityCondition   The entity condition to process.
+     * @param entityInContext   The entity in context.
+     * @param txn               The store transaction.
+     * @see com.divroll.datafactory.conditions.LinkCondition
+     * @see com.divroll.datafactory.conditions.OppositeLinkCondition
+     * @see com.divroll.datafactory.conditions.PropertyContainsCondition
+     * @see com.divroll.datafactory.conditions.PropertyEqualCondition
+     * @see com.divroll.datafactory.conditions.PropertyLocalTimeRangeCondition
+     * @see com.divroll.datafactory.conditions.PropertyMinMaxCondition
+     * @see com.divroll.datafactory.conditions.PropertyNearbyCondition
+     * @see com.divroll.datafactory.conditions.PropertyStartsWithCondition
+     * @see com.divroll.datafactory.conditions.PropertyUniqueCondition
+     * @see com.divroll.datafactory.conditions.CustomCondition
+     * @see com.divroll.datafactory.conditions.CustomQueryCondition
+     * @see com.divroll.datafactory.exceptions.UnsatisfiedConditionException
+     * @throws UnsatisfiedConditionException if the condition is not satisfied
+     */
     void process(AtomicReference<EntityIterable> scope, com.divroll.datafactory.conditions.EntityCondition entityCondition, Entity entityInContext, StoreTransaction txn);
+    /**
+     * Checks if the processor can handle a specific condition.
+     *
+     * @return The class type that the processor can handle.
+     */
     Class<?> canProcess();
 }
 

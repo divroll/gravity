@@ -24,17 +24,26 @@ import java.util.ArrayList;
 import java.util.List;
 import org.immutables.value.Value;
 
-/**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
- */
 @Value.Immutable
 public interface LinkRemoveAction extends EntityAction, Serializable {
+  /**
+   * Returns the name of the link.
+   * @return The name of the link.
+   */
   String linkName();
 
+  /**
+   * Returns the ID of the other entity involved in the link action.
+   *
+   * @return The ID of the other entity.
+   */
   String otherEntityId();
 
+  /**
+   * Returns the list of other entity property actions.
+   *
+   * @return The list of other entity property actions.
+   */
   @Value.Default
   default List<EntityPropertyAction> otherEntityPropertyActions() {
     return new ArrayList<>();

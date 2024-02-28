@@ -51,7 +51,6 @@ import jetbrains.exodus.bindings.ComparableBinding;
  * @since 0-SNAPSHOT
  */
 public class DataFactory {
-
   private static final Logger LOG = LoggerFactory.getLogger(DataFactory.class);
 
   private EntityStore entityStore;
@@ -84,6 +83,9 @@ public class DataFactory {
     return instance;
   }
 
+  /**
+   *
+   */
   public void register() throws RemoteException, NotBoundException {
     String host = System.getProperty(Constants.JAVA_RMI_HOST_ENVIRONMENT, "localhost");
     String port = System.getProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT, Constants.JAVA_RMI_PORT_DEFAULT);

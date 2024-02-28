@@ -25,14 +25,21 @@ import org.immutables.value.Value;
 /**
  * Action to prevent duplicate property to be saved into the
  * database.
- *
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
  */
 @Value.Immutable
 public interface PropertyIndexAction extends EntityPropertyAction {
+  /**
+   * Property name to be indexed.
+   *
+   * @return The name of the property.
+   */
   String propertyName();
+
+  /**
+   * Indicates the index operation will remove duplicates from the property.
+   *
+   * @return True if the duplicates will be removed, false otherwise
+   */
   @Nullable
   @Value.Default
   default Boolean removeDuplicates() {

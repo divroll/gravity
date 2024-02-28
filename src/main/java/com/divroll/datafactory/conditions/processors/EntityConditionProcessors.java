@@ -25,9 +25,48 @@ import com.divroll.datafactory.conditions.processors.core.UnsatisfiedConditionPr
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 
+/**
+ * The EntityConditionProcessors class is responsible for storing and retrieving a list of entity processor classes
+ * and finding classes in a specified package that implement or extend a given superclass or interface.
+ *
+ * The PACKAGE_NAME variable represents the package name for the classes related to entity condition processors in the data factory.
+ *
+ * @see EntityConditionProcessors
+ * @see com.divroll.datafactory.conditions.LinkCondition
+ * @see com.divroll.datafactory.conditions.OppositeLinkCondition
+ * @see com.divroll.datafactory.conditions.PropertyContainsCondition
+ * @see com.divroll.datafactory.conditions.PropertyEqualCondition
+ * @see com.divroll.datafactory.conditions.PropertyLocalTimeRangeCondition
+ * @see com.divroll.datafactory.conditions.PropertyMinMaxCondition
+ * @see com.divroll.datafactory.conditions.PropertyNearbyCondition
+ * @see com.divroll.datafactory.conditions.PropertyStartsWithCondition
+ * @see com.divroll.datafactory.conditions.PropertyUniqueCondition
+ * @see com.divroll.datafactory.conditions.CustomCondition
+ * @see com.divroll.datafactory.conditions.CustomQueryCondition
+ * @see com.divroll.datafactory.conditions.EntityCondition
+ */
 public class EntityConditionProcessors {
+    /**
+     *
+     */
     private static final List<Class<?>> entityProcessorClasses;
-
+    /**
+     * The PACKAGE_NAME variable represents the package name for the classes related to entity condition processors in the data factory.
+     *
+     * @see EntityConditionProcessors
+     * @see com.divroll.datafactory.conditions.LinkCondition
+     * @see com.divroll.datafactory.conditions.OppositeLinkCondition
+     * @see com.divroll.datafactory.conditions.PropertyContainsCondition
+     * @see com.divroll.datafactory.conditions.PropertyEqualCondition
+     * @see com.divroll.datafactory.conditions.PropertyLocalTimeRangeCondition
+     * @see com.divroll.datafactory.conditions.PropertyMinMaxCondition
+     * @see com.divroll.datafactory.conditions.PropertyNearbyCondition
+     * @see com.divroll.datafactory.conditions.PropertyStartsWithCondition
+     * @see com.divroll.datafactory.conditions.PropertyUniqueCondition
+     * @see com.divroll.datafactory.conditions.CustomCondition
+     * @see com.divroll.datafactory.conditions.CustomQueryCondition
+     * @see com.divroll.datafactory.conditions.EntityCondition
+     */
     private static final String PACKAGE_NAME = "com.divroll.datafactory.conditions.processors";
 
     static {
@@ -40,10 +79,22 @@ public class EntityConditionProcessors {
         }
     }
 
+    /**
+     * Retrieves a list of entity processor classes.
+     *
+     * @return A list of Class objects representing the entity processor classes.
+     */
     public static List<Class<?>> getEntityProcessorClasses() {
         return entityProcessorClasses;
     }
 
+    /**
+     * Finds classes in the specified package that implement or extend the given superclass or interface.
+     *
+     * @param packageName The name of the package to scan for classes.
+     * @param superClass  The superclass or interface that the classes should implement or extend.
+     * @return A List of Class objects that implement or extend the given superclass or interface.
+     */
     private List<Class<?>> findClasses(String packageName, Class<?> superClass) {
         try (ScanResult scanResult = new ClassGraph()
                 .whitelistPackages(packageName)

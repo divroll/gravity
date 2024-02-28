@@ -23,5 +23,10 @@ package com.divroll.datafactory.indexers;
  * The LuceneIndexerProvider interface provides a method to retrieve a LuceneIndexer instance.
  */
 public interface LuceneIndexerProvider {
+    /**
+     * Retrieves an instance of LuceneIndexer.
+     *
+     * @return The LuceneIndexer instance.
+     */
     LuceneIndexer getLuceneIndexer();
 }

@@ -30,25 +30,42 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents a query to retrieve an entity.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface EntityQuery extends Serializable {
-
+  /**
+   * The name of the environment to query
+   *
+   * @return The name of the environment
+   */
   @Value.Default
   default String environment() {
     return System.getProperty(Constants.DATAFACTORY_DIRECTORY_ENVIRONMENT);
   }
 
+  /**
+   * The name of the namespace to query
+   *
+   * @return The name of the namespace
+   */
   @Nullable
   String nameSpace();
 
+  /**
+   * The name of the entity type to query
+   *
+   * @return The name of the entity type
+   */
   @Nullable
   String entityType();
 
+  /**
+   * The id of the entity to query
+   *
+   * @return The id of the entity
+   */
   @Nullable
   String entityId();
 
@@ -77,7 +94,7 @@ public interface EntityQuery extends Serializable {
   /**
    * Indicates the query should return only the first entity found
    *
-   * @return
+   * @return True if the query should return only the first entity found, false otherwise
    */
   @Nullable
   @Value.Default
@@ -88,7 +105,7 @@ public interface EntityQuery extends Serializable {
   /**
    * Indicates the query should return only the last entity found
    *
-   * @return
+   * @return True if the query should return only the last entity found, false otherwise
    */
   @Nullable
   @Value.Default
@@ -96,6 +113,13 @@ public interface EntityQuery extends Serializable {
     return false;
   }
 
+  /**
+   * Retrieves the list of transaction filters specified for the EntityQuery.
+   *
+   * @return The list of transaction filters specified for the EntityQuery
+   *
+   * @deprecated This method is deprecated and may be removed in future versions.
+   */
   @Deprecated
   @Nullable
   @Value.Default
@@ -103,29 +127,53 @@ public interface EntityQuery extends Serializable {
     return new ArrayList<>();
   }
 
+  /**
+   * Retrieves the conditions specified for the EntityQuery.
+   *
+   * @return The list of EntityConditions specified for the EntityQuery
+   */
   @Nullable
   @Value.Default
   default List<EntityCondition> conditions() {
     return new ArrayList<>();
   }
 
+  /**
+   * Returns the offset value for the query.
+   *
+   * @return The offset value for the query. Default value is 0 if not specified.
+   */
   @Value.Default
   default Integer offset() {
     return 0;
   }
 
+  /**
+   * Indicates the query should return a maximum number of entities
+   *
+   * @return The maximum number of entities to return
+   */
   @Value.Default
   default Integer max() {
     return 100;
   }
 
+  /**
+   * Indicates the query should return the entities in a specific order
+   *
+   * @return The order in which the query should return the entities
+   */
   @Nullable
   String sort();
 
+  /**
+   * Indicates the query should return the entities in ascending order
+   *
+   * @return True if the query should return the entities in ascending order, false otherwise
+   */
   @Nullable
   @Value.Default
   default Boolean sortAscending() {
     return true;
   }
-
 }

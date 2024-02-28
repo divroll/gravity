@@ -31,8 +31,27 @@ import org.immutables.value.Value;
  */
 @Value.Immutable
 public interface PropertyRenameAction extends EntityPropertyAction {
+  /**
+   * The name of the property to be renamed.
+   *
+   * @return The name of the property.
+   */
   String propertyName();
+
+  /**
+   * The new name of the property.
+   *
+   * @return The new name of the property.
+   */
   String newPropertyName();
+
+  /**
+   * Indicates the rename operation will overwrite the existing property
+   * with the new property name.
+   *
+   * @return True if the existing property will be overwritten,
+   * false otherwise
+   */
   @Nullable
   @Value.Default
   default Boolean overwrite() {

@@ -22,13 +22,24 @@ package com.divroll.datafactory.conditions;
 import org.immutables.value.Value;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * PropertyContainsCondition is an interface that represents a condition for querying entities based on the presence of a property value.
+ * It extends the EntityCondition interface.
+ *
+ * @param <T> The type of the inner property value.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface PropertyContainsCondition<T extends Comparable> extends EntityCondition {
+  /**
+   * Returns the name of the property.
+   *
+   * @return The name of the property.
+   */
   String propertyName();
+  /**
+   * Retrieves the inner property value.
+   *
+   * @return The inner property value.
+   */
   T innerPropertyValue();
 }

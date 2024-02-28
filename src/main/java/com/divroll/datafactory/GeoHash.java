@@ -22,18 +22,23 @@ package com.divroll.datafactory;
 import com.divroll.datafactory.helpers.MathHelper;
 import com.google.common.base.Preconditions;
 
-
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents a GeoHash.
  */
 public class GeoHash {
-
+  /**
+   * The GeoHash as a String.
+   */
   private String geoHash;
 
+  /**
+   * Creates a new GeoHash with the given longitude and latitude.
+   */
   private GeoHash() {
   }
+  /**
+   * Creates a new GeoHash with the given longitude and latitude.
+   */
   public GeoHash(Double longitude, Double latitude) {
     Preconditions.checkArgument(
         latitude >= -90 && latitude <= 90, "Latitude must be in the range of [-90, 90] degrees");
@@ -42,19 +47,22 @@ public class GeoHash {
         "Longitude must be in the range of [-180, 180] degrees");
     this.geoHash = ch.hsr.geohash.GeoHash.withCharacterPrecision(latitude, longitude, 12).toBase32();
   }
+  /**
+   *
+   */
   public static String create(Double longitude, Double latitude) {
     return new GeoHash(longitude, latitude).toString();
   }
 
+  /**
+   * Returns the GeoHash as a String.
+   */
   @Override public String toString() {
     return geoHash;
   }
 
   /**
-   * Calculate the required precision for a give distance query
-   *
-   * @param reference
-   * @return
+   * Compares this GeoHash with another GeoHash.
    */
   public static int calculateGeoHashPrecision(Double reference) {
     double[][] ranges = {
@@ -98,5 +106,4 @@ public class GeoHash {
     }
     return -1;
   }
-
 }

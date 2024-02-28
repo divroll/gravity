@@ -28,11 +28,28 @@ import jetbrains.exodus.entitystore.StoreTransaction;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The OppositeLinkConditionProcessor class processes conditions of type OppositeLinkCondition.
+ * It extends the UnsatisfiedConditionProcessorBase class and implements the UnsatisfiedConditionProcessor interface.
+ */
 public class OppositeLinkConditionProcessor extends UnsatisfiedConditionProcessorBase<OppositeLinkCondition> {
+    /**
+     * OppositeLinkConditionProcessor is a class that processes conditions of type OppositeLinkCondition.
+     * It extends the UnsatisfiedConditionProcessorBase class and implements the UnsatisfiedConditionProcessor interface.
+     */
     public OppositeLinkConditionProcessor() {
         super(OppositeLinkCondition.class);
     }
-
+    /**
+     * Processes the given OppositeLinkCondition to check if the condition is satisfied.
+     * If the condition is not satisfied, it throws an UnsatisfiedConditionException.
+     *
+     * @param scope             The atomic reference to hold the entity iterable.
+     * @param entityCondition   The OppositeLinkCondition to process.
+     * @param entityInContext   The entity in context.
+     * @param txn               The store transaction.
+     * @throws UnsatisfiedConditionException if the condition is not satisfied.
+     */
     @Override
     protected void processCondition(AtomicReference<EntityIterable> scope, OppositeLinkCondition entityCondition, Entity entityInContext, StoreTransaction txn) {
         OppositeLinkCondition oppositeLinkCondition = (OppositeLinkCondition) entityCondition;

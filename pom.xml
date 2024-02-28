@@ -137,6 +137,23 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.6.3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <docTitle>DataFactory Documentation</docTitle>
+          <author>true</author>
+          <source>1.8</source>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 

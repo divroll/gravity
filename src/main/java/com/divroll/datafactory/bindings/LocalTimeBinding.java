@@ -28,37 +28,47 @@ import jetbrains.exodus.util.LightOutputStream;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents a binding for a LocalTime.
  */
 public class LocalTimeBinding extends ComparableBinding {
 
   public static final LocalTimeBinding BINDING = new LocalTimeBinding();
 
+  /**
+   * Reads a serialized object from the given ByteArrayInputStream.
+   *
+   * @param stream the ByteArrayInputStream containing the serialized object
+   * @return the deserialized object or null if an error occurred
+   */
   @Override public Comparable readObject(@NotNull ByteArrayInputStream stream) {
     return BindingUtils.readObject(stream);
   }
 
+  /**
+   * Writes a given object to the provided LightOutputStream using serialization.
+   *
+   * @param output the LightOutputStream to which the object will be written
+   * @param object the object to be serialized and written
+   */
   @Override public void writeObject(@NotNull LightOutputStream output, @NotNull Comparable object) {
     output.write(BindingUtils.writeObject(object));
   }
 
   /**
-   * De-serializes {@linkplain ByteIterable} entry to a {@linkplain LocalTime} value.
+   * Converts a byte array entry to a LocalTime object.
    *
-   * @param entry {@linkplain ByteIterable} instance
-   * @return de-serialized value
+   * @param entry the byte array entry to convert
+   * @return the LocalTime object
    */
   public static LocalTime entryToGeoPoint(@NotNull final ByteIterable entry) {
     return (LocalTime) BINDING.entryToObject(entry);
   }
 
   /**
-   * Serializes {@linkplain LocalTime} value to the {@linkplain ArrayByteIterable} entry.
+   * Convert a LocalTime object to an ArrayByteIterable entry.
    *
-   * @param object value to serialize
-   * @return {@linkplain ArrayByteIterable} entry
+   * @param object the LocalTime object to convert
+   * @return the ArrayByteIterable entry
    */
   public static ArrayByteIterable geoPointToEntry(final LocalTime object) {
     return BINDING.objectToEntry(object);

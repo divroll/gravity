@@ -26,24 +26,72 @@ import jetbrains.exodus.env.Environment;
 import jetbrains.exodus.lucene.ExodusDirectory;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * DatabaseManager is an interface that provides methods for managing a database.
  */
 public interface DatabaseManager {
 
+  /**
+   * Retrieves the environment associated with the specified directory.
+   *
+   * @param dir the directory path
+   * @param isContextual flag indicating whether the environment is contextual
+   * @return the environment associated with the specified directory
+   */
   Environment getEnvironment(String dir, boolean isContextual);
 
+  /**
+   * Retrieves a PersistentEntityStore instance.
+   *
+   * @param dir         the directory path of the entity store
+   * @param isReadOnly  specifies if the entity store should be read-only
+   * @return the PersistentEntityStore instance
+   */
   PersistentEntityStore getPersistentEntityStore(String dir, boolean isReadOnly);
+  /**
+   * Retrieves or creates a persistent entity store.
+   *
+   * @param dir The directory where the persistent entity store is located.
+   * @param storeName The name of the persistent entity store. If null, the default name will be used.
+   * @param isReadOnly True if the entity store should be opened in read-only mode, false otherwise.
+   * @return The persistent entity store.
+   */
   PersistentEntityStore getPersistentEntityStore(String dir, String storeName, boolean isReadOnly);
+  /**
+   * Retrieves the ExodusDirectory associated with the given directory path.
+   *
+   * @param dir the directory path
+   * @return the ExodusDirectory object
+   */
   ExodusDirectory getExodusDirectory(String dir);
 
+  /**
+   * Executes a transaction on a persistent entity store.
+   *
+   * @param dir The directory of the entity store.
+   * @param isReadOnly Indicates whether the transaction is read-only or not.
+   * @param tx The transaction to be executed.
+   */
   void transactPersistentEntityStore(String dir, boolean isReadOnly,
       StoreTransactionalExecutable tx);
 
+  /**
+   * Stores data in the given store using the provided transactional executable.
+   *
+   * @param dir The directory where the store is located.
+   * @param store The name of the store.
+   * @param tx The transactional executable to be executed.
+   */
   void transactionContextualStore(String dir, String store, StoreTransactionalExecutable tx);
 
+  /**
+   * Closes the environment associated with the given directory.
+   *
+   * @param dir the directory of the environment to be closed
+   */
   void closeEnvironment(String dir);
 
+  /**
+   * Closes all Xodus environments.
+   */
   void closeEnvironments();
 }

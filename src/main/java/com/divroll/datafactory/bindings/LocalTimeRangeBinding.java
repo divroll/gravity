@@ -28,37 +28,47 @@ import jetbrains.exodus.util.LightOutputStream;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents a binding for a LocalTimeRange.
  */
 public class LocalTimeRangeBinding extends ComparableBinding {
 
   public static final LocalTimeRangeBinding BINDING = new LocalTimeRangeBinding();
 
+  /**
+   * Reads a serialized object from the given ByteArrayInputStream.
+   *
+   * @param stream the ByteArrayInputStream containing the serialized object
+   * @return the deserialized object or null if an error occurred
+   */
   @Override public Comparable readObject(@NotNull ByteArrayInputStream stream) {
     return BindingUtils.readObject(stream);
   }
 
+  /**
+   * Writes a given object to a LightOutputStream using serialization.
+   *
+   * @param output the LightOutputStream to write the serialized object to
+   * @param object the object to be serialized
+   */
   @Override public void writeObject(@NotNull LightOutputStream output, @NotNull Comparable object) {
     output.write(BindingUtils.writeObject(object));
   }
 
   /**
-   * De-serializes {@linkplain ByteIterable} entry to a {@linkplain LocalTimeRange} value.
+   * Converts a ByteIterable entry object to a LocalTimeRange object.
    *
-   * @param entry {@linkplain ByteIterable} instance
-   * @return de-serialized value
+   * @param entry the ByteIterable entry to convert
+   * @return the converted LocalTimeRange object
    */
   public static LocalTimeRange entryToLocalTimeRange(@NotNull final ByteIterable entry) {
     return (LocalTimeRange) BINDING.entryToObject(entry);
   }
 
   /**
-   * Serializes {@linkplain LocalTimeRange} value to the {@linkplain ArrayByteIterable} entry.
+   * Converts a LocalTimeRange object to an ArrayByteIterable entry object.
    *
-   * @param object value to serialize
-   * @return {@linkplain ArrayByteIterable} entry
+   * @param object the LocalTimeRange object to convert
+   * @return the converted ArrayByteIterable entry object
    */
   public static ArrayByteIterable localTimeRangeToEntry(final LocalTimeRange object) {
     return BINDING.objectToEntry(object);

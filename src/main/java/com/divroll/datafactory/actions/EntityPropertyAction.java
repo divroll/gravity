@@ -22,9 +22,8 @@ package com.divroll.datafactory.actions;
 import java.io.Serializable;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * EntityPropertyAction is an interface that represents an action on an entity
+ * property. It extends the Serializable interface.
  */
 public interface EntityPropertyAction extends Serializable {
 }

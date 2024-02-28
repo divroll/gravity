@@ -24,22 +24,43 @@ import java.nio.ByteBuffer;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * Represents a byte array value.
  */
 public class ByteValue implements Serializable, Comparable<byte[]> {
-
+  /**
+   * Returns the byte array value.
+   *
+   * @return the byte array value
+   */
   private byte[] value;
 
+  /**
+   * Retrieves the value of the byte array.
+   *
+   * @return The byte array value.
+   */
   public byte[] getValue() {
     return value;
   }
 
+  /**
+   * Sets the value of the byte array.
+   *
+   * @param value the byte array value to set
+   */
   public void setValue(byte[] value) {
     this.value = value;
   }
 
+  /**
+   * Compares this byte array with another byte array for order. The comparison is based on the values
+   * of the bytes in the arrays.
+   *
+   * @param o the byte array to be compared
+   *
+   * @return a negative integer, zero, or a positive integer as this byte array is less than, equal to,
+   *         or greater than the specified byte array.
+   */
   @Override
   public int compareTo(@NotNull byte[] o) {
     return ByteBuffer.wrap(value).compareTo(ByteBuffer.wrap(o));

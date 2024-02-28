@@ -27,11 +27,16 @@ import util.ComparableHashMap;
 import util.ComparableLinkedList;
 
 /**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
+ * This class provides static methods for casting generic collections to comparable collections.
  */
 public class Comparables {
+  /**
+   * Casts a List of elements to a ComparableLinkedList of Comparable elements.
+   * Elements in the input List may be of any type that extends Comparable.
+   *
+   * @param comparableList the List to be casted
+   * @return a ComparableLinkedList with elements casted from the input List
+   */
   public static <V extends Comparable> ComparableLinkedList<Comparable> cast(
       List<V> comparableList) {
     if (comparableList == null) {
@@ -54,6 +59,17 @@ public class Comparables {
     return casted;
   }
 
+  /**
+   * This method casts a regular Map to a ComparableHashMap.
+   *
+   * @param <K> the type of keys maintained by the input map;
+   *            must extend Comparable
+   * @param <V> the type of mapped values of the input map;
+   *            must extend Comparable
+   * @param map the map to be casted
+   * @return a ComparableHashMap object with the same key-value pairs as the input map,
+   *         or null if the input map is null
+   */
   public static <K extends Comparable, V extends Comparable> ComparableHashMap<K, V> cast(
       Map<K, V> map) {
     if (map == null) {
