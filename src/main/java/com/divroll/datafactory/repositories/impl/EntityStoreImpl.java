@@ -260,7 +260,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   @Override public Boolean removeEntities(@NotNull EntityQuery[] queries)
       throws DataFactoryException, NotBoundException, RemoteException {
     final boolean[] success = {false};
-
+    final boolean[] hasRemovedEntities = {false};
     Map<String, List<EntityQuery>> dirOrderedQueries = sort(queries);
     Iterator<String> it = dirOrderedQueries.keySet().iterator();
     while (it.hasNext()) {
@@ -268,6 +268,8 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
       List<EntityQuery> queryList = dirOrderedQueries.get(dir);
       getDatabaseManager().transactPersistentEntityStore(dir, false, txn -> {
         queryList.forEach(query -> {
+
+          // Build the list of entities to be removed
           String entityType = query.entityType();
           String nameSpace = query.nameSpace();
           EntityIterable result = null;
@@ -280,15 +282,21 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
                 txn.getAll(entityType)
                     .minus(txn.findWithProp(entityType, Constants.NAMESPACE_PROPERTY));
           }
+
+          for(BlobQuery blobQuery : query.blobQueries()) {
+            result = result.intersect(txn.findWithBlob(entityType, blobQuery.blobName()));
+          }
+
+          // Remove the entities
           final boolean[] hasError = {false};
           for (Entity entity : result) {
-
             entity.getLinkNames().forEach(linkName -> {
               Entity linked = entity.getLink(linkName);
               entity.deleteLink(linkName, linked);
             });
 
             // TODO: This is a performance issue
+            // Review if this is even needed!
             final List<String> allLinkNames = ((PersistentEntityStoreImpl) txn.getStore())
                 .getAllLinkNames(
                     (PersistentStoreTransaction) txn.getStore().getCurrentTransaction());
@@ -300,15 +308,17 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
               }
             }
 
-            entity.getBlobNames().forEach(blobName -> {
+            for(String blobName : entity.getBlobNames()) {
               entity.deleteBlob(blobName);
-            });
+            }
 
             if (!entity.delete()) {
               hasError[0] = true;
+            } else {
+                hasRemovedEntities[0] = true;
             }
           }
-          success[0] = !hasError[0];
+          success[0] = (!hasError[0] && hasRemovedEntities[0]);
         });
       });
     }
@@ -495,16 +505,17 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   }
 
   private static Map<String, List<EntityQuery>> sort(EntityQuery[] entities) {
-    Map<String, List<EntityQuery>> appOrderedQueries = new HashMap<>();
+    Map<String, List<EntityQuery>> dirOrderedQueries = new HashMap<>();
     Arrays.asList(entities).forEach(remoteEntity -> {
       String dir = remoteEntity.environment();
-      List<EntityQuery> entityQueries = appOrderedQueries.get(dir);
+      List<EntityQuery> entityQueries = dirOrderedQueries.get(dir);
       if (entityQueries == null) {
         entityQueries = new ArrayList<>();
+        dirOrderedQueries.put(dir, entityQueries); // Put new ArrayList into the map
       }
       entityQueries.add(remoteEntity);
     });
-    return appOrderedQueries;
+    return dirOrderedQueries;
   }
 
   private Comparable asObject(EmbeddedEntityIterable entityIterable) {
