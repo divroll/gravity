@@ -260,7 +260,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   @Override public Boolean removeEntities(@NotNull EntityQuery[] queries)
       throws DataFactoryException, NotBoundException, RemoteException {
     final boolean[] success = {false};
-
+    final boolean[] hasRemovedEntities = {false};
     Map<String, List<EntityQuery>> dirOrderedQueries = sort(queries);
     Iterator<String> it = dirOrderedQueries.keySet().iterator();
     while (it.hasNext()) {
@@ -314,9 +314,11 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
 
             if (!entity.delete()) {
               hasError[0] = true;
+            } else {
+                hasRemovedEntities[0] = true;
             }
           }
-          success[0] = !hasError[0];
+          success[0] = (!hasError[0] && hasRemovedEntities[0]);
         });
       });
     }
