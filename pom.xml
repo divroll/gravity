@@ -127,6 +127,7 @@
           <configLocation>sun_checks.xml</configLocation>
           <consoleOutput>true</consoleOutput>
           <failsOnError>true</failsOnError> <!-- Fail on checkstyle violation -->
+          <configLocation>src/main/resources/sun_checks.xml</configLocation>
         </configuration>
         <executions>
           <execution>
