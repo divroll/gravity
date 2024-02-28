@@ -45,11 +45,6 @@
         <version>3.0.0</version>
       </plugin>
       <plugin>
-        <groupId>org.openclover</groupId>
-        <artifactId>clover-maven-plugin</artifactId>
-        <version>${clover.version}</version>
-      </plugin>
-      <plugin>
         <groupId>com.github.ferstl</groupId>
         <artifactId>depgraph-maven-plugin</artifactId>
         <version>3.3.0</version>
@@ -146,7 +141,7 @@
     <guava.version>29.0-jre</guava.version>
     <xtend.version>2.9.1</xtend.version>
     <lucene.version>7.5.0</lucene.version>
-    <clover.version>4.4.1</clover.version>
+    <commons-io.version>2.15.1</commons-io.version>
     <classgraph.version>4.8.104</classgraph.version>
     <junit.version>4.12</junit.version>
     <skipTests>false</skipTests>
@@ -216,11 +211,6 @@
     </dependency>
     <dependency>
       <groupId>org.jetbrains.xodus</groupId>
-      <artifactId>xodus-multinode</artifactId>
-      <version>${xodus.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.xodus</groupId>
       <artifactId>xodus-lucene-directory</artifactId>
       <version>${xodus.version}</version>
       <exclusions>
@@ -229,6 +219,11 @@
           <artifactId>lucene-analyzers-common</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
     </dependency>
     <dependency>
       <groupId>org.immutables</groupId>
@@ -259,11 +254,6 @@
       <groupId>org.codehaus.jettison</groupId>
       <artifactId>jettison</artifactId>
       <version>1.4.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.16</version>
     </dependency>
     <dependency>
       <groupId>org.gavaghan</groupId>
@@ -309,12 +299,6 @@
       <groupId>io.github.classgraph</groupId>
       <artifactId>classgraph</artifactId>
       <version>${classgraph.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openclover</groupId>
-      <artifactId>clover-maven-plugin</artifactId>
-      <version>4.4.1</version>
-      <type>maven-plugin</type>
     </dependency>
     <dependency>
       <groupId>org.awaitility</groupId>
