@@ -159,12 +159,11 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * @return  an Option containing a Entities object
    *          if the save operation was successful, otherwise an empty Option
    * @throws DataFactoryException if an error occurs during the save operation
-   * @throws NotBoundException if the entity store is not bound
    * @throws RemoteException if a remote communication error occurs
    */
   @Override
   public Option<Entities> saveEntities(@NotNull final Entity[] entities)
-      throws DataFactoryException, NotBoundException, RemoteException {
+      throws DataFactoryException, RemoteException {
     Map<String, List<Entity>> envIdOrderedEntities = sort(entities);
     Iterator<String> it = envIdOrderedEntities.keySet().iterator();
     AtomicReference<Entities> finalResult = new AtomicReference<>(null);
@@ -179,7 +178,8 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
           // Build an entity in context of a referenced scoped entities based on the
           // namespace
           final AtomicReference<EntityIterable> reference = new AtomicReference<>();
-          final jetbrains.exodus.entitystore.Entity entityInContext = Unmarshaller.buildContexedEntity(entity, reference, txn);
+          final jetbrains.exodus.entitystore.Entity entityInContext
+                  = Unmarshaller.buildContexedEntity(entity, reference, txn);
 
           // Filter the scoped entities based on the namespace
           reference.set(
@@ -538,25 +538,25 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
       throws DataFactoryException, NotBoundException, RemoteException {
     AtomicReference<EntityTypes> atomicReference = new AtomicReference<>();
     getDatabaseManager().transactPersistentEntityStore(query.environment(), true, txn -> {
-      List<String> entityTypes = txn.getEntityTypes();
+      List<String> types = txn.getEntityTypes();
       Long count = null;
       if (query.count()) {
         EntityIterable entities = txn.getAll(query.entityType());
         count = entities.size();
       }
       List<EntityType> entityTypeList = new ArrayList<>();
-      if (entityTypes != null) {
-        for (String entityType : entityTypes) {
+      if (types != null) {
+        for (String entityType : types) {
           entityTypeList.add(new EntityTypeBuilder()
               .entityTypeName(entityType)
               .build());
         }
       }
-      EntityTypes dataFactoryEntityTypes = new EntityTypesBuilder()
+      EntityTypes entityTypes = new EntityTypesBuilder()
           .entityTypes(entityTypeList)
           .entityCount(count)
           .build();
-      atomicReference.set(dataFactoryEntityTypes);
+      atomicReference.set(entityTypes);
     });
     return Option.of(atomicReference.get());
   }
@@ -568,20 +568,53 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * @param storeTransaction The transaction object used to interact with the persistent store.
    *                         Cannot be null.
    */
-  private void deleteEntityLinks(final jetbrains.exodus.entitystore.Entity entity, final StoreTransaction storeTransaction) {
-    // Note: The following code block may have performance issues due to the nested loops.
-    // It retrieves all link names and for each entity type, it finds and deletes the links.
+  private void deleteEntityLinks(final jetbrains.exodus.entitystore.Entity entity,
+                                 final StoreTransaction storeTransaction) {
     PersistentStoreTransaction currentTransaction
             = (PersistentStoreTransaction) storeTransaction.getStore().getCurrentTransaction();
-    final List<String> allLinkNames = ((PersistentEntityStoreImpl) storeTransaction.getStore())
-            .getAllLinkNames(currentTransaction);
-    for (final String entityType1 : storeTransaction.getEntityTypes()) {
-      for (final String linkName : allLinkNames) {
-        for (final jetbrains.exodus.entitystore.Entity referrer : storeTransaction.findLinks(entityType1, entity, linkName)) {
-          referrer.deleteLink(linkName, entity);
-        }
-      }
+    final List<String> allLinkNames = getAllLinks(storeTransaction, currentTransaction);
+    List<String> entityTypes = getEntityTypes(storeTransaction);
+    for (String entityType : entityTypes) {
+        deleteLinks(entity, storeTransaction, allLinkNames, entityType);
     }
+  }
+
+  /**
+   * Retrieves the list of entity types from the given store transaction.
+   *
+   * @param storeTransaction The transaction object used to interact with the persistent store.
+   *                         Cannot be null.
+   * @return A list of strings representing the entity types in the store transaction.
+   */
+  private List<String> getEntityTypes(final StoreTransaction storeTransaction) {
+    return new ArrayList<>(storeTransaction.getEntityTypes());
+  }
+
+  /**
+   * Retrieves all the link names from the persistent store.
+   *
+   * @param storeTransaction      The transaction object used to interact with the persistent store.
+   *                              Cannot be null.
+   * @param currentTransaction    The current transaction object used for the store.
+   *                              Cannot be null.
+   * @return A list of strings representing all the link names in the persistent store.
+   */
+  private List<String> getAllLinks(final StoreTransaction storeTransaction,
+                                   final PersistentStoreTransaction currentTransaction) {
+    return ((PersistentEntityStoreImpl) storeTransaction.getStore())
+            .getAllLinkNames(currentTransaction);
+  }
+
+  private void deleteLinks(final jetbrains.exodus.entitystore.Entity entity,
+                           final StoreTransaction storeTransaction,
+                           final List<String> allLinkNames,
+                           final String entityType) {
+    allLinkNames.forEach(linkName -> {
+      for (final jetbrains.exodus.entitystore.Entity referrer
+              : storeTransaction.findLinks(entityType, entity, linkName)) {
+        referrer.deleteLink(linkName, entity);
+      }
+    });
   }
 
   /**

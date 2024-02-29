@@ -28,6 +28,7 @@ import org.immutables.value.Value;
  * Represents an action to link an entity to another entity.
  */
 @Value.Immutable
+@Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface LinkAction extends EntityAction, Serializable {
   /**
    * Returns the name of the link.

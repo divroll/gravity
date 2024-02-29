@@ -26,6 +26,8 @@ import com.divroll.datafactory.database.impl.DatabaseManagerImpl;
 import com.divroll.datafactory.exceptions.DataFactoryException;
 import com.divroll.datafactory.indexers.LuceneIndexerProvider;
 import com.divroll.datafactory.indexers.SerializableLuceneIndexerProvider;
+import com.divroll.datafactory.remote.RmiClientFactory;
+import com.divroll.datafactory.remote.RmiServerFactory;
 import com.divroll.datafactory.repositories.EntityStore;
 import com.divroll.datafactory.repositories.impl.EntityStoreImpl;
 import com.godaddy.logging.Logger;
@@ -37,8 +39,11 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RMIClientSocketFactory;
+import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * DataFactory registers and exposes the repositories for accessing the underlying Xodus database.
@@ -52,6 +57,16 @@ public final class DataFactory {
    * logger instance specific to this class.
    */
   private static final Logger LOG = LoggerFactory.getLogger(DataFactory.class);
+
+  /**
+   * The default hostname used by the DataFactory class. The default hostname is "localhost".
+   */
+  private static final String DEFAULT_HOSTNAME = "localhost";
+
+  /**
+   * The maximum port number is 65535.
+   */
+  private static final int MAX_PORT_NUMBER = 65535;
 
   /**
    * The `entityStore` variable is an instance of the `EntityStore` interface.
@@ -109,6 +124,7 @@ public final class DataFactory {
     if (instance == null) {
       instance = new DataFactory();
     }
+
     return instance;
   }
 
@@ -119,23 +135,86 @@ public final class DataFactory {
    * @throws NotBoundException   if the registry could not be found
    */
   public void register() throws RemoteException, NotBoundException {
-    String host = System.getProperty(Constants.JAVA_RMI_HOST_ENVIRONMENT, "localhost");
+    setupRegistry();
+    logRegisteredObjects();
+    registerEntityStoreIfNeeded();
+    LOG.info("DataFactory initialized with process id: {}",
+            ManagementFactory.getRuntimeMXBean().getName());
+
+  }
+
+  /**
+   * Sets up the RMI registry if it is not already initialized.
+   * Uses the system property `java.rmi.server.hostname` to determine the host.
+   * If the registry is not null, it creates a new instance of the RMI registry on the specified
+   * port number, using the custom client and server socket factories for communication.
+   *
+   * @throws RemoteException if there is a communication-related error
+   * @see Constants#JAVA_RMI_HOST_ENVIRONMENT
+   * @see DataFactory#DEFAULT_HOSTNAME
+   * @see RmiClientFactory
+   * @see RmiServerFactory
+   * @see LocateRegistry#createRegistry(int, RMIClientSocketFactory, RMIServerSocketFactory)
+   */
+  private void setupRegistry() throws RemoteException {
+    String host = System.getProperty(Constants.JAVA_RMI_HOST_ENVIRONMENT, DEFAULT_HOSTNAME);
+    String port = getPort();
+    RMIClientSocketFactory csf = new RmiClientFactory(host);
+    RMIServerSocketFactory ssf = new RmiServerFactory(host);
+    int portNumber = Integer.parseInt(port);
+    if (registry == null) {
+      registry = LocateRegistry.createRegistry(portNumber, csf, ssf);
+    }
+  }
+
+  private String getPort() {
+    // Try to get the test port; if not set, fall back to the regular port,
+    // and finally to the default port
     String port = System.getProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT,
             Constants.JAVA_RMI_PORT_DEFAULT);
-    port = port != null ? port : System.getProperty(Constants.JAVA_RMI_PORT_ENVIRONMENT,
-            Constants.JAVA_RMI_PORT_DEFAULT);
-
-    if (registry == null) {
-      registry = LocateRegistry.createRegistry(Integer.valueOf(port));
+    // If test port is not set, try to get the regular port
+    if (port.equals(Constants.JAVA_RMI_PORT_DEFAULT)) {
+      port = System.getProperty(Constants.JAVA_RMI_PORT_ENVIRONMENT,
+              Constants.JAVA_RMI_PORT_DEFAULT);
     }
+    validatePortNumber(port);
+    return port;
+  }
 
-    if (!Arrays.asList(registry.list()).contains(EntityStore.class.getName())) {
+  private void logRegisteredObjects() throws RemoteException {
+    LOG.info("Listing all bound objects in the RMI registry");
+    String[] registeredObjects = registry.list();
+    if (registeredObjects.length == 0) {
+      LOG.info("No objects bound in the RMI registry");
+    } else {
+      Arrays.stream(registeredObjects).forEach(object -> LOG.info("Object: {}", object));
+    }
+  }
+
+  private void registerEntityStoreIfNeeded() throws RemoteException, NotBoundException {
+    List<String> registryList = Arrays.asList(registry.list());
+    String entityClassName = EntityStore.class.getName();
+    boolean isEntityStoreRegistered = registryList.contains(entityClassName);
+
+    if (!isEntityStoreRegistered) {
+      LOG.info("{} is not registered in the RMI registry. Registering...", entityClassName);
       entityStore = new EntityStoreImpl(DATABASE_MANAGER_PROVIDER, LUCENE_INDEXER_PROVIDER);
-      registry.rebind(EntityStore.class.getName(), entityStore);
+      registry.rebind(entityClassName, entityStore);
+    } else {
+      LOG.info("{} is already registered in the RMI registry", entityClassName);
     }
+  }
 
-    LOG.info("DataFactory initialized with process id: "
-            + ManagementFactory.getRuntimeMXBean().getName());
+  /**
+   * Validate port number. If it's invalid, throw an exception.
+   *
+   * @param port string port number
+   */
+  private void validatePortNumber(final String port) {
+    int portNumber = Integer.parseInt(port);
+    if (portNumber < 0 || portNumber > MAX_PORT_NUMBER) {
+      throw new IllegalArgumentException(String.format("Invalid port number: %s", port));
+    }
   }
 
   /**
@@ -187,6 +266,28 @@ public final class DataFactory {
 
   /**
    * Retrieves an instance of the EntityStore service. If the service has not been initialized yet,
+   * it will be created.
+   *
+   * @return the EntityStore service instance
+   * @throws DataFactoryException if there is an error in the data factory
+   * @throws RemoteException if a remote exception occurs during the RMI registry operations
+   * @throws NotBoundException if the RMI registry is not bound
+   */
+  public EntityStore getEntityStore() throws DataFactoryException {
+    try {
+      if (entityStore == null) {
+        entityStore =
+                new EntityStoreImpl(DATABASE_MANAGER_PROVIDER, LUCENE_INDEXER_PROVIDER);
+      }
+    } catch (RemoteException | NotBoundException e) {
+      throw new DataFactoryException("Unable to instantiate the "
+              + EntityStore.class.getSimpleName(), e);
+    }
+    return entityStore;
+  }
+
+  /**
+   * Retrieves an instance of the EntityStore service. If the service has not been initialized yet,
    * it will be created and registered with the RMI registry.
    *
    * @return the EntityStore service instance
@@ -194,15 +295,14 @@ public final class DataFactory {
    * @throws RemoteException if a remote exception occurs during the RMI registry operations
    * @throws NotBoundException if the RMI registry is not bound
    */
-  public EntityStore getEntityStore()
-      throws DataFactoryException, RemoteException, NotBoundException {
-    //Preconditions.checkNotNull(registry, "RMI registry should not be null");
+  public EntityStore getRemoteEntityStore()
+          throws DataFactoryException, RemoteException, NotBoundException {
+    // Preconditions.checkNotNull(registry, "RMI registry should not be null");
     if (registry == null) {
       register();
     }
     if (entityStore == null) {
-      entityStore =
-          new EntityStoreImpl(DATABASE_MANAGER_PROVIDER, LUCENE_INDEXER_PROVIDER);
+      entityStore = new EntityStoreImpl(DATABASE_MANAGER_PROVIDER, LUCENE_INDEXER_PROVIDER);
     }
     if (!Arrays.asList(registry.list()).contains(EntityStore.class.getName())) {
       registry.rebind(EntityStore.class.getName(), entityStore);

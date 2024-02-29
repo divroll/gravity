@@ -19,16 +19,21 @@
  */
 package com.divroll.datafactory.actions;
 
-import com.divroll.datafactory.BaseTest;
+import com.divroll.datafactory.ClientBaseTest;
+import com.divroll.datafactory.Constants;
+import com.divroll.datafactory.DataFactory;
+import com.divroll.datafactory.TestEnvironment;
 import com.divroll.datafactory.builders.*;
 import com.divroll.datafactory.builders.queries.BlobQueryBuilder;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityQueryBuilder;
+import com.divroll.datafactory.repositories.EntityStore;
 import com.google.common.io.ByteSource;
 import com.healthmarketscience.rmiio.RemoteInputStream;
 import com.healthmarketscience.rmiio.RemoteInputStreamClient;
 import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -42,8 +47,14 @@ import static org.junit.Assert.*;
 /**
  * This class provides test cases for the BlobRemoveAction class.
  */
-public class BlobRemoveActionTest extends BaseTest {
+public class BlobRemoveActionTest {
     private static final String ENTITY_TYPE = "Room";
+    private static EntityStore entityStore;
+    @Before
+    public void setup() throws NotBoundException, RemoteException {
+        this.entityStore = DataFactory.getInstance().getEntityStore();
+    }
+
     /**
      * Test case for the method testBlobRemove.
      * The method tests a scenario where an entity's blob is removed.
@@ -186,7 +197,8 @@ public class BlobRemoveActionTest extends BaseTest {
      * @throws NotBoundException If the object being called is not bound to this registry.
      */
     @Test
-    public void testFalseWhenRemovingMultipleNonExistingBlobsAtOnce() throws IOException, NotBoundException {
+    public void testFalseWhenRemovingMultipleNonExistingBlobsAtOnce()
+            throws IOException, NotBoundException {
         String environment = getEnvironment();
 
         // Create an entity with multiple blobs
@@ -310,6 +322,8 @@ public class BlobRemoveActionTest extends BaseTest {
                         .build())
                 .build();
 
+        String port = System.getProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT);
+
         // Try to remove the blob from non-existing entity
         boolean isRemoved = entityStore.removeEntity(entityQuery);
 
@@ -347,7 +361,7 @@ public class BlobRemoveActionTest extends BaseTest {
     }
 
     /**
-     * Creates a Entity with a blob.
+     * Creates an Entity with a blob.
      *
      * @return The created Entity.
      * @throws IOException If an I/O error occurs.
@@ -387,5 +401,9 @@ public class BlobRemoveActionTest extends BaseTest {
             }
         }
         return blobString;
+    }
+
+    private String getEnvironment() {
+        return TestEnvironment.getEnvironment();
     }
 }

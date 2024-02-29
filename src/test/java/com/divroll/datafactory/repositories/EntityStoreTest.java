@@ -21,454 +21,124 @@ package com.divroll.datafactory.repositories;
 
 import com.divroll.datafactory.DataFactory;
 import com.divroll.datafactory.TestEnvironment;
-import com.divroll.datafactory.actions.ImmutableBlobRemoveAction;
-import com.divroll.datafactory.actions.ImmutableBlobRenameAction;
-import com.divroll.datafactory.actions.ImmutableBlobRenameRegexAction;
-import com.divroll.datafactory.actions.ImmutableLinkAction;
+import com.divroll.datafactory.builders.Blob;
 import com.divroll.datafactory.builders.BlobBuilder;
 import com.divroll.datafactory.builders.Entity;
 import com.divroll.datafactory.builders.EntityBuilder;
 import com.divroll.datafactory.builders.queries.BlobQueryBuilder;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityQueryBuilder;
-import com.divroll.datafactory.conditions.PropertyStartsWithConditionBuilder;
-import com.divroll.datafactory.conditions.exceptions.UnsatisfiedConditionException;
 import com.google.common.io.ByteSource;
+import com.healthmarketscience.rmiio.RemoteInputStream;
 import com.healthmarketscience.rmiio.RemoteInputStreamClient;
 import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import jetbrains.exodus.entitystore.EntityRemovedInDatabaseException;
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.nio.charset.Charset;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
-/**
- * @author <a href="mailto:kerby@divroll.com">Kerby Martino</a>
- * @version 0-SNAPSHOT
- * @since 0-SNAPSHOT
- */
 public class EntityStoreTest {
+  EntityStore entityStore;
+  @Before
+  public void setUp() throws NotBoundException, RemoteException {
+    this.entityStore = DataFactory.getInstance().getEntityStore();
+  }
 
   @Test
-  public void testSaveEntity() throws Exception {
+  public void saveEntity_ShouldPersistEntitySuccessfully() throws Exception {
     String environment = TestEnvironment.getEnvironment();
-    EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    assertNotNull(entityStore);
+    Entity createdEntity = createAndSaveEntity(environment, "Foo", "foo", "bar");
+
+    assertNotNull("Entity should not be null after save", createdEntity);
+    assertNotNull("Entity ID should not be null after save", createdEntity.entityId());
+  }
+
+  @Test
+  public void saveEntityWithBlob_ShouldPersistEntitySuccessfully() throws Exception {
+    String environment = TestEnvironment.getEnvironment();
+    Entity createdEntity = createAndSaveEntityWithBlob(environment);
+
+    assertNotNull("Entity should not be null after save", createdEntity);
+    assertNotNull("Entity ID should not be null after save", createdEntity.entityId());
+
+    createdEntity = retrieveEntityWithBlob(environment, createdEntity.entityId(), "message");
+
+    // Retrieve the entity with the blob
+    String[] blobNames = createdEntity.blobNames();
+    List<Blob> blobs = createdEntity.blobs();
+
+    assertEquals(1, blobNames.length);
+    assertEquals("message", blobNames[0]);
+    assertEquals(1, blobs.size());
+
+    // Retrieve the blob
+    Blob blob = blobs.stream().findFirst().get();
+    String blobString =
+            IOUtils.toString(RemoteInputStreamClient.wrap(blob.blobStream()), Charset
+                    .defaultCharset());
+    assertEquals("Hello Word", blobString);
+  }
+
+  @Test
+  public void getEntity_ShouldRetrieveSavedEntityCorrectly() throws Exception {
+    // TestEnvironment generate new UUID for each call
+    String environment = TestEnvironment.getEnvironment();
+    Entity createdEntity = createAndSaveEntity(environment,"Foo", "foo", "bar");
+    Entity retrievedEntity = retrieveEntity(environment, createdEntity.entityId());
+
+    assertNotNull("Retrieved entity should not be null", retrievedEntity);
+    assertEquals("Entity ID should match the created entity", createdEntity.entityId(), retrievedEntity.entityId());
+    assertEquals("Entity property 'foo' should match", "bar", retrievedEntity.propertyMap().get("foo"));
+  }
+
+  private Entity createAndSaveEntity(String environment, String entityType, String key, String value) throws Exception {
+    EntityBuilder builder = new EntityBuilder()
+            .environment(environment)
+            .entityType(entityType)
+            .putPropertyMap(key, value);
+    return entityStore.saveEntity(builder.build()).get();
+  }
+
+  private Entity createAndSaveEntityWithBlob(String environment) throws Exception {
+    RemoteInputStream blobStream
+            = new SimpleRemoteInputStream(ByteSource.wrap("Hello Word".getBytes()).openStream());
+    Blob blob = new BlobBuilder()
+            .blobName("message")
+            .blobStream(blobStream)
+            .build();
     Entity entity = entityStore.saveEntity(new EntityBuilder()
-        .environment(environment)
-        .entityType("Foo")
-        .putPropertyMap("foo", "bar")
-        .build()).get();
-    assertNotNull(entity);
-    assertNotNull(entity.entityId());
+            .environment(environment)
+            .entityType("Foo")
+            .putPropertyMap("foo", "bar")
+            .addBlobs(blob)
+            .build()).get();
+    return entity;
   }
 
-  @Test
-  public void testSaveEntityWithBlobRemove() throws Exception {
-    String environment = TestEnvironment.getEnvironment();
-    EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    assertNotNull(entityStore);
-    // Create with blob
-    Entity entity = entityStore.saveEntity(new EntityBuilder()
-        .environment(environment)
-        .entityType("Foo")
-        .putPropertyMap("foo", "bar")
-        .addBlobs(new BlobBuilder()
-            .blobName("message")
-            .blobStream(
-                new SimpleRemoteInputStream(ByteSource.wrap("Hello Word".getBytes()).openStream()))
-            .build())
-        .build()).get();
-    assertNotNull(entity);
-    assertNotNull(entity.entityId());
-    // Get with blob
-    entityStore.getEntity(new EntityQueryBuilder()
-        .environment(environment)
-        .entityId(entity.entityId())
-        .addBlobQueries(new BlobQueryBuilder()
-            .blobName("message")
-            .include(true)
-            .build())
-        .build()).peek(saved -> {
-      assertNotNull(saved);
-      assertEquals(1, saved.blobNames().length);
-      assertEquals("message", saved.blobNames()[0]);
-      assertEquals(1, saved.blobs().size());
-      saved.blobs().forEach(dataFactoryBlob -> {
-        assertNotNull(dataFactoryBlob.blobStream());
-        try {
-          String blobString =
-              IOUtils.toString(RemoteInputStreamClient.wrap(dataFactoryBlob.blobStream()), Charset
-                  .defaultCharset());
-          assertEquals("Hello Word", blobString);
-        } catch (IOException e) {
-          e.printStackTrace();
-          fail();
-        }
-      });
-    });
-    // Delete blob
-    entityStore.saveEntity(new EntityBuilder()
-        .environment(environment)
-        .entityType("Foo")
-        .entityId(entity.entityId())
-        .addActions(ImmutableBlobRemoveAction.builder()
-            .blobNames(Arrays.asList("message"))
-            .build())
-        .build());
-    // Get with blob, expecting blob is removed
-    entityStore.getEntity(new EntityQueryBuilder()
-        .environment(environment)
-        .entityId(entity.entityId())
-        .addBlobQueries(new BlobQueryBuilder()
-            .blobName("message")
-            .include(true)
-            .build())
-        .build()).peek(saved -> {
-      assertNotNull(saved);
-      assertEquals(0, Arrays.asList(saved.blobNames()).size());
-      assertEquals(0, saved.blobs().size());
-    });
-  }
-
-  @Test
-  public void testSaveEntityWithBlobRename() throws Exception {
-    String environment = TestEnvironment.getEnvironment();
-    EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    assertNotNull(entityStore);
-    // Create with blob
-    Entity dataFactoryEntity = entityStore.saveEntity(new EntityBuilder()
-        .environment(environment)
-        .entityType("Foo")
-        .putPropertyMap("foo", "bar")
-        .addBlobs(new BlobBuilder()
-            .blobName("message")
-            .blobStream(
-                new SimpleRemoteInputStream(ByteSource.wrap("Hello Word".getBytes()).openStream()))
-            .build())
-        .build()).get();
-    assertNotNull(dataFactoryEntity);
-    assertNotNull(dataFactoryEntity.entityId());
-    // Get with blob
-    entityStore.getEntity(new EntityQueryBuilder()
-        .environment(environment)
-        .entityId(dataFactoryEntity.entityId())
-        .addBlobQueries(new BlobQueryBuilder()
-            .blobName("message")
-            .include(true)
-            .build())
-        .build()).peek(saved -> {
-      assertNotNull(saved);
-      assertEquals(1, saved.blobNames().length);
-      assertEquals("message", saved.blobNames()[0]);
-      assertEquals(1, saved.blobs().size());
-      saved.blobs().forEach(dataFactoryBlob -> {
-        assertNotNull(dataFactoryBlob.blobStream());
-        try {
-          String blobString =
-              IOUtils.toString(RemoteInputStreamClient.wrap(dataFactoryBlob.blobStream()), Charset
-                  .defaultCharset());
-          assertEquals("Hello Word", blobString);
-        } catch (IOException e) {
-          e.printStackTrace();
-          fail();
-        }
-      });
-    });
-    // Rename blob
-    Entity entity = new EntityBuilder()
-        .environment(environment)
-        .entityType("Foo")
-        .entityId(dataFactoryEntity.entityId())
-        .addActions(ImmutableBlobRenameAction.builder()
-            .blobName("message")
-            .newBlobName("theMessage")
-            .build())
-        .build();
-    entity = entityStore.saveEntity(entity).get();
-    EntityQuery entityQuery = new EntityQueryBuilder()
-        .environment(environment)
-        .entityId(entity.entityId())
-        .addBlobQueries(new BlobQueryBuilder()
-            .blobName("message")
-            .build(), new BlobQueryBuilder()
-            .blobName("theMessage")
-            .build())
-        .build();
-    entityStore.getEntity(entityQuery).peek(updatedEntity -> {
-      assertFalse(Arrays.asList(updatedEntity.blobNames()).contains("message"));
-      assertEquals(1, updatedEntity.blobs().size());
-      updatedEntity.blobs().forEach(dataFactoryBlob -> {
-        try {
-          String blobString =
-              IOUtils.toString(RemoteInputStreamClient.wrap(dataFactoryBlob.blobStream()), Charset
-                  .defaultCharset());
-          assertEquals("Hello Word", blobString);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      });
-    });
-  }
-
-  @Test
-  public void testSaveEntityWithBlobRenameRegex() throws Exception {
-    String environment = TestEnvironment.getEnvironment();
-    EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    assertNotNull(entityStore);
-    // Create with blob
-    Entity dataFactoryEntity = entityStore.saveEntity(new EntityBuilder()
-        .environment(environment)
-        .entityType("Foo")
-        .putPropertyMap("foo", "bar")
-        .addBlobs(new BlobBuilder()
-            .blobName("message")
-            .blobStream(
-                new SimpleRemoteInputStream(ByteSource.wrap("Should not be replaced".getBytes()).openStream()))
-            .build())
-        .addBlobs(new BlobBuilder()
-            .blobName("123")
-            .blobStream(
-                new SimpleRemoteInputStream(ByteSource.wrap("Should be replaced".getBytes()).openStream()))
-            .build())
-        .build()).get();
-    assertNotNull(dataFactoryEntity);
-    assertNotNull(dataFactoryEntity.entityId());
-    // Rename blob with regex
-    Entity entity = new EntityBuilder()
-        .environment(environment)
-        .entityType("Foo")
-        .entityId(dataFactoryEntity.entityId())
-        .addActions(ImmutableBlobRenameRegexAction.builder()
-            .regexPattern("\\d+")
-            .replacement("OneTwoThree")
-            .build())
-        .build();
-    entity = entityStore.saveEntity(entity).get();
-    EntityQuery entityQuery = new EntityQueryBuilder()
-        .environment(environment)
-        .entityId(entity.entityId())
-        .addBlobQueries(new BlobQueryBuilder()
-            .blobName("OneTwoThree")
-            .build())
-        .build();
-    entityStore.getEntity(entityQuery).peek(updatedEntity -> {
-      assertEquals(2, updatedEntity.blobNames().length);
-      assertEquals(1, updatedEntity.blobs().size());
-      updatedEntity.blobs().forEach(dataFactoryBlob -> {
-        try {
-          String blobString =
-              IOUtils.toString(RemoteInputStreamClient.wrap(dataFactoryBlob.blobStream()), Charset
-                  .defaultCharset());
-          assertEquals("Should be replaced", blobString);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      });
-    });
-    entityQuery = new EntityQueryBuilder()
-        .environment(environment)
-        .entityId(entity.entityId())
-        .addBlobQueries(new BlobQueryBuilder()
-            .blobName("message")
-            .build())
-        .build();
-    entityStore.getEntity(entityQuery).peek(updatedEntity -> {
-      assertEquals(2, updatedEntity.blobNames().length);
-      assertEquals(1, updatedEntity.blobs().size());
-      updatedEntity.blobs().forEach(dataFactoryBlob -> {
-        try {
-          String blobString =
-              IOUtils.toString(RemoteInputStreamClient.wrap(dataFactoryBlob.blobStream()), Charset
-                  .defaultCharset());
-          assertEquals("Should not be replaced", blobString);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      });
-    });
-  }
-
-  @Test
-  public void testSaveEntityWithLink() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithLinkNewEntity() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithLinkRemove() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithOppositeLink() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithOppositeLinkRemove() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithPropertyCopy() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithPropertyIndex() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithPropertyRemove() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithPropertySave() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithLinkCondition() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithOppositeLinkCondition() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithPropertyEqualCondition() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithLocalTimeRangeCondition() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithMinMaxCondition() throws Exception {
-
-  }
-
-  @Test
-  public void testSaveEntityWithNearbyCondition() throws Exception {
-
-  }
-
-  @Test(expected = UnsatisfiedConditionException.class)
-  public void testSaveEntityWithStartsWithShouldFail() throws Exception {
-    String environment = TestEnvironment.getEnvironment();
-    EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    assertNotNull(entityStore);
-    Entity entity = entityStore.saveEntity(new EntityBuilder()
-        .environment(environment)
-        .entityType("Foo")
-        .putPropertyMap("foo", "fooBar")
-        .build()).get();
-    assertNotNull(entity);
-    assertNotNull(entity.entityId());
-
-    entity = entityStore.saveEntity(new EntityBuilder()
-        .environment(environment)
-        .entityId(entity.entityId())
-        .putPropertyMap("hasFooBaz", true)
-        .addConditions(new PropertyStartsWithConditionBuilder()
-            .propertyName("foo")
-            .startsWith("fooBaz")
-            .build())
-        .build()).get();
-  }
-
-  @Test
-  public void testSaveEntityWithStartsWith() throws Exception {
-    String environment = TestEnvironment.getEnvironment();
-    EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    assertNotNull(entityStore);
-    Entity entity = entityStore.saveEntity(new EntityBuilder()
-        .environment(environment)
-        .entityType("Foo")
-        .putPropertyMap("foo", "fooBar")
-        .build()).get();
-    assertNotNull(entity);
-    assertNotNull(entity.entityId());
-    // Update entity if property "starts with", else fail
-    String entityId = entity.entityId();
-    entity = entityStore.saveEntity(new EntityBuilder()
-        .environment(environment)
-        .entityId(entity.entityId())
-        .putPropertyMap("hasFooBar", true)
-        .addConditions(new PropertyStartsWithConditionBuilder()
-            .propertyName("foo")
-            .startsWith("fooBar")
-            .build())
-        .build()).get();
-    assertNotNull(entity);
-    assertNotNull(entity.entityId());
-    assertEquals(entityId, entity.entityId());
-    // Get entity
-    EntityQuery entityQuery = new EntityQueryBuilder()
-        .environment(environment)
-        .entityId(entityId)
-        .build();
-    entityStore.getEntity(entityQuery).peek(updatedEntity -> {
-      assertEquals("fooBar", updatedEntity.propertyMap().get("foo"));
-      assertEquals(true, updatedEntity.propertyMap().get("hasFooBar"));
-    });
-  }
-
-  @Test
-  public void testGetEntity() throws Exception {
-    String environment = TestEnvironment.getEnvironment();
-    EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    assertNotNull(entityStore);
-    Entity entity = entityStore.saveEntity(new EntityBuilder()
-        .environment(environment)
-        .entityType("Foo")
-        .putPropertyMap("foo", "bar")
-        .build()).get();
-    assertNotNull(entity);
-    assertNotNull(entity.entityId());
+  private Entity retrieveEntity(String environment, String entityId) throws Exception {
     EntityQuery query = new EntityQueryBuilder()
-        .environment(environment)
-        .entityId(entity.entityId())
-        .build();
-    Entity savedEntity = entityStore.getEntity(query).get();
-    assertNotNull(savedEntity);
-    assertEquals(entity.entityId(), savedEntity.entityId());
-    assertEquals(entity.propertyMap().get("foo"), savedEntity.propertyMap().get("foo"));
+            .environment(environment)
+            .entityId(entityId)
+            .build();
+    return entityStore.getEntity(query).get();
   }
 
-  @Test(expected = EntityRemovedInDatabaseException.class)
-  public void test() throws Exception {
-    String environment = TestEnvironment.getEnvironment();
-    EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    assertNotNull(entityStore);
-    Entity entity = entityStore.saveEntity(new EntityBuilder()
-        .environment(environment)
-        .entityType("Foo")
-        .putPropertyMap("foo", "bar")
-        .addActions(ImmutableLinkAction.builder()
-            .linkName("baz")
-            .otherEntityId("0-1000")
-            .isSet(true)
-            .build())
-        .build()).get();
-    assertNotNull(entity);
+  private Entity retrieveEntityWithBlob(String environment, String entityId, String blobName) throws Exception {
+    EntityQuery entityWithBlobQuery = new EntityQueryBuilder()
+            .environment(environment)
+            .entityId(entityId)
+            .addBlobQueries(new BlobQueryBuilder()
+                    .blobName(blobName)
+                    .include(true)
+                    .build())
+            .build();
+    return entityStore.getEntity(entityWithBlobQuery).get();
   }
 }

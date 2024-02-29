@@ -19,6 +19,7 @@
  */
 package com.divroll.datafactory.repositories.impl;
 
+import com.divroll.datafactory.repositories.EntityStore;
 import com.divroll.datafactory.builders.Entities;
 import com.divroll.datafactory.builders.Entity;
 import com.divroll.datafactory.builders.EntityTypes;
@@ -26,7 +27,6 @@ import com.divroll.datafactory.builders.Property;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityTypeQuery;
 import com.divroll.datafactory.exceptions.DataFactoryException;
-import com.divroll.datafactory.repositories.EntityStore;
 import io.vavr.control.Option;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,7 +54,7 @@ public class EntityStoreClientImpl implements EntityStore {
    */
   private Integer port;
   /**
-   *
+   * The host address of the EntityStore service.
    */
   private String host;
 
@@ -64,7 +64,7 @@ public class EntityStoreClientImpl implements EntityStore {
    *
    * This class has a private constructor to prevent instantiation from outside the class.
    *
-   * @see EntityStoreClient
+   * @see EntityStore
    */
   private EntityStoreClientImpl() {
     // Prevent instantiation

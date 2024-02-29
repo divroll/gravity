@@ -25,6 +25,7 @@ import org.immutables.value.Value;
  * Represents an action to rename a blob using a regular expression.
  */
 @Value.Immutable
+@Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface BlobRenameRegexAction extends EntityAction {
   /**
    * Retrieves the replacement string for a BlobRenameRegexAction.
