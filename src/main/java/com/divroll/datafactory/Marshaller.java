@@ -108,8 +108,9 @@ public class Marshaller {
   }
 
   /**
-   * Builds a {@linkplain jetbrains.exodus.entitystore.Entity} into a {@linkplain Entity} for remote transmission.
-   * This method should be called within a database {@linkplain StoreTransaction}.
+   * Builds a {@linkplain jetbrains.exodus.entitystore.Entity} into a {@linkplain Entity} for
+   * remote transmission. This method should be called within a database
+   * {@linkplain StoreTransaction}.
    *
    * @return {@code entity}
    */

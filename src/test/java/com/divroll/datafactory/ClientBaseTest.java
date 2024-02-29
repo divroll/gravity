@@ -29,17 +29,17 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
-public abstract class BaseTest {
+public abstract class ClientBaseTest {
     protected static EntityStore entityStore;
-    protected static DataFactory dataFactory = DataFactory.getInstance();
+    protected static DataFactory dataFactory;
 
     @BeforeClass
     public static void beforeAll() throws Exception {
         try {
-            entityStore = DataFactoryClient.getInstance(TestEnvironment.getDomain(), TestEnvironment.getPort()).getEntityStore();
-            System.setProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT, TestEnvironment.getPort());
-            dataFactory.register();
-            await().atMost(5, TimeUnit.SECONDS);
+            String host = TestEnvironment.getDomain();
+            String port = TestEnvironment.getPort();
+            startServer(host, port);
+            entityStore = DataFactoryClient.getInstance(host, port).getEntityStore();
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
         }
@@ -48,6 +48,16 @@ public abstract class BaseTest {
     @AfterClass
     public static void afterAll() {
         dataFactory.release();
+    }
+
+    public static void startServer(String host, String port)
+            throws NotBoundException, RemoteException {
+        // Emulate setting the environment variables
+        System.setProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT, port);
+        dataFactory = DataFactory.getInstance();
+
+        // Effectively "start" the RMI server
+        dataFactory.register();
     }
 
     public static String getEnvironment() {

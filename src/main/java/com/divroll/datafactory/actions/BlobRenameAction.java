@@ -26,6 +26,7 @@ import org.immutables.value.Value;
  * Represents an action to rename a blob.
  */
 @Value.Immutable
+@Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface BlobRenameAction extends EntityAction, Serializable {
   /**
    * Returns the name of the blob.

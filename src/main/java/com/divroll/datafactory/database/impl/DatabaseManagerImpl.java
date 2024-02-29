@@ -287,7 +287,7 @@ public final class DatabaseManagerImpl implements DatabaseManager {
     final ContextualEnvironment environment
             = (ContextualEnvironment) getEnvironment(dir, true);
     ContextualStore contextualStore = environment.openStore(store, StoreConfig.WITHOUT_DUPLICATES);
-    throw new IllegalArgumentException("Not yet implemented");
+    throw new UnsupportedOperationException("Not yet implemented");
   }
 
   /**

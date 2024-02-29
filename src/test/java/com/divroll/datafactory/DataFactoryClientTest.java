@@ -21,51 +21,17 @@ package com.divroll.datafactory;
 
 import com.divroll.datafactory.builders.Entity;
 import com.divroll.datafactory.builders.EntityBuilder;
-import com.divroll.datafactory.repositories.EntityStore;
-
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.awaitility.Awaitility.await;
-
-public class DataFactoryClientTest {
-  private static DataFactory dataFactory = DataFactory.getInstance();
-  private static DataFactoryClient client;
-
-  @BeforeClass
-  public static void beforeTest() throws Exception {
-    try {
-      System.setProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT, TestEnvironment.getPort());
-      dataFactory.register();
-      await().atMost(5, TimeUnit.SECONDS);
-      client = DataFactoryClient.getInstance(TestEnvironment.getDomain(), TestEnvironment.getPort());
-    } catch (RemoteException e) {
-      throw new RuntimeException(e);
-    } catch (NotBoundException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @AfterClass
-  public static void afterAll() {
-    dataFactory.release();
-  }
-
+public class DataFactoryClientTest extends ClientBaseTest {
   @Test
   public void testGetInstance() throws Exception {
-    EntityStore entityStore = client.getEntityStore();
     Assert.assertNotNull(entityStore);
   }
 
   @Test
   public void testSimpleSave() throws Exception {
-    EntityStore entityStore = client.getEntityStore();
     Assert.assertNotNull(entityStore);
 
     Entity entity = new EntityBuilder()
@@ -74,9 +40,9 @@ public class DataFactoryClientTest {
             .putPropertyMap("foo", "bar")
             .build();
 
-    Entity dataFactoryEntity = entityStore.saveEntity(entity).get();
-    Assert.assertNotNull(dataFactoryEntity);
-    Assert.assertNotNull(dataFactoryEntity.entityId());
-    Assert.assertEquals("bar", dataFactoryEntity.propertyMap().get("foo"));
+    entity = entityStore.saveEntity(entity).get();
+    Assert.assertNotNull(entity);
+    Assert.assertNotNull(entity.entityId());
+    Assert.assertEquals("bar", entity.propertyMap().get("foo"));
   }
 }

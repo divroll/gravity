@@ -69,14 +69,14 @@ public class PropertyNearbyConditionPerfTest {
         .putPropertyMap("geoLocation", new GeoPoint(120.976187, 14.581310))
         .build()).get();
 
-    Entities dataFactoryEntities =
+    Entities entities =
         entityStore.getEntities(new EntityQueryBuilder()
             .environment(environment)
             .entityType("Room")
             .max(10000)
             .build()).get();
 
-    Assert.assertEquals(1000L, dataFactoryEntities.count().longValue());
+    Assert.assertEquals(1000L, entities.count().longValue());
 
     long time = System.currentTimeMillis() - start;
     LOG.info("Time to save complete (ms): " + time);
@@ -101,7 +101,7 @@ public class PropertyNearbyConditionPerfTest {
           .offset(offset)
           .max(max)
           .build();
-      Entities entities = entityStore.getEntities(entityQuery).get();
+      entities = entityStore.getEntities(entityQuery).get();
       matched.addAll(entities.entities());
       time = System.currentTimeMillis() - start;
       times.add(time);

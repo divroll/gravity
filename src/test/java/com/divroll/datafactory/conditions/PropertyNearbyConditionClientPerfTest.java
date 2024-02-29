@@ -19,27 +19,23 @@
  */
 package com.divroll.datafactory.conditions;
 
-import com.divroll.datafactory.*;
+import com.divroll.datafactory.ClientBaseTest;
+import com.divroll.datafactory.GeoHash;
+import com.divroll.datafactory.GeoPoint;
+import com.divroll.datafactory.TestEnvironment;
 import com.divroll.datafactory.builders.Entities;
 import com.divroll.datafactory.builders.Entity;
 import com.divroll.datafactory.builders.EntityBuilder;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityQueryBuilder;
-import com.divroll.datafactory.repositories.EntityStore;
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -48,33 +44,13 @@ import static org.junit.Assert.assertNotNull;
  * @version 0-SNAPSHOT
  * @since 0-SNAPSHOT
  */
-public class PropertyNearbyConditionClientPerfTest {
+public class PropertyNearbyConditionClientPerfTest extends ClientBaseTest {
 
-  private static final Logger LOG = LoggerFactory.getLogger(PropertyNearbyConditionClientPerfTest.class);
-  private static DataFactory dataFactory = DataFactory.getInstance();
-
-  @BeforeClass
-  public static void beforeAll() throws Exception {
-    try {
-      System.setProperty(Constants.JAVA_RMI_TEST_PORT_ENVIRONMENT, TestEnvironment.getPort());
-      dataFactory.register();
-      await().atMost(5, TimeUnit.SECONDS);
-    } catch (RemoteException e) {
-      throw new RuntimeException(e);
-    } catch (NotBoundException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @AfterClass
-  public static void afterAll() {
-    dataFactory.release();
-  }
+  private static final Logger LOG
+          = LoggerFactory.getLogger(PropertyNearbyConditionClientPerfTest.class);
 
   @Test
   public void testPropertyNearbyCondition() throws Exception {
-    EntityStore entityStore = DataFactoryClient.getInstance(TestEnvironment.getDomain(), TestEnvironment.getPort()).getEntityStore();
-    assertNotNull(entityStore);
     String environment = TestEnvironment.getEnvironment();
     long start = System.currentTimeMillis();
 
@@ -92,14 +68,14 @@ public class PropertyNearbyConditionClientPerfTest {
         .putPropertyMap("geoLocation", new GeoPoint(120.976187, 14.581310))
         .build()).get();
 
-    Entities dataFactoryEntities =
+    Entities entities =
         entityStore.getEntities(new EntityQueryBuilder()
             .environment(environment)
             .entityType("Room")
             .max(10000)
             .build()).get();
 
-    Assert.assertEquals(1000L, dataFactoryEntities.count().longValue());
+    Assert.assertEquals(1000L, entities.count().longValue());
 
     long time = System.currentTimeMillis() - start;
     LOG.info("Time to save complete (ms): " + time);
@@ -124,7 +100,7 @@ public class PropertyNearbyConditionClientPerfTest {
           .offset(offset)
           .max(max)
           .build();
-      Entities entities = entityStore.getEntities(entityQuery).get();
+      entities = entityStore.getEntities(entityQuery).get();
       matched.addAll(entities.entities());
       time = System.currentTimeMillis() - start;
       times.add(time);
@@ -146,7 +122,6 @@ public class PropertyNearbyConditionClientPerfTest {
   @Test
   public void testNearbyConditionWithGeoHash() throws Exception {
     String environment = TestEnvironment.getEnvironment();
-    EntityStore entityStore = DataFactoryClient.getInstance(TestEnvironment.getDomain(), TestEnvironment.getPort()).getEntityStore();
 
     Entity firstLocation = new EntityBuilder()
         .environment(environment)
