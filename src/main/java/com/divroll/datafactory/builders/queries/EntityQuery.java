@@ -20,7 +20,6 @@
 package com.divroll.datafactory.builders.queries;
 
 import com.divroll.datafactory.Constants;
-import com.divroll.datafactory.builders.DataFactoryEntity;
 import com.divroll.datafactory.builders.TransactionFilter;
 import com.divroll.datafactory.conditions.EntityCondition;
 import java.io.Serializable;
@@ -36,7 +35,11 @@ import org.immutables.value.Value;
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface EntityQuery extends Serializable {
   /**
-   * The name of the environment to query
+   * The default maximum number of entities to return.
+   */
+  int DEFAULT_MAX_RESULT_SET = 100;
+  /**
+   * The name of the environment to query.
    *
    * @return The name of the environment
    */
@@ -46,7 +49,7 @@ public interface EntityQuery extends Serializable {
   }
 
   /**
-   * The name of the namespace to query
+   * The name of the namespace to query.
    *
    * @return The name of the namespace
    */
@@ -54,7 +57,7 @@ public interface EntityQuery extends Serializable {
   String nameSpace();
 
   /**
-   * The name of the entity type to query
+   * The name of the entity type to query.
    *
    * @return The name of the entity type
    */
@@ -62,7 +65,7 @@ public interface EntityQuery extends Serializable {
   String entityType();
 
   /**
-   * The id of the entity to query
+   * The id of the entity to query.
    *
    * @return The id of the entity
    */
@@ -70,9 +73,10 @@ public interface EntityQuery extends Serializable {
   String entityId();
 
   /**
-   * Indicates the {@code linkNames} to use in the query
+   * Indicates the {@code linkNames} to use in the query.
    *
-   * @return names of the links of {@linkplain DataFactoryEntity} to query
+   * @return names of the links of {@linkplain com.divroll.datafactory.builders.DataFactoryEntity}
+   * to query
    */
   @Nullable
   @Value.Default
@@ -81,9 +85,10 @@ public interface EntityQuery extends Serializable {
   }
 
   /**
-   * Indicates the {@code blobNames} to use in the query
+   * Indicates the {@code blobNames} to use in the query.
    *
-   * @return names of the blobs of {@linkplain DataFactoryEntity} to query
+   * @return names of the blobs of {@linkplain com.divroll.datafactory.builders.DataFactoryEntity}
+   * to query
    */
   @Nullable
   @Value.Default
@@ -92,7 +97,7 @@ public interface EntityQuery extends Serializable {
   }
 
   /**
-   * Indicates the query should return only the first entity found
+   * Indicates the query should return only the first entity found.
    *
    * @return True if the query should return only the first entity found, false otherwise
    */
@@ -103,7 +108,7 @@ public interface EntityQuery extends Serializable {
   }
 
   /**
-   * Indicates the query should return only the last entity found
+   * Indicates the query should return only the last entity found.
    *
    * @return True if the query should return only the last entity found, false otherwise
    */
@@ -149,17 +154,17 @@ public interface EntityQuery extends Serializable {
   }
 
   /**
-   * Indicates the query should return a maximum number of entities
+   * Indicates the query should return a maximum number of entities.
    *
    * @return The maximum number of entities to return
    */
   @Value.Default
   default Integer max() {
-    return 100;
+    return DEFAULT_MAX_RESULT_SET;
   }
 
   /**
-   * Indicates the query should return the entities in a specific order
+   * Indicates the query should return the entities in a specific order.
    *
    * @return The order in which the query should return the entities
    */
@@ -167,7 +172,7 @@ public interface EntityQuery extends Serializable {
   String sort();
 
   /**
-   * Indicates the query should return the entities in ascending order
+   * Indicates the query should return the entities in ascending order.
    *
    * @return True if the query should return the entities in ascending order, false otherwise
    */

@@ -54,8 +54,11 @@ public class ByteValueIterable implements Serializable, ByteIterable {
 
   /**
    * This class represents an iterable of bytes derived from a ByteValue object.
+   *
+   * @param byteValue the ByteValue object
+   *                  from which the byte array is derived
    */
-  public ByteValueIterable(ByteValue byteValue) {
+  public ByteValueIterable(final ByteValue byteValue) {
     byte[] bytes = toByteArray(byteValue);
     this.bytes = bytes;
     this.byteValue = byteValue;
@@ -104,20 +107,20 @@ public class ByteValueIterable implements Serializable, ByteIterable {
    */
   @NotNull
   @Override
-  public ByteIterable subIterable(int offset, int length) {
+  public ByteIterable subIterable(final int offset, final int length) {
     throw new UnsupportedOperationException("subIterable");
   }
 
   /**
-   * Compares this ByteIterable with another ByteIterable for order. The comparison is based on the values
-   * of the bytes in the ByteIterables.
+   * Compares this ByteIterable with another ByteIterable for order.
+   * The comparison is based on the values of the bytes in the ByteIterables.
    *
    * @param o the ByteIterable to be compared
-   * @return a negative integer, zero, or a positive integer as this ByteIterable is less than, equal to,
-   *         or greater than the specified ByteIterable.
+   * @return  a negative integer, zero, or a positive integer as this ByteIterable
+   *          is less than, equal to, or greater than the specified ByteIterable.
    */
   @Override
-  public int compareTo(@NotNull ByteIterable o) {
+  public int compareTo(@NotNull final ByteIterable o) {
     return ByteIterableUtil.compare(this, o);
   }
 
@@ -127,7 +130,7 @@ public class ByteValueIterable implements Serializable, ByteIterable {
    * @param object the object to be converted
    * @return the byte array representing the object
    */
-  protected byte[] toByteArray(Object object) {
+  protected byte[] toByteArray(final Object object) {
     try {
       try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
            ObjectOutput out = new ObjectOutputStream(bos)) {

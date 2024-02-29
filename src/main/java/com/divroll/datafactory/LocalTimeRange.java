@@ -28,10 +28,22 @@ import org.jetbrains.annotations.NotNull;
  */
 public class LocalTimeRange implements Comparable<LocalTimeRange>, Serializable {
 
+  /**
+   * Represents the lower bound of a LocalTimeRange.
+   */
   private LocalTime lower;
+  /**
+   * Represents the upper bound of a LocalTime range.
+   */
   private LocalTime upper;
 
-  public LocalTimeRange(LocalTime lower, LocalTime upper) {
+  /**
+   * Represents a range of LocalTime values.
+   *
+   * @param lower the lower bound of the LocalTimeRange
+   * @param upper the upper bound of the LocalTimeRange
+   */
+  public LocalTimeRange(final LocalTime lower, final LocalTime upper) {
     setLower(lower);
     setUpper(upper);
   }
@@ -40,15 +52,17 @@ public class LocalTimeRange implements Comparable<LocalTimeRange>, Serializable 
    * Compares this LocalTimeRange with another LocalTimeRange.
    *
    * @param   range the LocalTimeRange to compare with
-   * @return  -1 if this LocalTimeRange is before the given LocalTimeRange, 1 if this LocalTimeRange is
-   * after the given LocalTimeRange, and 0 if the LocalTimeRanges are equal
+   * @return  -1 if this LocalTimeRange is before the given LocalTimeRange,
+   *          1 if this LocalTimeRange is after the given LocalTimeRange,
+   *          and 0 if the LocalTimeRanges are equal
    */
-  @Override public int compareTo(@NotNull LocalTimeRange range) {
-    if ((range.lower.isBefore(lower) && range.upper.isBefore(lower)) && (range.lower.isBefore(upper)
+  @Override public int compareTo(@NotNull final LocalTimeRange range) {
+    if ((range.lower.isBefore(lower) && range.upper.isBefore(lower))
+            && (range.lower.isBefore(upper)
         && range.upper.isBefore(upper))) {
       return -1;
-    } else if ((range.lower.isAfter(lower) && range.upper.isAfter(lower)) && (range.lower.isAfter(
-        upper)
+    } else if ((range.lower.isAfter(lower) && range.upper.isAfter(lower))
+            && (range.lower.isAfter(upper)
         && range.upper.isAfter(upper))) {
       return 1;
     }
@@ -69,7 +83,7 @@ public class LocalTimeRange implements Comparable<LocalTimeRange>, Serializable 
    *
    * @param   lower the lower bound of this LocalTimeRange
    */
-  public void setLower(LocalTime lower) {
+  public void setLower(final LocalTime lower) {
     this.lower = lower;
   }
 
@@ -87,7 +101,7 @@ public class LocalTimeRange implements Comparable<LocalTimeRange>, Serializable 
    *
    * @param   upper the upper bound of this LocalTimeRange
    */
-  public void setUpper(LocalTime upper) {
+  public void setUpper(final LocalTime upper) {
     this.upper = upper;
   }
 }

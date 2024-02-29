@@ -31,6 +31,21 @@ import com.divroll.datafactory.properties.EmbeddedArrayIterable;
 import com.divroll.datafactory.properties.EmbeddedEntityIterable;
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
+import jetbrains.exodus.bindings.ComparableBinding;
+import jetbrains.exodus.entitystore.PersistentEntityStore;
+import jetbrains.exodus.entitystore.PersistentEntityStoreConfig;
+import jetbrains.exodus.entitystore.PersistentEntityStores;
+import jetbrains.exodus.entitystore.StoreTransactionalExecutable;
+import jetbrains.exodus.env.ContextualEnvironment;
+import jetbrains.exodus.env.Environment;
+import jetbrains.exodus.env.Environments;
+import jetbrains.exodus.env.EnvironmentConfig;
+import jetbrains.exodus.env.StoreConfig;
+import jetbrains.exodus.env.ContextualStore;
+import jetbrains.exodus.lucene.ExodusDirectory;
+import jetbrains.exodus.lucene.ExodusDirectoryConfig;
+import jetbrains.exodus.vfs.VfsConfig;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,45 +56,16 @@ import java.util.Scanner;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import jetbrains.exodus.bindings.ComparableBinding;
-import jetbrains.exodus.entitystore.PersistentEntityStore;
-import jetbrains.exodus.entitystore.PersistentEntityStoreConfig;
-import jetbrains.exodus.entitystore.PersistentEntityStores;
-import jetbrains.exodus.entitystore.StoreTransactionalExecutable;
-import jetbrains.exodus.env.ContextualEnvironment;
-import jetbrains.exodus.env.ContextualStore;
-import jetbrains.exodus.env.Environment;
-import jetbrains.exodus.env.EnvironmentConfig;
-import jetbrains.exodus.env.Environments;
-import jetbrains.exodus.env.StoreConfig;
-import jetbrains.exodus.env.Transaction;
-import jetbrains.exodus.env.TransactionalExecutable;
-import jetbrains.exodus.lucene.ExodusDirectory;
-import jetbrains.exodus.lucene.ExodusDirectoryConfig;
-import jetbrains.exodus.vfs.VfsConfig;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Deletes the persistent entity store associated with the given directory.
- *
- * @param dir The directory of the persistent entity store.
  */
 public final class DatabaseManagerImpl implements DatabaseManager {
 
   /**
-   * LOG is a private static final variable of type Logger.
-   *
-   * It is used for logging messages and debugging information in the DatabaseManagerImpl class.
-   *
-   * Example usage:
-   *
-   * LOG.info("This is an information message");
-   * LOG.debug("This is a debug message");
-   * LOG.error("This is an error message");
+   * Logger for capturing events, errors, and informational messages within
+   * the {@code DatabaseManagerImpl} class. Utilizes the {@link LoggerFactory} to create the
+   * logger instance specific to this class.
    */
   private static final Logger LOG = LoggerFactory.getLogger(DatabaseManagerImpl.class);
   /**
@@ -88,26 +74,32 @@ public final class DatabaseManagerImpl implements DatabaseManager {
   private static final int DEFAULT_LOCK_TIMEOUT = 30000;
   /**
    * The default name of a persistent entity store.
-   * This constant is used in {@link DatabaseManager#getPersistentEntityStore(String, String, boolean)} method
-   * to retrieve or create a persistent entity store with the default name when a specific name is not provided.
+   * This constant is used in
+   * {@link DatabaseManager#getPersistentEntityStore(String, String, boolean)} method
+   * to retrieve or create a persistent entity store with the default name when a specific name
+   * is not provided.
    */
   private static final String DEFAULT_ENTITYSTORE_NAME = "persistentEntityStore";
 
   /**
-   * contextualEnvironmentMap is a Map that stores the contextual environments associated with their directory paths.
+   * contextualEnvironmentMap is a Map that stores the contextual environments associated with
+   * their directory paths.
    *
    * The key in the map is the directory path.
    * The value in the map is an instance of ContextualEnvironment.
    *
-   * ContextualEnvironment is an object that represents a contextual environment associated with a directory.
-   * It provides methods for managing the environmental properties and configurations.
+   * ContextualEnvironment is an object that represents a contextual environment associated
+   * with a directory. It provides methods for managing the environmental properties
+   * and configurations.
    *
-   * Use the contextualEnvironmentMap to retrieve a specific ContextualEnvironment instance using its directory path.
-   * This map is used by the DatabaseManagerImpl class to manage and access the contextual environments.
+   * Use the contextualEnvironmentMap to retrieve a specific ContextualEnvironment instance
+   * using its directory path. This map is used by the DatabaseManagerImpl class to manage and
+   * access the contextual environments.
    *
    * Example usage:
    *
-   * Map<String, ContextualEnvironment> contextualEnvironmentMap = DatabaseManagerImpl.contextualEnvironmentMap;
+   * Map<String, ContextualEnvironment> contextualEnvironmentMap
+   *  = DatabaseManagerImpl.contextualEnvironmentMap;
    * ContextualEnvironment environment = contextualEnvironmentMap.get("/path/to/environment");
    *
    * // Access properties and methods of the ContextualEnvironment instance
@@ -121,19 +113,20 @@ public final class DatabaseManagerImpl implements DatabaseManager {
    *     // Perform operations on the ContextualEnvironment instance
    * }
    */
-  Map<String, ContextualEnvironment> contextualEnvironmentMap;
+  private Map<String, ContextualEnvironment> contextualEnvironmentMap;
   /**
    * A map that stores the association between directory paths and ExodusDirectory objects.
    */
-  Map<String, ExodusDirectory> exodusDirectoryMap;
+  private Map<String, ExodusDirectory> exodusDirectoryMap;
   /**
-   * environmentMap is a map that stores the association between directory paths and Environment objects.
+   * environmentMap is a map that stores the association between directory paths
+   * and Environment objects.
    */
-  Map<String, Environment> environmentMap;
+  private Map<String, Environment> environmentMap;
   /**
    * A map that stores entity stores associated with directory paths.
    */
-  Map<String, PersistentEntityStore> entityStoreMap;
+  private Map<String, PersistentEntityStore> entityStoreMap;
 
   /**
    * This is the private static instance variable of the class DatabaseManagerImpl.
@@ -180,7 +173,7 @@ public final class DatabaseManagerImpl implements DatabaseManager {
    * @return The environment corresponding to the given directory.
    */
   @Override
-  public Environment getEnvironment(String dir, boolean isContextual) {
+  public Environment getEnvironment(final String dir, final boolean isContextual) {
     Environment environment = environmentMap.get(dir);
     if (environment == null) {
       EnvironmentConfig config = new EnvironmentConfig();
@@ -203,8 +196,8 @@ public final class DatabaseManagerImpl implements DatabaseManager {
    * @return The persistent entity store instance.
    */
   @Override
-  public PersistentEntityStore getPersistentEntityStore(String dir,
-      boolean isReadOnly) {
+  public PersistentEntityStore getPersistentEntityStore(final String dir,
+                                                        final boolean isReadOnly) {
     return getPersistentEntityStore(dir, DEFAULT_ENTITYSTORE_NAME, isReadOnly);
   }
 
@@ -216,8 +209,9 @@ public final class DatabaseManagerImpl implements DatabaseManager {
    * @param isReadOnly A flag indicating whether the store should be opened in read-only mode.
    * @return The retrieved or created PersistentEntityStore.
    */
-  @Override public PersistentEntityStore getPersistentEntityStore(String dir, String storeName,
-      boolean isReadOnly) {
+  @Override public PersistentEntityStore getPersistentEntityStore(final String dir,
+                                                                  final String storeName,
+                                                                  final boolean isReadOnly) {
     PersistentEntityStore entityStore = entityStoreMap.get(dir);
     if (entityStore == null) {
       Environment environment = getEnvironment(dir, false);
@@ -253,25 +247,31 @@ public final class DatabaseManagerImpl implements DatabaseManager {
    * @param dir the directory for which to retrieve the ExodusDirectory
    * @return the ExodusDirectory associated with the specified directory
    */
-  @Override public ExodusDirectory getExodusDirectory(String dir) {
+  @Override public ExodusDirectory getExodusDirectory(final String dir) {
     ContextualEnvironment env = (ContextualEnvironment) getEnvironment(dir, true);
     ExodusDirectory exodusDirectory = exodusDirectoryMap.get(dir);
-    if(exodusDirectory == null) {
-      exodusDirectory = new ExodusDirectory(env, VfsConfig.DEFAULT, StoreConfig.WITHOUT_DUPLICATES_WITH_PREFIXING, new ExodusDirectoryConfig());
+    if (exodusDirectory == null) {
+      exodusDirectory = new ExodusDirectory(env, VfsConfig.DEFAULT,
+              StoreConfig.WITHOUT_DUPLICATES_WITH_PREFIXING, new ExodusDirectoryConfig());
       exodusDirectoryMap.put(dir, exodusDirectory);
     }
     return exodusDirectoryMap.get(dir);
   }
 
   /**
+   * Executes a transaction on a persistent entity store.
    *
+   * @param dir The directory where the persistent entity store is located.
+   * @param isReadOnly A flag indicating whether the persistent entity store should be read-only.
+   * @param storeTransaction The transaction to be executed.
    */
   @Override
-  public void transactPersistentEntityStore(String dir, boolean isReadOnly,
-      StoreTransactionalExecutable txn) {
+  public void transactPersistentEntityStore(final String dir,
+                                            final boolean isReadOnly,
+                                            final StoreTransactionalExecutable storeTransaction) {
     final PersistentEntityStore entityStore =
         getPersistentEntityStore(dir, isReadOnly);
-    entityStore.executeInTransaction(txn);
+    entityStore.executeInTransaction(storeTransaction);
   }
 
   /**
@@ -281,9 +281,13 @@ public final class DatabaseManagerImpl implements DatabaseManager {
    * @param store The name of the store.
    * @param tx The transactional executable to be executed.
    */
-  @Override public void transactionContextualStore(String dir, String store, StoreTransactionalExecutable tx) {
-    final ContextualEnvironment environment = (ContextualEnvironment) getEnvironment(dir, true);
+  @Override public void transactionContextualStore(final String dir,
+                                                   final String store,
+                                                   final StoreTransactionalExecutable tx) {
+    final ContextualEnvironment environment
+            = (ContextualEnvironment) getEnvironment(dir, true);
     ContextualStore contextualStore = environment.openStore(store, StoreConfig.WITHOUT_DUPLICATES);
+    throw new IllegalArgumentException("Not yet implemented");
   }
 
   /**
@@ -291,7 +295,7 @@ public final class DatabaseManagerImpl implements DatabaseManager {
    *
    * @param dir the directory of the environment to be closed
    */
-  @Override public void closeEnvironment(String dir) {
+  @Override public void closeEnvironment(final String dir) {
     PersistentEntityStore entityStore = entityStoreMap.get(dir);
     entityStore.getEnvironment().close();
     entityStore.close();
@@ -315,11 +319,14 @@ public final class DatabaseManagerImpl implements DatabaseManager {
    * @param isContextual flag indicating whether the environment is contextual
    * @return the retrieved Environment instance
    */
-  private Environment deleteLockingProcessAndGetEnvironment(String dir,
-      EnvironmentConfig config, boolean isContextual) {
+  private Environment deleteLockingProcessAndGetEnvironment(final String dir,
+                                                            final EnvironmentConfig config,
+                                                            final boolean isContextual) {
     Environment env = null;
     try {
-      env = isContextual ? Environments.newContextualInstance(dir,config) : Environments.newInstance(dir, config);
+      env = isContextual
+              ? Environments.newContextualInstance(dir, config)
+              : Environments.newInstance(dir, config);
     } catch (Exception e) {
       if (e.getMessage().contains("Can't acquire environment lock")) {
         try {
@@ -330,7 +337,9 @@ public final class DatabaseManagerImpl implements DatabaseManager {
           String cmd = isWindows ? "taskkill /F /PID " + processId : "kill -9 " + processId;
           Runtime.getRuntime().exec(cmd);
           // Try again
-          env = isContextual ? Environments.newContextualInstance(dir,config) : Environments.newInstance(dir, config);
+          env = isContextual
+                  ? Environments.newContextualInstance(dir, config)
+                  : Environments.newInstance(dir, config);
         } catch (FileNotFoundException ex) {
           LOG.error("Lock file not found");
         } catch (IOException ex) {
@@ -351,7 +360,9 @@ public final class DatabaseManagerImpl implements DatabaseManager {
    * @param <B>     the binding type
    */
   public <T extends Comparable, B extends ComparableBinding> void registerCustomPropertyType(
-      String dir, final Class<T> clazz, final B binding) {
+      final String dir,
+      final Class<T> clazz,
+      final B binding) {
     getPersistentEntityStore(dir, false).executeInTransaction(txn -> {
       ((PersistentEntityStore) txn.getStore()).registerCustomPropertyType(txn, clazz, binding);
     });
@@ -363,7 +374,7 @@ public final class DatabaseManagerImpl implements DatabaseManager {
    * @param text The input text to be parsed.
    * @return The extracted process ID, or null if no match is found.
    */
-  public static String parseProcessId(String text) {
+  public static String parseProcessId(final String text) {
     Pattern pattern = Pattern.compile("^Private property of Exodus:\\s(\\d+)");
     Matcher matcher = pattern.matcher(text);
     if (matcher.matches()) {
@@ -382,7 +393,8 @@ public final class DatabaseManagerImpl implements DatabaseManager {
    * @return a consumer that handles exceptions thrown by the input consumer
    */
   public static <T, E extends Exception> Consumer<T> consumerWrapper(
-      ThrowingConsumer<T> consumer, Class<E> clazz) {
+          final ThrowingConsumer<T> consumer,
+          final Class<E> clazz) {
     return i -> {
       try {
         consumer.accept(i);

@@ -66,7 +66,8 @@ public class EmbeddedEntityBinding extends ComparableBinding implements Serializ
    * @param data  the byte array to be deserialized
    * @param clazz the class of the object to be deserialized
    * @param <T>   the type of the object to be deserialized
-   * @return the deserialized object of type T, or null if the deserialized object is not of the specified class
+   * @return the deserialized object of type T, or null if the deserialized object
+   * is not of the specified class
    * @throws UncheckedIOException if an IOException occurs during deserialization
    */
   public static <T> T deserialize(final byte[] data, final Class<T> clazz) {
@@ -88,7 +89,8 @@ public class EmbeddedEntityBinding extends ComparableBinding implements Serializ
    * Reads an object of type Comparable from a ByteArrayInputStream.
    *
    * @param stream the ByteArrayInputStream containing the serialized object
-   * @return the deserialized object of type Comparable, or null if the deserialized object is not of type Comparable
+   * @return the deserialized object of type Comparable, or null if the deserialized object
+   * is not of type Comparable
    */
   @Override
   public Comparable readObject(@NotNull final ByteArrayInputStream stream) {
@@ -105,7 +107,8 @@ public class EmbeddedEntityBinding extends ComparableBinding implements Serializ
    * @param object the Comparable object to write
    */
   @Override
-  public void writeObject(@NotNull final LightOutputStream output, @NotNull final Comparable object) {
+  public void writeObject(@NotNull final LightOutputStream output,
+                          @NotNull final Comparable object) {
     byte[] serialized = serialize(object);
     if (serialized != null) {
       output.write(serialized);

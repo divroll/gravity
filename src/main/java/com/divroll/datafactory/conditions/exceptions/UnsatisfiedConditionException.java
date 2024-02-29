@@ -28,28 +28,33 @@ import com.divroll.datafactory.exceptions.DataFactoryException;
 public class UnsatisfiedConditionException extends DataFactoryException {
   /**
    * Exception thrown when a given condition is not satisfied.
+   *
+   * @param condition The unsatisfied condition.
    */
-  public UnsatisfiedConditionException(EntityCondition condition) {
+  public UnsatisfiedConditionException(final EntityCondition condition) {
    super("The condition " + condition.getClass().getName() + " was not satisfied");
   }
 
   /**
    * Exception thrown when a given condition is not satisfied.
    *
+   * @param condition The unsatisfied condition.
+   * @param e The cause of the exception.
+   *
    * @see EntityCondition
-   * @see LinkCondition
-   * @see OppositeLinkCondition
-   * @see PropertyContainsCondition
-   * @see PropertyEqualCondition
-   * @see PropertyLocalTimeRangeCondition
-   * @see PropertyMinMaxCondition
-   * @see PropertyNearbyCondition
-   * @see PropertyStartsWithCondition
-   * @see PropertyUniqueCondition
-   * @see CustomCondition
-   * @see CustomQueryCondition
+   * @see com.divroll.datafactory.conditions.LinkCondition
+   * @see com.divroll.datafactory.conditions.OppositeLinkCondition
+   * @see com.divroll.datafactory.conditions.PropertyContainsCondition
+   * @see com.divroll.datafactory.conditions.PropertyEqualCondition
+   * @see com.divroll.datafactory.conditions.PropertyLocalTimeRangeCondition
+   * @see com.divroll.datafactory.conditions.PropertyMinMaxCondition
+   * @see com.divroll.datafactory.conditions.PropertyNearbyCondition
+   * @see com.divroll.datafactory.conditions.PropertyStartsWithCondition
+   * @see com.divroll.datafactory.conditions.PropertyUniqueCondition
+   * @see com.divroll.datafactory.conditions.CustomCondition
+   * @see com.divroll.datafactory.conditions.CustomQueryCondition
    */
-  public UnsatisfiedConditionException(EntityCondition condition, Throwable e) {
+  public UnsatisfiedConditionException(final EntityCondition condition, final Throwable e) {
     super("The condition " + condition.getClass().getName() + " was not satisfied", e);
   }
 }

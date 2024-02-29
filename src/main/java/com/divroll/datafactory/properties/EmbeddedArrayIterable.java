@@ -42,8 +42,10 @@ public class EmbeddedArrayIterable implements Serializable, ByteIterable {
 
   /**
    * Represents an Iterable of embedded arrays.
+   *
+   * @param objects the List of embedded arrays
    */
-  public EmbeddedArrayIterable(List<Comparable> objects) {
+  public EmbeddedArrayIterable(final List<Comparable> objects) {
     bytes = serialize(objects);
   }
 
@@ -53,7 +55,7 @@ public class EmbeddedArrayIterable implements Serializable, ByteIterable {
    * @param obj the object to be serialized
    * @return the serialized byte array, or null if serialization fails
    */
-  public static byte[] serialize(Object obj) {
+  public static byte[] serialize(final Object obj) {
     return Try.of(() -> {
       ByteArrayOutputStream out = new ByteArrayOutputStream();
       ObjectOutputStream os = new ObjectOutputStream(out);
@@ -68,7 +70,7 @@ public class EmbeddedArrayIterable implements Serializable, ByteIterable {
    * @param data the byte array to deserialize
    * @return the deserialized Comparable object, or null if deserialization fails
    */
-  public static Comparable deserialize(byte[] data) {
+  public static Comparable deserialize(final byte[] data) {
     return Try.of(() -> {
       ByteArrayInputStream in = new ByteArrayInputStream(data);
       ObjectInputStream is = new ObjectInputStream(in);
@@ -111,7 +113,8 @@ public class EmbeddedArrayIterable implements Serializable, ByteIterable {
   }
 
   /**
-   * Returns a sub-iterable of the current byte iterable starting from the specified offset and with the specified length.
+   * Returns a sub-iterable of the current byte iterable starting from the specified offset
+   * and with the specified length.
    *
    * @param offset the starting offset of the sub-iterable
    * @param length the length of the sub-iterable
@@ -119,7 +122,7 @@ public class EmbeddedArrayIterable implements Serializable, ByteIterable {
    */
   @NotNull
   @Override
-  public ByteIterable subIterable(int offset, int length) {
+  public ByteIterable subIterable(final int offset, final int length) {
     return null;
   }
 
@@ -127,11 +130,11 @@ public class EmbeddedArrayIterable implements Serializable, ByteIterable {
    * Compares this ByteIterable to the specified ByteIterable.
    *
    * @param o The ByteIterable to be compared.
-   * @return Returns a negative integer, zero, or a positive integer as this ByteIterable is less than, equal to,
-   *         or greater than the specified ByteIterable.
+   * @return Returns a negative integer, zero, or a positive integer as this ByteIterable
+   * is less than, equal to, or greater than the specified ByteIterable.
    */
   @Override
-  public int compareTo(@NotNull ByteIterable o) {
+  public int compareTo(@NotNull final ByteIterable o) {
     return 0;
   }
 
@@ -139,7 +142,8 @@ public class EmbeddedArrayIterable implements Serializable, ByteIterable {
    * Returns the deserialized value of the bytes as a List<Comparable>. If the deserialized value
    * is not an instance of List, null is returned.
    *
-   * @return the deserialized value as a List<Comparable> or null if the deserialized value is not a List
+   * @return the deserialized value as a List<Comparable> or null if the deserialized value
+   * is not a List
    */
   public List<Comparable> asObject() {
     Comparable comparable = deserialize(bytes);

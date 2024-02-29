@@ -32,10 +32,13 @@ public final class Throwing {
    *
    * <p>Note: This constructor is private and cannot be accessed or called from outside the class.
    */
-  private Throwing() {}
+  private Throwing() {
+
+  }
 
   /**
-   * This method returns a Consumer that allows rethrowing checked exceptions thrown by a ThrowingConsumer.
+   * This method returns a Consumer that allows rethrowing checked exceptions thrown
+   * by a ThrowingConsumer.
    *
    * @param consumer The ThrowingConsumer that throws checked exceptions.
    * @param <T>      The type of the input to the Consumer.
@@ -57,7 +60,7 @@ public final class Throwing {
    */
   @SuppressWarnings("unchecked")
   @Nonnull
-  public static <E extends Throwable> void sneakyThrow(@Nonnull Throwable ex) throws E {
+  public static <E extends Throwable> void sneakyThrow(@Nonnull final Throwable ex) throws E {
     throw (E) ex;
   }
 }

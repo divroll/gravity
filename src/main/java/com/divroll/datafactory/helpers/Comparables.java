@@ -29,16 +29,24 @@ import util.ComparableLinkedList;
 /**
  * This class provides static methods for casting generic collections to comparable collections.
  */
-public class Comparables {
+public final class Comparables {
+    /**
+     * This is a utility class and cannot be instantiated.
+     */
+    private Comparables() {
+        throw new UnsupportedOperationException(
+                "This is a utility class and cannot be instantiated");
+    }
   /**
    * Casts a List of elements to a ComparableLinkedList of Comparable elements.
    * Elements in the input List may be of any type that extends Comparable.
    *
    * @param comparableList the List to be casted
+   * @param <V> the type of elements in the input List;
    * @return a ComparableLinkedList with elements casted from the input List
    */
   public static <V extends Comparable> ComparableLinkedList<Comparable> cast(
-      List<V> comparableList) {
+      final List<V> comparableList) {
     if (comparableList == null) {
       return null;
     }
@@ -71,7 +79,7 @@ public class Comparables {
    *         or null if the input map is null
    */
   public static <K extends Comparable, V extends Comparable> ComparableHashMap<K, V> cast(
-      Map<K, V> map) {
+      final Map<K, V> map) {
     if (map == null) {
       return null;
     }

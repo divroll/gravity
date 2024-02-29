@@ -38,8 +38,8 @@ import org.jetbrains.annotations.NotNull;
 public class EmbeddedEntityIterable implements Serializable, ByteIterable {
   /**
    * The serialVersionUID is a unique identifier for a Serializable class.
-   * It is used during deserialization to ensure that the sender and receiver of a serialized object
-   * have loaded classes with compatible serialVersionUIDs.
+   * It is used during deserialization to ensure that the sender and receiver of
+   * a serialized object have loaded classes with compatible serialVersionUIDs.
    * If the serialVersionUIDs do not match, an InvalidClassException is thrown.
    *
    * The serialVersionUID is a 64-bit hash of the class structure,
@@ -80,8 +80,10 @@ public class EmbeddedEntityIterable implements Serializable, ByteIterable {
    * The asObject() method deserializes the bytes back into the Comparable object.
    *
    * Note: This class implements the ByteIterable interface.
+   *
+   * @param object the object to be serialized and stored as bytes
    */
-  public EmbeddedEntityIterable(Comparable object) {
+  public EmbeddedEntityIterable(final Comparable object) {
     bytes = serialize(object);
   }
 
@@ -91,7 +93,7 @@ public class EmbeddedEntityIterable implements Serializable, ByteIterable {
    * @param obj the object to be serialized
    * @return the serialized byte array
    */
-  public static byte[] serialize(Object obj) {
+  public static byte[] serialize(final Object obj) {
     return Try.of(() -> {
       ByteArrayOutputStream out = new ByteArrayOutputStream();
       ObjectOutputStream os = new ObjectOutputStream(out);
@@ -106,7 +108,7 @@ public class EmbeddedEntityIterable implements Serializable, ByteIterable {
    * @param data The byte array to deserialize.
    * @return The deserialized Comparable object, or null if deserialization fails.
    */
-  public static Comparable deserialize(byte[] data) {
+  public static Comparable deserialize(final byte[] data) {
     return Try.of(() -> {
       ByteArrayInputStream in = new ByteArrayInputStream(data);
       ObjectInputStream is = new ObjectInputStream(in);
@@ -145,7 +147,8 @@ public class EmbeddedEntityIterable implements Serializable, ByteIterable {
   }
 
   /**
-   * Returns a sub-range of the current ByteIterable starting from the specified offset and of the specified length.
+   * Returns a sub-range of the current ByteIterable starting from the specified offset
+   * and of the specified length.
    *
    * @param offset the starting offset of the sub-range
    * @param length the length of the sub-range
@@ -153,18 +156,20 @@ public class EmbeddedEntityIterable implements Serializable, ByteIterable {
    */
   @NotNull
   @Override
-  public ByteIterable subIterable(int offset, int length) {
+  public ByteIterable subIterable(final int offset, final int length) {
     return null;
   }
 
   /**
-   * Compares this ByteIterable object with the specified object for order. The comparison is based on the serialized form of the objects.
+   * Compares this ByteIterable object with the specified object for order.
+   * The comparison is based on the serialized form of the objects.
    *
    * @param o the object to be compared
-   * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object
+   * @return a negative integer, zero, or a positive integer as this object is less than,
+   * equal to, or greater than the specified object
    */
   @Override
-  public int compareTo(@NotNull ByteIterable o) {
+  public int compareTo(@NotNull final ByteIterable o) {
     return 0;
   }
 

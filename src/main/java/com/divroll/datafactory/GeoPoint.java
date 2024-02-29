@@ -24,10 +24,54 @@ import java.io.Serializable;
 import org.jetbrains.annotations.NotNull;
 
 /**
- *
+ * Represents a geographic point with latitude and longitude coordinates.
  */
 public class GeoPoint implements Comparable<GeoPoint>, Serializable {
+  /**
+   * The minimum valid latitude value.
+   */
+  private static final double MIN_LATITUDE = -90.0;
+  /**
+   * The maximum latitude value allowed for a geographic point.
+   */
+  private static final double MAX_LATITUDE = 90.0;
+  /**
+   * Minimum longitude value allowed for a geographic point.
+   *
+   * The value of MIN_LONGITUDE is set to -180.0 degrees.
+   * This represents the westernmost longitude that can be assigned to a GeoPoint.
+   * Any longitude value less than -180.0 is considered invalid.
+   *
+   * @see GeoPoint
+   */
+  private static final double MIN_LONGITUDE = -180.0;
+  /**
+   * The maximum longitude value allowed in the GeoPoint class.
+   */
+  private static final double MAX_LONGITUDE = 180.0;
+  /**
+   * Represents the longitude of a geographic point.
+   *
+   * This variable stores the longitude of a geographic point in degrees.
+   * The range of valid longitude values is -180 to 180 degrees.
+   *
+   * @see GeoPoint
+   */
   private Double longitude;
+  /**
+   * Represents the latitude value of a GeoPoint.
+   * <p>
+   * The latitude value indicates the north-south position of the GeoPoint on the Earth's surface.
+   * It is a decimal number between -90 and 90 degrees, where positive values indicate
+   * northern hemisphere and negative values indicate southern hemisphere.
+   * </p>
+   * <p>
+   * This variable is a Double type to allow for more accurate latitude representation,
+   * such as when dealing with decimal degrees or precise coordinates.
+   * </p>
+   *
+   * @see GeoPoint
+   */
   private Double latitude;
 
   /**
@@ -36,14 +80,15 @@ public class GeoPoint implements Comparable<GeoPoint>, Serializable {
    * @param longitude the longitude of the GeoPoint
    * @param latitude  the latitude of the GeoPoint
    */
-  public GeoPoint(Double longitude, Double latitude) {
+  public GeoPoint(final Double longitude, final Double latitude) {
     Preconditions.checkArgument(
-        latitude >= -90 && latitude <= 90, "Latitude must be in the range of [-90, 90] degrees");
+            latitude >= MIN_LATITUDE && latitude <= MAX_LATITUDE,
+            "Latitude must be in the range of [-90, 90] degrees");
     Preconditions.checkArgument(
-        longitude >= -180 && longitude <= 180,
-        "Longitude must be in the range of [-180, 180] degrees");
-    setLongitude(longitude);
-    setLatitude(latitude);
+            longitude >= MIN_LONGITUDE && longitude <= MAX_LONGITUDE,
+            "Longitude must be in the range of [-180, 180] degrees");
+    this.longitude = longitude;
+    this.latitude = latitude;
   }
 
   /**
@@ -54,17 +99,32 @@ public class GeoPoint implements Comparable<GeoPoint>, Serializable {
    *          a value less than 0 if the current GeoPoint is less than the given GeoPoint, and
    *          a value greater than 0 if the current GeoPoint is greater than the given GeoPoint
    */
-  @Override public int compareTo(@NotNull GeoPoint geoPoint) {
-    return 0;
+  @Override public int compareTo(@NotNull final GeoPoint geoPoint) {
+    if (this.latitude < geoPoint.latitude) {
+      return -1;
+    } else if (this.latitude > geoPoint.latitude) {
+      return 1;
+    } else {
+      // At this point, latitudes are equal, so compare by longitude
+      if (this.longitude < geoPoint.longitude) {
+        return -1;
+      } else if (this.longitude > geoPoint.longitude) {
+        return 1;
+      } else {
+        // Both latitude and longitude are equal, so the points are considered equal
+        return 0;
+      }
+    }
   }
 
   /**
    * Overrides the equals method for the GeoPoint class.
    *
    * @param obj the object to be compared with the current GeoPoint instance
-   * @return true if the given object is a GeoPoint and its latitude and longitude match the current instance's latitude and longitude, false otherwise
+   * @return    true if the given object is a GeoPoint and its latitude and longitude match
+   *            the current instance's latitude and longitude, false otherwise
    */
-  @Override public boolean equals(Object obj) {
+  @Override public boolean equals(final Object obj) {
     // Check if the current instance is the same as the object
     if (this == obj) {
       return true;
@@ -81,6 +141,14 @@ public class GeoPoint implements Comparable<GeoPoint>, Serializable {
   }
 
   /**
+   * Overrides the hashCode method for the GeoPoint class.
+   * @return the hash code of the GeoPoint
+   */
+  @Override public int hashCode() {
+    return java.util.Objects.hash(latitude, longitude);
+  }
+
+  /**
    * Returns the longitude of this GeoPoint.
    *
    * @return the longitude of this GeoPoint
@@ -92,9 +160,9 @@ public class GeoPoint implements Comparable<GeoPoint>, Serializable {
   /**
    * Returns the latitude of this GeoPoint.
    *
-   * @return the latitude of this GeoPoint
+   * @param longitude the longitude of this GeoPoint
    */
-  public void setLongitude(Double longitude) {
+  public void setLongitude(final Double longitude) {
     this.longitude = longitude;
   }
 
@@ -112,7 +180,7 @@ public class GeoPoint implements Comparable<GeoPoint>, Serializable {
    *
    * @param latitude the latitude of this GeoPoint
    */
-  public void setLatitude(Double latitude) {
+  public void setLatitude(final Double latitude) {
     this.latitude = latitude;
   }
 }

@@ -22,12 +22,11 @@ package com.divroll.datafactory.conditions;
 import org.immutables.value.Value;
 
 /**
- * PropertyUniqueCondition is an interface representing a condition that checks if a property in an entity has a unique value.
- * It extends the EntityCondition interface and provides the name of the property and its corresponding value to be checked.
- * PropertyUniqueCondition is immutable and its implementation class is ImmutablePropertyUniqueCondition.
+ * PropertyUniqueCondition is an interface representing a condition that checks if a property
+ * in an entity has a unique value. It extends the EntityCondition interface and provides
+ * the name of the property and its corresponding value to be checked.
  *
  * @see EntityCondition
- * @see ImmutablePropertyUniqueCondition
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)

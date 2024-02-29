@@ -23,7 +23,8 @@ import org.immutables.value.Value;
 
 /**
  * The BlobExistsCondition interface represents a condition that checks the existence of a blob.
- * It extends the EntityCondition interface and provides the method to retrieve the blobName attribute.
+ * It extends the EntityCondition interface and provides the method to retrieve the blobName
+ * attribute.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)

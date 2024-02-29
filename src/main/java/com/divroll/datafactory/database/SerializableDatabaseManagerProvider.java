@@ -28,10 +28,11 @@ import java.io.Serializable;
  * and provides an implementation for the getDatabaseManager method by returning an instance of
  * the DatabaseManagerImpl class.
  *
- * This class also implements the Serializable interface to allow objects of this class to be serialized
- * and deserialized.
+ * This class also implements the Serializable interface to allow objects of this class to be
+ * serialized and deserialized.
  */
-public class SerializableDatabaseManagerProvider implements DatabaseManagerProvider, Serializable {
+public class SerializableDatabaseManagerProvider
+        implements DatabaseManagerProvider, Serializable {
     /**
      * Retrieves the DatabaseManager instance.
      *

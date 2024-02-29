@@ -32,6 +32,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class LocalTimeRangeBinding extends ComparableBinding {
 
+  /**
+   * The binding for a LocalTimeRange.
+   */
   public static final LocalTimeRangeBinding BINDING = new LocalTimeRangeBinding();
 
   /**
@@ -40,7 +43,7 @@ public class LocalTimeRangeBinding extends ComparableBinding {
    * @param stream the ByteArrayInputStream containing the serialized object
    * @return the deserialized object or null if an error occurred
    */
-  @Override public Comparable readObject(@NotNull ByteArrayInputStream stream) {
+  @Override public Comparable readObject(@NotNull final ByteArrayInputStream stream) {
     return BindingUtils.readObject(stream);
   }
 
@@ -50,7 +53,8 @@ public class LocalTimeRangeBinding extends ComparableBinding {
    * @param output the LightOutputStream to write the serialized object to
    * @param object the object to be serialized
    */
-  @Override public void writeObject(@NotNull LightOutputStream output, @NotNull Comparable object) {
+  @Override public void writeObject(@NotNull final LightOutputStream output,
+                                    @NotNull final Comparable object) {
     output.write(BindingUtils.writeObject(object));
   }
 

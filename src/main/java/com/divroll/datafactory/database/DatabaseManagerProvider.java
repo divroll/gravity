@@ -20,8 +20,9 @@
 package com.divroll.datafactory.database;
 
 /**
- * The DatabaseManagerProvider interface provides a method to retrieve an instance of the DatabaseManager.
- * Implementing classes must provide an implementation of the getDatabaseManager method.
+ * The DatabaseManagerProvider interface provides a method to retrieve an instance
+ * of the DatabaseManager. Implementing classes must provide an implementation of the
+ * getDatabaseManager method.
  */
 public interface DatabaseManagerProvider {
     /**

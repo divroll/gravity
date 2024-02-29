@@ -49,15 +49,15 @@ public class CustomConditionProcessor extends UnsatisfiedConditionProcessorBase<
      * @param scope The atomic reference to hold the entity iterable.
      * @param entityCondition The custom condition to execute.
      * @param entityInContext The entity on which the condition will be executed.
-     * @param txn The store transaction.
+     * @param storeTransaction The store transaction.
      * @see CustomCondition#execute(Entity)
      * @since 0-SNAPSHOT
      */
     @Override
-    protected void processCondition(AtomicReference<EntityIterable> scope,
-                                    CustomCondition entityCondition,
-                                    Entity entityInContext,
-                                    StoreTransaction txn) {
+    protected void processCondition(final AtomicReference<EntityIterable> scope,
+                                    final CustomCondition entityCondition,
+                                    final Entity entityInContext,
+                                    final StoreTransaction storeTransaction) {
         entityCondition.execute(entityInContext);
     }
 

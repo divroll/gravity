@@ -32,31 +32,41 @@ import java.time.LocalTime;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * The PropertyLocalTimeRangeConditionProcessor class is a processor for a condition that represents a time range for a property value.
+ * The PropertyLocalTimeRangeConditionProcessor class is a processor for a condition
+ * that represents a time range for a property value.
  *
- * This class extends the UnsatisfiedConditionProcessorBase class and implements the processCondition method to handle the processing of the given condition.
+ * This class extends the UnsatisfiedConditionProcessorBase class and implements
+ * the processCondition method to handle the processing of the given condition.
  */
-public class PropertyLocalTimeRangeConditionProcessor extends UnsatisfiedConditionProcessorBase<PropertyLocalTimeRangeCondition> {
+public class PropertyLocalTimeRangeConditionProcessor
+        extends UnsatisfiedConditionProcessorBase<PropertyLocalTimeRangeCondition> {
     /**
-     * The PropertyLocalTimeRangeConditionProcessor class is a processor for a condition that represents a time range for a property value.
+     * The PropertyLocalTimeRangeConditionProcessor class is a processor for a condition
+     * that represents a time range for a property value.
      *
-     * This class extends the UnsatisfiedConditionProcessorBase class and implements the processCondition method to handle the processing of the given condition.
+     * This class extends the UnsatisfiedConditionProcessorBase class and implements
+     * the processCondition method to handle the processing of the given condition.
      */
     public PropertyLocalTimeRangeConditionProcessor() {
         super(PropertyLocalTimeRangeCondition.class);
     }
     /**
-     * This method processes a PropertyLocalTimeRangeCondition by checking if the given entity's property value is within the specified range.
+     * This method processes a PropertyLocalTimeRangeCondition by checking if
+     * the given entity's property value is within the specified range.
      * If the property value is not within the range, an UnsatisfiedConditionException is thrown.
      *
      * @param scope           The atomic reference to hold the entity iterable.
      * @param entityCondition The PropertyLocalTimeRangeCondition to process.
      * @param entityInContext The entity in context.
-     * @param txn             The store transaction.
-     * @throws UnsatisfiedConditionException If the entity's property value is not within the specified range.
+     * @param storeTransaction             The store transaction.
+     * @throws UnsatisfiedConditionException If the entity's property value is not within
+     * the specified range.
      */
     @Override
-    protected void processCondition(AtomicReference<EntityIterable> scope, PropertyLocalTimeRangeCondition entityCondition, Entity entityInContext, StoreTransaction txn)
+    protected void processCondition(final AtomicReference<EntityIterable> scope,
+                                    final PropertyLocalTimeRangeCondition entityCondition,
+                                    final Entity entityInContext,
+                                    final StoreTransaction storeTransaction)
             throws UnsatisfiedConditionException {
         PropertyLocalTimeRangeCondition propertyLocalTimeRangeCondition =
                 (PropertyLocalTimeRangeCondition) entityCondition;

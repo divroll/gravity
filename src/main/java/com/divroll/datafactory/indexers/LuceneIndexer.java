@@ -22,7 +22,8 @@ package com.divroll.datafactory.indexers;
 import java.util.List;
 
 /**
- * The LuceneIndexer interface provides methods for indexing and searching entities with geographical information using Lucene.
+ * The LuceneIndexer interface provides methods for indexing and searching entities
+ * with geographical information using Lucene.
  */
 public interface LuceneIndexer {
   /**
@@ -36,7 +37,10 @@ public interface LuceneIndexer {
    * @return true if the entity is successfully indexed, false otherwise
    * @throws Exception if an error occurs during the indexing operation
    */
-  Boolean index(String dir, String entityId, Double longitude, Double latitude) throws Exception;
+  Boolean index(String dir,
+                String entityId,
+                Double longitude,
+                Double latitude) throws Exception;
 
   /**
    * Indexes the specified text for a given field in the Lucene index.
@@ -48,7 +52,10 @@ public interface LuceneIndexer {
    * @return true if the text was successfully indexed, otherwise false
    * @throws Exception if an error occurs while indexing the text
    */
-  Boolean index(String dir, String entityId, String field, String text) throws Exception;
+  Boolean index(String dir,
+                String entityId,
+                String field,
+                String text) throws Exception;
 
   /**
    * Search neighbors within a given radius from the specified location.
@@ -62,7 +69,11 @@ public interface LuceneIndexer {
    * @return A list of neighbor entities that match the search criteria.
    * @throws Exception If an error occurs during the search.
    */
-  List<String> searchNeighbor(String dir, Double longitude, Double latitude, Double radius, String after,
+  List<String> searchNeighbor(String dir,
+                              Double longitude,
+                              Double latitude,
+                              Double radius,
+                              String after,
       Integer hits)
       throws Exception;
 
@@ -77,7 +88,10 @@ public interface LuceneIndexer {
    * @return A list of strings representing the search results.
    * @throws Exception If an error occurs during the search process.
    */
-  List<String> search(String dir, String field, String text, String after,
-      Integer hits)
+  List<String> search(String dir,
+                      String field,
+                      String text,
+                      String after,
+                      Integer hits)
     throws Exception;
 }

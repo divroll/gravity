@@ -21,6 +21,9 @@ package com.divroll.datafactory.builders;
 
 import java.io.Serializable;
 import javax.annotation.Nullable;
+
+import com.divroll.datafactory.database.BinaryOp;
+import com.divroll.datafactory.database.EqualityOp;
 import org.immutables.value.Value;
 
 /**
@@ -28,28 +31,12 @@ import org.immutables.value.Value;
  */
 @Value.Immutable
 public interface TransactionFilter extends Serializable {
-  enum BINARY_OP {
-    INTERSECT,
-    UNION,
-    MINUS,
-    CONCAT
-  }
-
-  enum EQUALITY_OP {
-    EQUAL,
-    STARTS_WITH,
-    CONTAINS,
-    IN_RANGE,
-    NOT_STARTS_WITH,
-    NOT_EQUAL
-  }
-
   /**
    * Retrieves the value of the equalityOp attribute in the TransactionFilter class.
    *
    * @return The value of the equalityOp attribute
    */
-  EQUALITY_OP equalityOp();
+  EqualityOp equalityOp();
 
   /**
    * Retrieves the value of the propertyName attribute.
@@ -86,7 +73,7 @@ public interface TransactionFilter extends Serializable {
    * @return The value of the operator attribute
    */
   @Nullable
-  BINARY_OP operator();
+  BinaryOp operator();
 
   /**
    * Retrieves the next {@code TransactionFilter} in the sequence.

@@ -24,7 +24,11 @@ import com.divroll.datafactory.indexers.LuceneIndexer;
 import jetbrains.exodus.lucene.ExodusDirectory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.*;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.LatLonPoint;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -46,7 +50,7 @@ import java.util.List;
  * The LuceneIndexerImpl class is an implementation of the LuceneIndexer interface.
  * It provides methods for indexing and searching entities using the Lucene library.
  */
-public class LuceneIndexerImpl implements LuceneIndexer {
+public final class LuceneIndexerImpl implements LuceneIndexer {
   /**
    * IndexSearcher is a class in the Lucene library that provides
    * search functionality on an index.
@@ -59,7 +63,8 @@ public class LuceneIndexerImpl implements LuceneIndexer {
   private IndexWriter writer;
 
   /**
-   * The private static variable instance represents an implementation of the LuceneIndexer interface.
+   * The private static variable instance represents an implementation of the
+   * interface.
    */
   private static LuceneIndexerImpl instance;
 
@@ -88,7 +93,8 @@ public class LuceneIndexerImpl implements LuceneIndexer {
   }
 
   /**
-   * Indexes a document in the given directory with the specified entity ID, longitude, and latitude.
+   * Indexes a document in the given directory with the specified entity ID, longitude,
+   * and latitude.
    *
    * @param dir       The directory where the index is stored.
    * @param entityId  The ID of the entity to be indexed.
@@ -97,7 +103,10 @@ public class LuceneIndexerImpl implements LuceneIndexer {
    * @return True if the index operation is successful, false otherwise.
    * @throws Exception If an error occurs during the indexing process.
    */
-  @Override public Boolean index(String dir, String entityId, Double longitude, Double latitude)
+  @Override public Boolean index(final String dir,
+                                 final String entityId,
+                                 final Double longitude,
+                                 final Double latitude)
       throws Exception {
     ExodusDirectory exodusDirectory = DatabaseManagerImpl.getInstance().getExodusDirectory(dir);
     Analyzer analyzer = new StandardAnalyzer();
@@ -105,14 +114,14 @@ public class LuceneIndexerImpl implements LuceneIndexer {
     iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
     return exodusDirectory.getEnvironment().computeInTransaction(txn -> {
       try {
-        IndexWriter writer =  new IndexWriter(exodusDirectory, iwc);
+        IndexWriter indexWriter =  new IndexWriter(exodusDirectory, iwc);
         Document doc = new Document();
         doc.add(new StoredField("entityId", entityId));
         doc.add(new LatLonPoint("latlon", latitude, longitude));
         Geo3DPoint point = new Geo3DPoint("geo3d", latitude, longitude);
         doc.add(point);
-        writer.addDocument(doc);
-        writer.close();
+        indexWriter.addDocument(doc);
+        indexWriter.close();
         return true;
       } catch (IOException e) {
         return false;
@@ -130,19 +139,22 @@ public class LuceneIndexerImpl implements LuceneIndexer {
    * @return true if the text was successfully indexed, false otherwise
    * @throws Exception if an error occurs while indexing the text
    */
-  @Override public Boolean index(String dir, String entityId, String field, String text) throws Exception {
+  @Override public Boolean index(final String dir,
+                                 final String entityId,
+                                 final String field,
+                                 final String text) throws Exception {
     ExodusDirectory exodusDirectory = DatabaseManagerImpl.getInstance().getExodusDirectory(dir);
     Analyzer analyzer = new StandardAnalyzer();
     IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
     iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
     return exodusDirectory.getEnvironment().computeInTransaction(txn -> {
       try {
-        IndexWriter writer =  new IndexWriter(exodusDirectory, iwc);
+        IndexWriter indexWriter =  new IndexWriter(exodusDirectory, iwc);
         Document doc = new Document();
         doc.add(new StoredField("entityId", entityId));
         doc.add(new TextField(field, text, Field.Store.YES));
-        writer.addDocument(doc);
-        writer.close();
+        indexWriter.addDocument(doc);
+        indexWriter.close();
         return true;
       } catch (IOException e) {
         return false;
@@ -157,14 +169,18 @@ public class LuceneIndexerImpl implements LuceneIndexer {
    * @param longitude The longitude coordinate of the center of the search area.
    * @param latitude  The latitude coordinate of the center of the search area.
    * @param radius    The radius in which to search for neighbors from the center location.
-   * @param after     A string representing the after parameter. [Additional information about after parameter]
+   * @param after     A string representing the after parameter.
    * @param hits      The maximum number of neighbors to retrieve.
    * @return A list of neighbor IDs within the specified radius.
    * @throws Exception If an error occurs during the search process.
    */
   @Override
-  public List<String> searchNeighbor(String dir, Double longitude, Double latitude, Double radius, String after,
-      Integer hits) throws Exception {
+  public List<String> searchNeighbor(final String dir,
+                                     final Double longitude,
+                                     final Double latitude,
+                                     final Double radius,
+                                     final String after,
+                                     final Integer hits) throws Exception {
     ExodusDirectory exodusDirectory = DatabaseManagerImpl.getInstance().getExodusDirectory(dir);
     Analyzer analyzer = new StandardAnalyzer();
     List<String> neighbors = new ArrayList<>();
@@ -198,7 +214,11 @@ public class LuceneIndexerImpl implements LuceneIndexer {
    * @return A list of entity IDs matching the search criteria.
    * @throws Exception     If an error occurs during the search.
    */
-  @Override public List<String> search(String dir, String field, String queryString, String after, Integer hits)
+  @Override public List<String> search(final String dir,
+                                       final String field,
+                                       final String queryString,
+                                       final String after,
+                                       final Integer hits)
       throws Exception {
     ExodusDirectory exodusDirectory = DatabaseManagerImpl.getInstance().getExodusDirectory(dir);
     Analyzer analyzer = new StandardAnalyzer();
@@ -212,8 +232,11 @@ public class LuceneIndexerImpl implements LuceneIndexer {
         TopDocs docs = searcher.search(query, hits);
         for (ScoreDoc scoreDoc : docs.scoreDocs) {
           Document doc = searcher.doc(scoreDoc.doc);
-          System.out.println("score: " + scoreDoc.score +
-              " -- " + field + ": " + doc.get(field));
+          System.out.println("score: "
+                  + scoreDoc.score
+                  + " -- " + field
+                  + ": "
+                  + doc.get(field));
           entityIds.add(doc.get("entityId"));
         }
         reader.close();

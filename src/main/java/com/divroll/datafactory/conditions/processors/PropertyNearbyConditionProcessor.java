@@ -28,13 +28,14 @@ import jetbrains.exodus.entitystore.StoreTransaction;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * The PropertyNearbyConditionProcessor class is a processor that handles the PropertyNearbyCondition.
- * It extends the UnsatisfiedConditionProcessorBase class and implements the processCondition method.
+ * The PropertyNearbyConditionProcessor class is a processor that handles
+ * the PropertyNearbyCondition.
  */
-public class PropertyNearbyConditionProcessor extends UnsatisfiedConditionProcessorBase<PropertyNearbyCondition> {
+public class PropertyNearbyConditionProcessor
+        extends UnsatisfiedConditionProcessorBase<PropertyNearbyCondition> {
     /**
-     * The PropertyNearbyConditionProcessor class is a processor that handles the PropertyNearbyCondition.
-     * It extends the UnsatisfiedConditionProcessorBase class and implements the processCondition method.
+     * The PropertyNearbyConditionProcessor class is a processor that handles the
+     * PropertyNearbyCondition.
      *
      * @see UnsatisfiedConditionProcessorBase
      * @see PropertyNearbyCondition
@@ -49,11 +50,14 @@ public class PropertyNearbyConditionProcessor extends UnsatisfiedConditionProces
      * @param scope         The atomic reference to hold the entity iterable.
      * @param entityCondition The PropertyNearbyCondition entity condition to process.
      * @param entity        The entity in context.
-     * @param txn           The store transaction.
+     * @param storeTransaction           The store transaction.
      * @throws IllegalArgumentException if the method is not yet implemented
      */
     @Override
-    protected void processCondition(AtomicReference<EntityIterable> scope, PropertyNearbyCondition entityCondition, Entity entity, StoreTransaction txn) {
+    protected void processCondition(final AtomicReference<EntityIterable> scope,
+                                    final PropertyNearbyCondition entityCondition,
+                                    final Entity entity,
+                                    final StoreTransaction storeTransaction) {
         PropertyNearbyCondition nearbyCondition = (PropertyNearbyCondition) entityCondition;
         throw new IllegalArgumentException("Not yet implemented");
     }

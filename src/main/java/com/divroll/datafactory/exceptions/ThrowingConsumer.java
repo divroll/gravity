@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  * @param <T> the type of the input to the consumer
  */
 @FunctionalInterface
-public interface ThrowingConsumer<T> extends Consumer<T>{
+public interface ThrowingConsumer<T> extends Consumer<T> {
   /**
    * Accepts an element of type T and applies an action to it. If any checked exception is thrown
    * during the execution of the action, it is caught and rethrown as an unchecked exception.

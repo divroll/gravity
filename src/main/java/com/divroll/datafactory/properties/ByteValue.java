@@ -48,21 +48,21 @@ public class ByteValue implements Serializable, Comparable<byte[]> {
    *
    * @param value the byte array value to set
    */
-  public void setValue(byte[] value) {
+  public void setValue(final byte[] value) {
     this.value = value;
   }
 
   /**
-   * Compares this byte array with another byte array for order. The comparison is based on the values
-   * of the bytes in the arrays.
+   * Compares this byte array with another byte array for order.
+   * The comparison is based on the values of the bytes in the arrays.
    *
    * @param o the byte array to be compared
    *
-   * @return a negative integer, zero, or a positive integer as this byte array is less than, equal to,
-   *         or greater than the specified byte array.
+   * @return  a negative integer, zero, or a positive integer as this byte array
+   *          is less than, equal to, or greater than the specified byte array.
    */
   @Override
-  public int compareTo(@NotNull byte[] o) {
+  public int compareTo(@NotNull final byte[] o) {
     return ByteBuffer.wrap(value).compareTo(ByteBuffer.wrap(o));
   }
 }

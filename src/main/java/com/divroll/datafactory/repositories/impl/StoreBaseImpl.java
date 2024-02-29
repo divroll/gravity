@@ -38,63 +38,77 @@ import util.CustomHashMap;
 
 public abstract class StoreBaseImpl<T> extends UnicastRemoteObject {
   /**
-   *
+   * Logger for capturing events, errors, and informational messages within
+   * the {@code StoreBaseImpl} class. Utilizes the {@link LoggerFactory} to create the
+   * logger instance specific to this class.
    */
   private static final Logger LOG = LoggerFactory.getLogger(StoreBaseImpl.class);
 
+
   /**
+   * StoreBaseImpl is an abstract class that provides a base implementation for a store.
    *
+   * @throws RemoteException If a remote communication error occurs.
    */
   public StoreBaseImpl() throws RemoteException {
   }
 
   /**
+   * Removes duplicates from a ComparableLinkedList.
    *
+   * @param list the ComparableLinkedList from which to remove duplicates
+   * @param <T> the type of the elements in the list
    */
-  public static <T> void removeDuplicates(ComparableLinkedList<T> list) {
+  public static <T> void removeDuplicates(final ComparableLinkedList<T> list) {
     int size = list.size();
     int out = 0;
-    {
-      final Set<T> encountered = new HashSet<T>();
-      for (int in = 0; in < size; in++) {
-        final T t = list.get(in);
-        final boolean first = encountered.add(t);
-        if (first) {
-          list.set(out++, t);
-        }
+
+    Set<T> encountered = new HashSet<>();
+    for (int in = 0; in < size; in++) {
+      final T t = list.get(in);
+      final boolean first = encountered.add(t);
+      if (first) {
+        list.set(out++, t);
       }
     }
+
     while (out < size) {
       list.remove(--size);
     }
   }
 
   /**
+   * This method removes duplicate elements from the given ArrayList.
    *
+   * @param list the ArrayList from which duplicates are to be removed
+   * @param <T>  the type of elements in the ArrayList
    */
-  public static <T> void removeDuplicates(ArrayList<T> list) {
+  public static <T> void removeDuplicates(final ArrayList<T> list) {
     int size = list.size();
     int out = 0;
-    {
-      final Set<T> encountered = new HashSet<T>();
-      for (int in = 0; in < size; in++) {
-        final T t = list.get(in);
-        final boolean first = encountered.add(t);
-        if (first) {
-          list.set(out++, t);
-        }
+
+    final Set<T> encountered = new HashSet<T>();
+    for (int in = 0; in < size; in++) {
+      final T t = list.get(in);
+      final boolean first = encountered.add(t);
+      if (first) {
+        list.set(out++, t);
       }
     }
+
     while (out < size) {
       list.remove(--size);
     }
   }
 
   /**
+   * Converts an Entity object into a CustomHashMap containing String keys and Comparable values.
    *
+   * @param entity the Entity object to convert
+   * @return a CustomHashMap containing the properties of the Entity object
    */
   protected static CustomHashMap<String, Comparable> entityToMap(
-      jetbrains.exodus.entitystore.Entity entity) {
+      final jetbrains.exodus.entitystore.Entity entity) {
     CustomHashMap<String, Comparable> comparableMap = new CustomHashMap<>();
     for (String property : entity.getPropertyNames()) {
       Comparable value = entity.getProperty(property);
@@ -113,7 +127,9 @@ public abstract class StoreBaseImpl<T> extends UnicastRemoteObject {
   }
 
   /**
+   * Retrieves the ISO date and time string in the UTC timezone.
    *
+   * @return The ISO date and time string in the format "yyyy-MM-dd'T'HH:mm'Z'".
    */
   protected String getISODate() {
     TimeZone tz = TimeZone.getTimeZone("UTC");
@@ -125,7 +141,9 @@ public abstract class StoreBaseImpl<T> extends UnicastRemoteObject {
   }
 
   /**
+   * Retrieves the value of the system property representing the data factory directory.
    *
+   * @return the data factory directory system property value
    */
   protected String dataFactoryDir() {
     return System.getProperty(Constants.DATAFACTORY_DIRECTORY_ENVIRONMENT);

@@ -21,7 +21,6 @@ package com.divroll.datafactory.database;
 
 import jetbrains.exodus.entitystore.PersistentEntityStore;
 import jetbrains.exodus.entitystore.StoreTransactionalExecutable;
-import jetbrains.exodus.env.ContextualEnvironment;
 import jetbrains.exodus.env.Environment;
 import jetbrains.exodus.lucene.ExodusDirectory;
 
@@ -50,9 +49,11 @@ public interface DatabaseManager {
   /**
    * Retrieves or creates a persistent entity store.
    *
-   * @param dir The directory where the persistent entity store is located.
-   * @param storeName The name of the persistent entity store. If null, the default name will be used.
-   * @param isReadOnly True if the entity store should be opened in read-only mode, false otherwise.
+   * @param dir         The directory where the persistent entity store is located.
+   * @param storeName   The name of the persistent entity store.
+   *                    If null, the default name will be used.
+   * @param isReadOnly  True if the entity store should be opened in read-only mode,
+   *                    false otherwise.
    * @return The persistent entity store.
    */
   PersistentEntityStore getPersistentEntityStore(String dir, String storeName, boolean isReadOnly);

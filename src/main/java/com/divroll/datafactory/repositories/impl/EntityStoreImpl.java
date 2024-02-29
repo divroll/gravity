@@ -26,19 +26,19 @@ import com.divroll.datafactory.actions.PropertyRemoveAction;
 import com.divroll.datafactory.actions.PropertyRenameAction;
 import com.divroll.datafactory.builders.DataFactoryEntities;
 import com.divroll.datafactory.builders.DataFactoryEntitiesBuilder;
-import com.divroll.datafactory.builders.DataFactoryEntity;
-import com.divroll.datafactory.builders.DataFactoryEntityType;
 import com.divroll.datafactory.builders.DataFactoryEntityTypeBuilder;
-import com.divroll.datafactory.builders.DataFactoryEntityTypes;
 import com.divroll.datafactory.builders.DataFactoryEntityTypesBuilder;
+import com.divroll.datafactory.builders.DataFactoryEntity;
 import com.divroll.datafactory.builders.DataFactoryProperty;
+import com.divroll.datafactory.builders.DataFactoryEntityType;
+import com.divroll.datafactory.builders.DataFactoryEntityTypes;
 import com.divroll.datafactory.builders.queries.BlobQuery;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityTypeQuery;
 import com.divroll.datafactory.builders.queries.LinkQuery;
-import com.divroll.datafactory.conditions.UnsatisfiedCondition;
 import com.divroll.datafactory.database.DatabaseManager;
 import com.divroll.datafactory.database.DatabaseManagerProvider;
+import com.divroll.datafactory.database.impl.DatabaseManagerImpl;
 import com.divroll.datafactory.exceptions.DataFactoryException;
 import com.divroll.datafactory.indexers.LuceneIndexer;
 import com.divroll.datafactory.indexers.LuceneIndexerProvider;
@@ -51,24 +51,26 @@ import com.google.common.collect.FluentIterable;
 import com.healthmarketscience.rmiio.RemoteInputStreamClient;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import java.io.InputStream;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import jetbrains.exodus.entitystore.Entity;
 import jetbrains.exodus.entitystore.EntityId;
 import jetbrains.exodus.entitystore.EntityIterable;
+import jetbrains.exodus.entitystore.StoreTransaction;
 import jetbrains.exodus.entitystore.PersistentEntityStoreImpl;
 import jetbrains.exodus.entitystore.PersistentStoreTransaction;
 import org.jetbrains.annotations.NotNull;
 import util.ComparableHashMap;
+
+import java.io.InputStream;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.divroll.datafactory.Unmarshaller.processActions;
 import static com.divroll.datafactory.Unmarshaller.processConditions;
@@ -80,62 +82,55 @@ import static com.divroll.datafactory.Unmarshaller.processUnsatisfiedConditions;
 public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
 
   /**
-   * The logger is used to log information, warning, and error messages during the execution of the application.
+   * Logger for capturing events, errors, and informational messages within
+   * the {@code EntityStoreImpl} class. Utilizes the {@link LoggerFactory} to create the
+   * logger instance specific to this class.
    */
   private static final Logger LOG = LoggerFactory.getLogger(EntityStoreImpl.class);
 
   /**
-   * This variable represents a provider for accessing a database manager.
+   * The {@code databaseManagerProvider} variable serves as a provider for accessing
+   * a database manager, specifically designed for use within the {@link EntityStoreImpl} class
+   * to manage interactions with the database. Its primary role is to prevent direct references to
+   * the {@link DatabaseManagerImpl}, addressing serialization concerns that may arise
+   * from such direct linkage.
    *
-   * The DatabaseManagerProvider class is responsible for providing an instance of a DatabaseManager,
-   * which can be used to interact with a database. The DatabaseManagerProvider object encapsulates
-   * the logic for creating and initializing the DatabaseManager instance.
+   * This abstraction facilitates a loose coupling between the {@code EntityStoreImpl} and
+   * the {@code DatabaseManagerImpl}, ensuring that changes in the database management
+   * implementation have minimal impact on the entity storage logic.
    *
-   * Usage:
-   * The databaseManagerProvider variable can be used to obtain a DatabaseManager instance by calling
-   * the appropriate methods provided by the DatabaseManagerProvider class.
-   *
-   * Example:
-   * DatabaseManagerProvider databaseManagerProvider = new DatabaseManagerProvider();
-   * // Get a DatabaseManager instance
-   * DatabaseManager databaseManager = databaseManagerProvider.getDatabaseManager();
-   *
-   * Note: It is recommended to use dependency injection or a singleton pattern to ensure
-   *       that only one instance of the DatabaseManagerProvider is used throughout the application.
+   * To obtain an instance of the DatabaseManager, the {@link #getDatabaseManager()} method should
+   * be invoked on the {@code databaseManagerProvider}. This approach promotes a cleaner,
+   * more maintainable codebase by encapsulating the mechanism for database manager retrieval.
    */
   private DatabaseManagerProvider databaseManagerProvider;
 
   /**
-   * The private variable luceneIndexerProvider is an instance of the LuceneIndexerProvider interface.
+   * The private variable 'luceneIndexerProvider' is of type LuceneIndexerProvider.
    *
-   * This variable is used to retrieve a LuceneIndexer instance, which provides functionality for indexing and searching data.
+   * LuceneIndexerProvider is an interface that provides a method to retrieve a LuceneIndexer
+   * instance. It has a single method getLuceneIndexer() which returns the LuceneIndexer instance.
    *
-   * To retrieve a LuceneIndexer instance, use the getLuceneIndexer() method provided by the LuceneIndexerProvider interface.
+   * This variable is used in the class 'EntityStoreImpl' to retrieve the LuceneIndexer instance
+   * used for search indexing.
    *
-   * Example usage:
-   *
-   * LuceneIndexerProvider provider = luceneIndexerProvider;
-   * LuceneIndexer indexer = provider.getLuceneIndexer();
+   * To get the LuceneIndexer instance, call the getLuceneIndexer() method on the
+   * luceneIndexerProvider variable.
    */
   private LuceneIndexerProvider luceneIndexerProvider;
 
   /**
-   * EntityStoreImpl is a class that provides implementation for storing and retrieving entities in a data factory system.
+   * EntityStoreImpl is a class that provides implementation for storing and retrieving entities.
    *
    * @param databaseManagerProvider The provider for retrieving an instance of DatabaseManager.
-
    * @param luceneIndexerProvider The provider for retrieving an instance of LuceneIndexer.
-
-   *
-
    * @throws DataFactoryException If there is an error in the data factory.
-
-   * @throws NotBoundException If a remote object is not bound to the specified name in the registry.
-
+   * @throws NotBoundException  If a remote object is not bound to the specified name
+   *                            in the registry.
    * @throws RemoteException If a remote communication error occurs.
-
    */
-  public EntityStoreImpl(DatabaseManagerProvider databaseManagerProvider, LuceneIndexerProvider luceneIndexerProvider)
+  public EntityStoreImpl(final DatabaseManagerProvider databaseManagerProvider,
+                         final LuceneIndexerProvider luceneIndexerProvider)
       throws DataFactoryException, NotBoundException, RemoteException {
     this.databaseManagerProvider = databaseManagerProvider;
     this.luceneIndexerProvider = luceneIndexerProvider;
@@ -145,12 +140,14 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * Saves a DataFactoryEntity and returns an Option of the saved entity.
    *
    * @param entity The DataFactoryEntity to be saved. Cannot be null.
-   * @return An Option of the saved DataFactoryEntity. Returns None if the entity could not be saved.
-   * @throws DataFactoryException   if there is an error in the data factory.
-   * @throws NotBoundException      if a remote object is not bound to the specified name in the registry.
-   * @throws RemoteException        if a remote communication error occurs.
+   * @return  An Option of the saved DataFactoryEntity.
+   *          Returns None if the entity could not be saved.
+   * @throws DataFactoryException if there is an error in the data factory.
+   * @throws NotBoundException    if a remote object is not bound to the specified name in
+   *                              the registry.
+   * @throws RemoteException      if a remote communication error occurs.
    */
-  @Override public Option<DataFactoryEntity> saveEntity(@NotNull DataFactoryEntity entity)
+  @Override public Option<DataFactoryEntity> saveEntity(@NotNull final DataFactoryEntity entity)
       throws DataFactoryException, NotBoundException, RemoteException {
     DataFactoryEntities dataFactoryEntities = saveEntities(new DataFactoryEntity[] {entity}).get();
     return Option.of(dataFactoryEntities.entities().stream().findFirst().get());
@@ -160,13 +157,14 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * Saves an array of DataFactoryEntities.
    *
    * @param entities the array of DataFactoryEntities to be saved
-   * @return an Option containing a DataFactoryEntities object if the save operation was successful, otherwise an empty Option
+   * @return  an Option containing a DataFactoryEntities object
+   *          if the save operation was successful, otherwise an empty Option
    * @throws DataFactoryException if an error occurs during the save operation
    * @throws NotBoundException if the entity store is not bound
    * @throws RemoteException if a remote communication error occurs
    */
   @Override
-  public Option<DataFactoryEntities> saveEntities(@NotNull DataFactoryEntity[] entities)
+  public Option<DataFactoryEntities> saveEntities(@NotNull final DataFactoryEntity[] entities)
       throws DataFactoryException, NotBoundException, RemoteException {
     Map<String, List<DataFactoryEntity>> envIdOrderedEntities = sort(entities);
     Iterator<String> it = envIdOrderedEntities.keySet().iterator();
@@ -179,29 +177,21 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
         List<DataFactoryEntity> resultEntities = new ArrayList<>();
         dataFactoryEntityList.forEach(entity -> {
 
-          /**
-           * Build a {@linkplain Entity} in context of a referenced scoped entities based on the
-           * {@code namespace}
-           */
-
+          // Build an entity in context of a referenced scoped entities based on the
+          // namespace
           final AtomicReference<EntityIterable> reference = new AtomicReference<>();
           final Entity entityInContext = Unmarshaller.buildContexedEntity(entity, reference, txn);
 
-          /**
-           * Filter the {@linkplain EntityIterable} reference scoped
-           */
+          // Filter the scoped entities based on the namespace
           reference.set(
               Unmarshaller.filterContext(reference, entity.filters(), entity.entityType(), txn));
 
-          /**
-           * Process entity conditions, if there are no {@linkplain UnsatisfiedCondition}
-           * process the actions, blobs and properties
-           */
+          // Process unsatisfied conditions
+          // If there are unsatisfied conditions, the entity will not be saved
+          // And the actions, blobs and properties will not be processed
           processUnsatisfiedConditions(reference, entity.conditions(), entityInContext, txn);
 
-          /**
-           * Process entity actions within the context of the {@linkplain Entity}
-           */
+          // Process actions within the context of the entity
           processActions(entity, reference, entityInContext, txn);
 
           entity.blobs().forEach(remoteBlob -> {
@@ -210,11 +200,8 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
             entityInContext.setBlob(remoteBlob.blobName(), blobStream);
           });
 
-          /**
-           * Process properties to save or update.
-           * Saving null value for a property effectively deletes the property
-           */
-
+          // Process properties,
+          // Note: Saving null values for properties effectively deletes them
           Iterator<String> propertyIterator = entity.propertyMap().keySet().iterator();
           while (propertyIterator.hasNext()) {
             String key = propertyIterator.next();
@@ -238,12 +225,13 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * Retrieves an entity from the DataFactory system based on the provided entity query.
    *
    * @param query The entity query used to retrieve the entity.
-   * @return An Option object containing the retrieved DataFactoryEntity if it exists, otherwise an empty Option object.
+   * @return  An Option object containing the retrieved DataFactoryEntity if it exists,
+   *          otherwise an empty Option object.
    * @throws DataFactoryException If there was an error retrieving the entity.
    * @throws NotBoundException if the entity is not bound.
    * @throws RemoteException if a communication error occurred during the remote call.
    */
-  @Override public Option<DataFactoryEntity> getEntity(@NotNull EntityQuery query)
+  @Override public Option<DataFactoryEntity> getEntity(@NotNull final EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
     Option<DataFactoryEntities> optional = getEntities(query);
     if (optional.isDefined()) {
@@ -263,7 +251,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * @throws RemoteException if a network error occurs during the remote communication.
    */
   @Override
-  public Option<DataFactoryEntities> getEntities(@NotNull EntityQuery query)
+  public Option<DataFactoryEntities> getEntities(@NotNull final EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
 
     String dir = query.environment();
@@ -342,7 +330,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   /**
    *
    */
-  @Override public Boolean removeEntity(@NotNull EntityQuery query)
+  @Override public Boolean removeEntity(@NotNull final EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
     return removeEntities(new EntityQuery[] {query});
   }
@@ -350,13 +338,14 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   /**
    * Removes entities matching the given queries from the persistent store.
    *
-   * @param queries The array of EntityQuery objects representing the queries to filter the entities to remove.
+   * @param queries The array of EntityQuery objects representing the queries to filter
+   *                the entities to remove.
    * @return true if the entities were successfully removed, false otherwise.
    * @throws DataFactoryException if an error occurs during the removal process.
    * @throws NotBoundException if the persistent store is not bound.
    * @throws RemoteException if there is a remote communication error.
    */
-  @Override public Boolean removeEntities(@NotNull EntityQuery[] queries)
+  @Override public Boolean removeEntities(@NotNull final EntityQuery[] queries)
       throws DataFactoryException, NotBoundException, RemoteException {
     final boolean[] success = {false};
     final boolean[] hasRemovedEntities = {false};
@@ -382,7 +371,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
                     .minus(txn.findWithProp(entityType, Constants.NAMESPACE_PROPERTY));
           }
 
-          for(BlobQuery blobQuery : query.blobQueries()) {
+          for (BlobQuery blobQuery : query.blobQueries()) {
             result = result.intersect(txn.findWithBlob(entityType, blobQuery.blobName()));
           }
 
@@ -394,20 +383,9 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
               entity.deleteLink(linkName, linked);
             });
 
-            // TODO: This is a performance issue
-            // Review if this is even needed!
-            final List<String> allLinkNames = ((PersistentEntityStoreImpl) txn.getStore())
-                .getAllLinkNames(
-                    (PersistentStoreTransaction) txn.getStore().getCurrentTransaction());
-            for (final String entityType1 : txn.getEntityTypes()) {
-              for (final String linkName : allLinkNames) {
-                for (final Entity referrer : txn.findLinks(entityType1, entity, linkName)) {
-                  referrer.deleteLink(linkName, entity);
-                }
-              }
-            }
+            deleteEntityLinks(entity, txn);
 
-            for(String blobName : entity.getBlobNames()) {
+            for (String blobName : entity.getBlobNames()) {
               entity.deleteBlob(blobName);
             }
 
@@ -434,7 +412,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * @throws NotBoundException If the data factory is not bound.
    * @throws RemoteException If a remote connection error occurs.
    */
-  @Override public Boolean saveProperty(@NotNull DataFactoryProperty property)
+  @Override public Boolean saveProperty(@NotNull final DataFactoryProperty property)
       throws DataFactoryException, NotBoundException, RemoteException {
     String dir = property.environment();
     String entityType = property.entityType();
@@ -482,7 +460,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * @throws NotBoundException if the DataFactory is not bound.
    * @throws RemoteException if there is a remote communication error.
    */
-  @Override public Boolean removeProperty(@NotNull DataFactoryProperty property)
+  @Override public Boolean removeProperty(@NotNull final DataFactoryProperty property)
       throws DataFactoryException, NotBoundException, RemoteException {
     String dir = property.environment();
     String entityType = property.entityType();
@@ -524,7 +502,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * @throws NotBoundException If the entity store is not bound.
    */
   @Override
-  public Boolean removeEntityType(@NotNull EntityQuery query)
+  public Boolean removeEntityType(@NotNull final EntityQuery query)
       throws RemoteException, NotBoundException {
     final boolean[] success = {false};
 
@@ -548,16 +526,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
           Entity linked = entity.getLink(linkName);
           entity.deleteLink(linkName, linked);
         });
-        // TODO: This is a performance issue
-        final List<String> allLinkNames = ((PersistentEntityStoreImpl) txn.getStore())
-            .getAllLinkNames((PersistentStoreTransaction) txn.getStore().getCurrentTransaction());
-        for (final String entityType1 : txn.getEntityTypes()) {
-          for (final String linkName : allLinkNames) {
-            for (final Entity referrer : txn.findLinks(entityType1, entity, linkName)) {
-              referrer.deleteLink(linkName, entity);
-            }
-          }
-        }
+        deleteEntityLinks(entity, txn);
       }
     });
     return success[0];
@@ -566,13 +535,13 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   /**
    *
    */
-  @Override public Option<DataFactoryEntityTypes> getEntityTypes(EntityTypeQuery query)
+  @Override public Option<DataFactoryEntityTypes> getEntityTypes(final EntityTypeQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
     AtomicReference<DataFactoryEntityTypes> atomicReference = new AtomicReference<>();
     getDatabaseManager().transactPersistentEntityStore(query.environment(), true, txn -> {
       List<String> entityTypes = txn.getEntityTypes();
       Long count = null;
-      if(query.count()) {
+      if (query.count()) {
         EntityIterable entities = txn.getAll(query.entityType());
         count = entities.size();
       }
@@ -594,23 +563,27 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   }
 
   /**
-   * Sort an array of {@linkplain EntityUpdate} by Environment path.
+   * Deletes all links associated with a given entity.
    *
-   * @param entityUpdates
-   * @return
+   * @param entity The entity for which to delete the links. Cannot be null.
+   * @param storeTransaction The transaction object used to interact with the persistent store.
+   *                         Cannot be null.
    */
-  //private static Map<String, List<EntityUpdate>> sort(EntityUpdate[] entityUpdates) {
-  //  Map<String, List<EntityUpdate>> envOrderedUpdates = new HashMap<>();
-  //  Arrays.asList(entityUpdates).forEach(entityUpdate -> {
-  //    String dir = entityUpdate.entity().environment();
-  //    List<EntityUpdate> remoteEntityUpdates = envOrderedUpdates.get(dir);
-  //    if (remoteEntityUpdates == null) {
-  //      remoteEntityUpdates = new ArrayList<>();
-  //    }
-  //    remoteEntityUpdates.add(entityUpdate);
-  //  });
-  //  return envOrderedUpdates;
-  //}
+  private void deleteEntityLinks(final Entity entity, final StoreTransaction storeTransaction) {
+    // Note: The following code block may have performance issues due to the nested loops.
+    // It retrieves all link names and for each entity type, it finds and deletes the links.
+    PersistentStoreTransaction currentTransaction
+            = (PersistentStoreTransaction) storeTransaction.getStore().getCurrentTransaction();
+    final List<String> allLinkNames = ((PersistentEntityStoreImpl) storeTransaction.getStore())
+            .getAllLinkNames(currentTransaction);
+    for (final String entityType1 : storeTransaction.getEntityTypes()) {
+      for (final String linkName : allLinkNames) {
+        for (final Entity referrer : storeTransaction.findLinks(entityType1, entity, linkName)) {
+          referrer.deleteLink(linkName, entity);
+        }
+      }
+    }
+  }
 
   /**
    * Sort an array of {@linkplain DataFactoryEntity} by Application ID.
@@ -618,7 +591,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * @param entities the array of DataFactoryEntity objects to be sorted
    * @return a Map object containing the sorted entities mapped to their respective directories
    */
-  private static Map<String, List<DataFactoryEntity>> sort(DataFactoryEntity[] entities) {
+  private static Map<String, List<DataFactoryEntity>> sort(final DataFactoryEntity[] entities) {
     Map<String, List<DataFactoryEntity>> dirOrderedEntities = new HashMap<>();
     Arrays.asList(entities).forEach(remoteEntity -> {
       String dir = remoteEntity.environment();
@@ -633,9 +606,13 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   }
 
   /**
+   * Sorts an array of {@code EntityQuery} objects by directory.
    *
+   * @param entities The array of {@code EntityQuery} objects to be sorted. Cannot be null.
+   * @return A {@code Map} object containing the sorted entities mapped
+   * to their respective directories.
    */
-  private static Map<String, List<EntityQuery>> sort(EntityQuery[] entities) {
+  private static Map<String, List<EntityQuery>> sort(final EntityQuery[] entities) {
     Map<String, List<EntityQuery>> dirOrderedQueries = new HashMap<>();
     Arrays.asList(entities).forEach(remoteEntity -> {
       String dir = remoteEntity.environment();
@@ -656,7 +633,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * @return A Comparable instance representing the converted entityIterable,
    *         or the original entityIterable if it cannot be converted.
    */
-  private Comparable asObject(EmbeddedEntityIterable entityIterable) {
+  private Comparable asObject(final EmbeddedEntityIterable entityIterable) {
     Comparable comparable = entityIterable.asObject();
     if (comparable instanceof ComparableHashMap) {
       ComparableHashMap comparableHashMap = (ComparableHashMap) comparable;

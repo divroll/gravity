@@ -24,7 +24,8 @@ import org.immutables.value.Value;
 
 /**
  * LinkCondition is an interface that represents a condition for querying links between entities.
- * It extends the EntityCondition interface and provides methods for retrieving the link name and the other entity id associated with the link condition.
+ * It extends the EntityCondition interface and provides methods for retrieving the link name
+ * and the other entity id associated with the link condition.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)

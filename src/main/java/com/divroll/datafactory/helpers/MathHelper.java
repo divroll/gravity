@@ -8,90 +8,127 @@
  * use this file except in compliance with the License.
  *
  * You may obtain a copy of the License at
- *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
 package com.divroll.datafactory.helpers;
 
-import java.time.LocalTime;
-
 /**
- * A utility class that provides mathematical helper methods.
+ * Provides mathematical helper methods, particularly for operations
+ * involving numerical arrays. This class is designed as a utility
+ * class, meaning it contains only static methods and should not be
+ * instantiated. The primary use case is to support mathematical
+ * operations that are frequently required across various parts of an
+ * application, such as finding the closest number in an array to a given value.
  */
-public class MathHelper {
+public final class MathHelper {
   /**
-   * Checks if a given pair of time ranges overlap with each other.
-   *
-   * @param upper1 the upper boundary of the first time range
-   * @param lower1 the lower boundary of the first time range
-   * @param upper2 the upper boundary of the second time range
-   * @param lower2 the lower boundary of the second time range
-   * @return true if the time ranges overlap, false otherwise
-   * @throws IllegalArgumentException if the method is not yet implemented
+   * Prevents instantiation of this utility class.
+   * Utility classes should not have public constructors, as they are not meant to be instantiated.
+   * Throwing an exception prevents accidental instantiation from within the class itself.
    */
-  public static boolean inRange(LocalTime upper1, LocalTime lower1, LocalTime upper2,
-      LocalTime lower2) {
-    throw new IllegalArgumentException("Not yet implemented");
+  private MathHelper() {
+    throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
   }
 
   /**
-   * Finds the closest value to a target value in a sorted array.
+   * Finds the closest value to a specified target in a sorted array of doubles.
+   * This method is optimized for performance in sorted arrays, utilizing a binary search approach.
+   * It handles edge cases where the target value is outside the bounds of the array values.
    *
-   * @param arr    The sorted array of double values.
-   * @param target The target value to find the closest value to.
-   * @return The closest value to the target value in the array.
+   * @param numberArray A sorted array of double values. It's crucial that the array is sorted
+   *                    for the binary search technique to work correctly.
+   * @param targetValue The double value for which the closest number is to be found.
+   * @return The value from the array that is closest to the specified target value.
    */
-  public static double findClosest(double arr[], double target) {
-    int n = arr.length;
-    if (target <= arr[0]) {
-      return arr[0];
+  public static double findClosest(final double[] numberArray, final double targetValue) {
+    int arrayLength = numberArray.length;
+    if (targetValue <= numberArray[0]) {
+      return numberArray[0];
     }
-    if (target >= arr[n - 1]) {
-      return arr[n - 1];
+    if (targetValue >= numberArray[arrayLength - 1]) {
+      return numberArray[arrayLength - 1];
     }
-    int i = 0, j = n, mid = 0;
-    while (i < j) {
-      mid = (i + j) / 2;
-      if (arr[mid] == target) {
-        return arr[mid];
+
+    return findNearest(numberArray, targetValue, arrayLength);
+  }
+
+  /**
+   * Performs a binary search to find the nearest value to the targetValue within the array.
+   * The method is private as it serves as a helper for the public findClosest method,
+   * encapsulating the logic specific to the binary search implementation.
+   *
+   * @param numberArray The array of numbers to search through, assumed to be sorted.
+   * @param targetValue The target value to find the closest number to.
+   * @param arrayLength The length of the numberArray, passed in to avoid recalculating.
+   * @return The value from the array closest to the target value.
+   */
+  private static double findNearest(final double[] numberArray,
+                                    final double targetValue,
+                                    final int arrayLength) {
+    int left = 0;
+    int right = arrayLength;
+    int middleIndex = 0;
+
+    while (left < right) {
+      middleIndex = calculateMiddleIndex(left, right);
+      double middleValue = numberArray[middleIndex];
+
+      if (middleValue == targetValue) {
+        return middleValue;
       }
-      if (target < arr[mid]) {
-        if (mid > 0 && target > arr[mid - 1]) {
-          return getClosest(arr[mid - 1],
-              arr[mid], target);
+
+      if (targetValue < middleValue) {
+        if (middleIndex > 0 && targetValue > numberArray[middleIndex - 1]) {
+          return getClosest(numberArray[middleIndex - 1], middleValue, targetValue);
         }
-        j = mid;
+        right = middleIndex;
       } else {
-        if (mid < n - 1 && target < arr[mid + 1]) {
-          return getClosest(arr[mid],
-              arr[mid + 1], target);
+        if (middleIndex < arrayLength - 1 && targetValue < numberArray[middleIndex + 1]) {
+          return getClosest(middleValue, numberArray[middleIndex + 1], targetValue);
         }
-        i = mid + 1;
+        left = middleIndex + 1;
       }
     }
-    return arr[mid];
+
+    return numberArray[middleIndex];
   }
 
   /**
-   * Returns the closest value to the target value from two given values.
+   * Calculates the middle index between two indices.
+   * This method simplifies the calculation and centralizes the logic for updating
+   * the search bounds.
    *
-   * @param val1   the first value
-   * @param val2   the second value
-   * @param target the target value
-   * @return the closest value to the target value
+   * @param leftIndex The left boundary of the current search interval.
+   * @param rightIndex The right boundary of the current search interval.
+   * @return The middle index between the left and right indices.
    */
-  public static double getClosest(double val1, double val2,
-      double target) {
-    if (target - val1 >= val2 - target) {
-      return val2;
+  private static int calculateMiddleIndex(final int leftIndex, final int rightIndex) {
+    return (leftIndex + rightIndex) / 2;
+  }
+
+  /**
+   * Determines which of two values is closer to a target value.
+   * This method abstracts the logic for determining closeness, reducing duplication
+   * and centralizing the comparison logic.
+   *
+   * @param value1 The first value to compare against the target.
+   * @param value2 The second value to compare against the target.
+   * @param targetValue The target value for the comparison.
+   * @return The value (either value1 or value2) that is closest to the target value.
+   */
+  private static double getClosest(final double value1,
+                                   final double value2,
+                                   final double targetValue) {
+    if (targetValue - value1 >= value2 - targetValue) {
+      return value2;
     } else {
-      return val1;
+      return value1;
     }
   }
 }

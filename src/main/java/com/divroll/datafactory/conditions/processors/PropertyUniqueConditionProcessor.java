@@ -22,6 +22,7 @@ package com.divroll.datafactory.conditions.processors;
 import com.divroll.datafactory.conditions.PropertyUniqueCondition;
 import com.divroll.datafactory.conditions.exceptions.UnsatisfiedConditionException;
 import com.divroll.datafactory.conditions.processors.core.UnsatisfiedConditionProcessorBase;
+import com.divroll.datafactory.conditions.processors.core.UnsatisfiedConditionProcessor;
 import jetbrains.exodus.entitystore.Entity;
 import jetbrains.exodus.entitystore.EntityIterable;
 import jetbrains.exodus.entitystore.StoreTransaction;
@@ -30,18 +31,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This class is a processor for handling the PropertyUniqueCondition.
- * It extends the UnsatisfiedConditionProcessorBase class and implements the UnsatisfiedConditionProcessor interface.
- *
- * @param <T> The type of the condition that this processor can handle.
  *
  * @see PropertyUniqueCondition
  * @see UnsatisfiedConditionProcessorBase
  * @see UnsatisfiedConditionProcessor
  */
-public class PropertyUniqueConditionProcessor extends UnsatisfiedConditionProcessorBase<PropertyUniqueCondition> {
+public class PropertyUniqueConditionProcessor
+        extends UnsatisfiedConditionProcessorBase<PropertyUniqueCondition> {
     /**
      * This class is a processor for handling the PropertyUniqueCondition.
-     * It extends the UnsatisfiedConditionProcessorBase class and implements the UnsatisfiedConditionProcessor interface.
      *
      * @see PropertyUniqueCondition
      * @see UnsatisfiedConditionProcessorBase
@@ -52,22 +50,28 @@ public class PropertyUniqueConditionProcessor extends UnsatisfiedConditionProces
     }
 
     /**
-     * Processes the given condition by intersecting the scope with the entities in the store that satisfy the condition.
-     * If any entities are found, it throws an UnsatisfiedConditionException.
+     * Processes the given condition by intersecting the scope with the entities in
+     * the store that satisfy the condition. If any entities are found, it throws
+     * an UnsatisfiedConditionException.
      *
      * @param scope              The atomic reference to hold the entity iterable.
      * @param entityCondition    The property unique condition to process.
      * @param entityInContext    The entity in context.
-     * @param txn                The store transaction.
+     * @param storeTransaction                The store transaction.
      * @throws UnsatisfiedConditionException if any entities are found that satisfy the condition
      */
     @Override
-    protected void processCondition(AtomicReference<EntityIterable> scope, PropertyUniqueCondition entityCondition,
-                                    Entity entityInContext, StoreTransaction txn) {
+    protected void processCondition(final AtomicReference<EntityIterable> scope,
+                                    final PropertyUniqueCondition entityCondition,
+                                    final Entity entityInContext,
+                                    final StoreTransaction storeTransaction) {
         String propertyName = entityCondition.propertyName();
         Comparable propertyValue = entityCondition.propertyValue();
         if (scope.get()
-                .intersect(txn.find(entityInContext.getType(), propertyName, propertyValue))
+                .intersect(storeTransaction
+                        .find(entityInContext.getType(),
+                        propertyName,
+                        propertyValue))
                 .getFirst() != null) {
             throw new UnsatisfiedConditionException(entityCondition);
         }

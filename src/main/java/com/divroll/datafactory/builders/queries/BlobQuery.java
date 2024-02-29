@@ -19,7 +19,6 @@
  */
 package com.divroll.datafactory.builders.queries;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import org.immutables.value.Value;
 
@@ -29,10 +28,15 @@ import org.immutables.value.Value;
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface BlobQuery extends Serializable {
+  /**
+   * Returns the value of the blobName attribute.
+   *
+   * @return The value of the blobName attribute
+   */
   String blobName();
 
   /**
-   * Indicates to include the blob {@linkplain InputStream} body in the query response
+   * Indicates to include the blob {@linkplain java.io.InputStream} body in the query response.
    *
    * @return True if the blob body will be included in the query response, false otherwise
    */

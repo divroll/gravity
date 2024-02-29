@@ -39,17 +39,19 @@ import java.util.concurrent.atomic.AtomicReference;
  * <pre>{@code
  * PropertyMinMaxConditionProcessor processor = new PropertyMinMaxConditionProcessor();
  * AtomicReference<EntityIterable> scope = new AtomicReference<>();
- * PropertyMinMaxCondition condition = new PropertyMinMaxCondition("propertyName", minValue, maxValue);
+ * PropertyMinMaxCondition condition
+ *  = new PropertyMinMaxCondition("propertyName", minValue, maxValue);
  * Entity entity = ...
  * StoreTransaction txn = ...
  * processor.process(scope, condition, entity, txn);
  * }</pre>
  *
  * @see UnsatisfiedConditionProcessorBase
- * @see UnsatisfiedConditionProcessor
+ * @see com.divroll.datafactory.conditions.processors.core.UnsatisfiedConditionProcessor
  * @see PropertyMinMaxCondition
  */
-public class PropertyMinMaxConditionProcessor extends UnsatisfiedConditionProcessorBase<PropertyMinMaxCondition> {
+public class PropertyMinMaxConditionProcessor
+        extends UnsatisfiedConditionProcessorBase<PropertyMinMaxCondition> {
     /**
      * The PropertyMinMaxConditionProcessor class is responsible for processing
      * the PropertyMinMaxCondition entity condition. It extends the
@@ -60,14 +62,15 @@ public class PropertyMinMaxConditionProcessor extends UnsatisfiedConditionProces
      * <pre>{@code
      * PropertyMinMaxConditionProcessor processor = new PropertyMinMaxConditionProcessor();
      * AtomicReference<EntityIterable> scope = new AtomicReference<>();
-     * PropertyMinMaxCondition condition = new PropertyMinMaxCondition("propertyName", minValue, maxValue);
+     * PropertyMinMaxCondition condition
+     *  = new PropertyMinMaxCondition("propertyName", minValue, maxValue);
      * Entity entity = ...
      * StoreTransaction txn = ...
      * processor.process(scope, condition, entity, txn);
      * }</pre>
      *
-     * @see UnsatisfiedConditionProcessorBase
-     * @see UnsatisfiedConditionProcessor
+     * @see com.divroll.datafactory.conditions.processors.core.UnsatisfiedConditionProcessorBase
+     * @see com.divroll.datafactory.conditions.processors.core.UnsatisfiedConditionProcessor
      * @see PropertyMinMaxCondition
      */
     public PropertyMinMaxConditionProcessor() {
@@ -82,16 +85,20 @@ public class PropertyMinMaxConditionProcessor extends UnsatisfiedConditionProces
      * @param scope             The atomic reference to hold the entity iterable.
      * @param entityCondition   The PropertyMinMaxCondition to process.
      * @param entityInContext   The entity in context.
-     * @param txn               The store transaction.
+     * @param storeTransaction               The store transaction.
      *
-     * @throws UnsatisfiedConditionException if the property value is not within the specified range.
+     * @throws UnsatisfiedConditionException if the property value is not within the specified
+     * range.
      *
-     * @see EntityCondition
+     * @see com.divroll.datafactory.conditions.EntityCondition
      * @see PropertyMinMaxCondition
      * @see UnsatisfiedConditionException
      */
     @Override
-    protected void processCondition(AtomicReference<EntityIterable> scope, PropertyMinMaxCondition entityCondition, Entity entityInContext, StoreTransaction txn) {
+    protected void processCondition(final AtomicReference<EntityIterable> scope,
+                                    final PropertyMinMaxCondition entityCondition,
+                                    final Entity entityInContext,
+                                    final StoreTransaction storeTransaction) {
         PropertyMinMaxCondition minMaxCondition = (PropertyMinMaxCondition) entityCondition;
         String propertyName = minMaxCondition.propertyName();
         Comparable minValue = minMaxCondition.minValue();

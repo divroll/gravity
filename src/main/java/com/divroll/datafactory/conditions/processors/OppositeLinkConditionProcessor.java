@@ -30,12 +30,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The OppositeLinkConditionProcessor class processes conditions of type OppositeLinkCondition.
- * It extends the UnsatisfiedConditionProcessorBase class and implements the UnsatisfiedConditionProcessor interface.
+ * It extends the UnsatisfiedConditionProcessorBase class and implements
+ * the UnsatisfiedConditionProcessor interface.
  */
-public class OppositeLinkConditionProcessor extends UnsatisfiedConditionProcessorBase<OppositeLinkCondition> {
+public class OppositeLinkConditionProcessor
+        extends UnsatisfiedConditionProcessorBase<OppositeLinkCondition> {
     /**
-     * OppositeLinkConditionProcessor is a class that processes conditions of type OppositeLinkCondition.
-     * It extends the UnsatisfiedConditionProcessorBase class and implements the UnsatisfiedConditionProcessor interface.
+     * OppositeLinkConditionProcessor is a class that processes conditions
+     * of type OppositeLinkCondition. It extends the UnsatisfiedConditionProcessorBase class and
+     * implements the UnsatisfiedConditionProcessor interface.
      */
     public OppositeLinkConditionProcessor() {
         super(OppositeLinkCondition.class);
@@ -47,11 +50,14 @@ public class OppositeLinkConditionProcessor extends UnsatisfiedConditionProcesso
      * @param scope             The atomic reference to hold the entity iterable.
      * @param entityCondition   The OppositeLinkCondition to process.
      * @param entityInContext   The entity in context.
-     * @param txn               The store transaction.
+     * @param storeTransaction               The store transaction.
      * @throws UnsatisfiedConditionException if the condition is not satisfied.
      */
     @Override
-    protected void processCondition(AtomicReference<EntityIterable> scope, OppositeLinkCondition entityCondition, Entity entityInContext, StoreTransaction txn) {
+    protected void processCondition(final AtomicReference<EntityIterable> scope,
+                                    final OppositeLinkCondition entityCondition,
+                                    final Entity entityInContext,
+                                    final StoreTransaction storeTransaction) {
         OppositeLinkCondition oppositeLinkCondition = (OppositeLinkCondition) entityCondition;
         String linkName = oppositeLinkCondition.linkName();
         String oppositeLinkName = oppositeLinkCondition.oppositeLinkName();
@@ -59,7 +65,7 @@ public class OppositeLinkConditionProcessor extends UnsatisfiedConditionProcesso
         Boolean isSet = oppositeLinkCondition.isSet();
         Entity oppositeEntity = entityInContext.getStore()
                 .getCurrentTransaction()
-                .getEntity(txn.toEntityId(oppositeEntityId));
+                .getEntity(storeTransaction.toEntityId(oppositeEntityId));
 
         if (entityInContext.getLinks(linkName).isEmpty()) {
             throw new UnsatisfiedConditionException(entityCondition);

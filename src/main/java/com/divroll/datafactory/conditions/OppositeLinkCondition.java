@@ -23,8 +23,10 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 /**
- * OppositeLinkCondition is an interface that represents a condition for querying entities based on opposite link attributes.
- * It extends the EntityCondition interface and provides methods for retrieving the link name, opposite link name, opposite entity ID, and whether the isSet attribute is set.
+ * OppositeLinkCondition is an interface that represents a condition for querying entities based
+ * on opposite link attributes. It extends the EntityCondition interface and provides methods
+ * for retrieving the link name, opposite link name, opposite entity ID,
+ * and whether the isSet attribute is set.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)

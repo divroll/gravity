@@ -29,7 +29,8 @@ import org.immutables.value.Value;
 public interface EntityTypeQuery extends Serializable {
   /**
    * Returns the value of the environment attribute.
-   * If not set, this attribute will have a default value as returned by the initializer of environment.
+   * If not set, this attribute will have a default value as returned by the initializer
+   * of environment.
    *
    * @return The value of the environment attribute
    */

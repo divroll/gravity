@@ -22,9 +22,11 @@ package com.divroll.datafactory.conditions;
 import org.immutables.value.Value;
 
 /**
- * PropertyMinMaxCondition is an interface that represents a condition for querying entities with a specific property that falls within a specified minimum and maximum value range
+ * PropertyMinMaxCondition is an interface that represents a condition for querying entities
+ * with a specific property that falls within a specified minimum and maximum value range
  *.
- * It extends the EntityCondition interface and provides methods for retrieving the property name, minimum value, and maximum value of the condition.
+ * It extends the EntityCondition interface and provides methods for retrieving the property name,
+ * minimum value, and maximum value of the condition.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)

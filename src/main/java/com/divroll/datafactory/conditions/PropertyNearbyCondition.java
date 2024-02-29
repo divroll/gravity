@@ -24,8 +24,8 @@ import org.immutables.value.Value;
 
 /**
  * The PropertyNearbyCondition class represents a condition for querying nearby properties.
- * It extends the EntityCondition interface and provides methods for retrieving the property name, latitude, longitude,
- * distance, and usesGeoHash attribute.
+ * It extends the EntityCondition interface and provides methods for retrieving the property name,
+ * latitude, longitude, distance, and usesGeoHash attribute.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)

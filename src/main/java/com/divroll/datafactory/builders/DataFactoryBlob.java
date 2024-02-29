@@ -22,7 +22,6 @@ package com.divroll.datafactory.builders;
 import com.healthmarketscience.rmiio.RemoteInputStream;
 import java.io.Serializable;
 import javax.annotation.Nullable;
-import jetbrains.exodus.entitystore.Entity;
 import org.immutables.value.Value;
 
 @Value.Immutable
@@ -51,11 +50,13 @@ public interface DataFactoryBlob extends Serializable {
   RemoteInputStream blobStream();
 
   /**
-   * Indicates that this blob can be {@code set} to multiple {@linkplain Entity}. If used for a
-   * delete operation this property indicates whether to delete the blob from multiple {@linkplain
-   * Entity} matching the query.
+   * Indicates that this blob can be {@code set} to multiple
+   * {@linkplain jetbrains.exodus.entitystore.Entity}. If used for a delete operation this
+   * property indicates whether to delete the blob from multiple
+   * {@linkplain jetbrains.exodus.entitystore.Entity} matching the query.
    *
-   * @return True if the blob can be set to multiple {@linkplain Entity}, false otherwise
+   * @return True if the blob can be set to multiple
+   * {@linkplain jetbrains.exodus.entitystore.Entity}, false otherwise
    */
   @Nullable
   @Value.Default

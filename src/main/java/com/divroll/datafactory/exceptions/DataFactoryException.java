@@ -28,17 +28,21 @@ public class DataFactoryException extends ExodusException {
   /**
    * Exception thrown when there is an error in the data factory.
    *
-   * @since 0-SNAPSHOT
+   * @param message the error message
    */
-  public DataFactoryException(String message) {
+  public DataFactoryException(final String message) {
     super(message);
   }
 
   /**
-   * DataFactoryException is an exception class that is thrown when an error occurs in the data factory.
-   * It extends the ExodusException class and provides constructors to set the error message and cause of the exception.
+   * DataFactoryException is an exception class that is thrown when an error occurs
+   * in the data factory. It extends the ExodusException class and provides constructors
+   * to set the error message and cause of the exception.
+   *
+   * @param message the error message
+   * @param cause the cause of the exception
    */
-  public DataFactoryException(String message, Throwable cause) {
+  public DataFactoryException(final String message, final Throwable cause) {
     super(message, cause);
   }
 }

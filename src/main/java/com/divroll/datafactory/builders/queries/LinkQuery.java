@@ -19,7 +19,6 @@
  */
 package com.divroll.datafactory.builders.queries;
 
-import com.divroll.datafactory.builders.DataFactoryEntity;
 import java.io.Serializable;
 import javax.annotation.Nullable;
 import org.immutables.value.Value;
@@ -30,12 +29,19 @@ import org.immutables.value.Value;
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface LinkQuery extends Serializable {
+  /**
+   * Retrieves the link name of a {@link LinkQuery} instance.
+   *
+   * @return The link name
+   */
   String linkName();
 
   /**
-   * Indicates to include the linked {@linkplain DataFactoryEntity} body in the query response
+   * Indicates to include the
+   * {@linkplain com.divroll.datafactory.builders.DataFactoryEntity} body in the query response.
    *
-   * @return True if the linked entity body will be included in the query response, false otherwise
+   * @return  True if the linked entity body will be included in the query response,
+   *          false otherwise
    */
   @Nullable
   @Value.Default

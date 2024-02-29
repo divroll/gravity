@@ -25,20 +25,20 @@ import com.divroll.datafactory.conditions.EntityCondition;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.immutables.value.Value;
+
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
-import org.immutables.value.Value;
 
 /**
  * DataFactoryEntity represents an entity in the data factory system.
- * It contains information such as the entity type, ID, namespace, property map, blobs, links, and more.
- * This is an immutable interface, which means the attributes cannot be modified once set.
- * Use the DataFactoryEntityBuilder to construct instances of this interface.
+ * It contains information such as the entity type, ID, namespace, property map, blobs,
+ * links, and more. This is an immutable interface, which means the attributes cannot be modified
+ * once set. Use the DataFactoryEntityBuilder to construct instances of this interface.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
@@ -53,8 +53,10 @@ public interface DataFactoryEntity extends Serializable {
   @Value.Check
   default DataFactoryEntity check() {
     Preconditions.checkState(
-        !((entityType() == null || entityType().isEmpty()) && (entityId() == null || entityId().isEmpty()))
-    , "Should have at least either an Entity Type or ID");
+        !((entityType() == null
+                || entityType().isEmpty()) && (entityId() == null
+                || entityId().isEmpty())),
+            "Should have at least either an Entity Type or ID");
     return this;
   }
 
@@ -96,8 +98,9 @@ public interface DataFactoryEntity extends Serializable {
   /**
    * Returns the property map of a DataFactoryEntity.
    *
-   * @return The property map as a {@code Map<String, Comparable>} object. Returns a new empty {@code LinkedHashMap} if no
-   *         properties are set. The returned map is not null.
+   * @return The property map as a {@code Map<String, Comparable>} object.
+   * Returns a new empty {@code LinkedHashMap} if no properties are set.
+   * The returned map is not null.
    */
   @Value.Default
   default Map<String, Comparable> propertyMap() {
@@ -107,7 +110,8 @@ public interface DataFactoryEntity extends Serializable {
   /**
    * Retrieves the list of blobs associated with the DataFactoryEntity.
    *
-   * @return The list of DataFactoryBlob objects. Returns an empty list if no blobs are associated with the entity. The returned list is nullable.
+   * @return The list of DataFactoryBlob objects. Returns an empty list if no blobs are associated
+   * with the entity. The returned list is nullable.
    */
   @Nullable
   @Value.Default
@@ -124,7 +128,7 @@ public interface DataFactoryEntity extends Serializable {
    */
   @Nullable
   @Value.Default
-  default Multimap<String,DataFactoryEntity> links() {
+  default Multimap<String, DataFactoryEntity> links() {
     return ArrayListMultimap.create();
   }
 

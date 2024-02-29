@@ -22,8 +22,8 @@ package com.divroll.datafactory.conditions;
 import org.immutables.value.Value;
 
 /**
- * PropertyContainsCondition is an interface that represents a condition for querying entities based on the presence of a property value.
- * It extends the EntityCondition interface.
+ * PropertyContainsCondition is an interface that represents a condition for querying entities
+ * based on the presence of a property value.
  *
  * @param <T> The type of the inner property value.
  */

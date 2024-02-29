@@ -23,7 +23,8 @@ import org.immutables.value.Value;
 
 /**
  * UnsatisfiedCondition interface represents a condition for querying entities.
- * It provides a method to retrieve the EntityCondition object representing the condition for the method.
+ * It provides a method to retrieve the EntityCondition object representing
+ * the condition for the method.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)

@@ -21,24 +21,24 @@ package com.divroll.datafactory.conditions;
 
 import java.io.Serializable;
 import javax.annotation.Nullable;
+
+import com.divroll.datafactory.database.BinaryOp;
 import org.immutables.value.Value;
 
 /**
  * EntityCondition is an interface that represents a condition for querying entities.
- * It extends the Serializable interface and provides methods for retrieving and setting the binary operator for the condition.
+ * It extends the Serializable interface and provides methods for retrieving and setting
+ * the binary operator for the condition.
  */
 public interface EntityCondition extends Serializable {
-  enum BINARY_OP {
-    INTERSECT, MINUS, UNION, CONCAT
-  }
   /**
-   * Returns the binary operator for the condition. If not set, the default value is BINARY_OP.INTERSECT.
+   * Returns the binary operator used in the condition.
    *
-   * @return the binary operator for the condition
+   * @return The binary operator.
    */
   @Nullable
   @Value.Default
-  default BINARY_OP binaryOperator() {
-    return BINARY_OP.INTERSECT;
+  default BinaryOp binaryOperator() {
+    return BinaryOp.INTERSECT;
   }
 }

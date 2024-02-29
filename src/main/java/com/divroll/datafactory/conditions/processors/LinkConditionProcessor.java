@@ -52,11 +52,14 @@ public class LinkConditionProcessor extends UnsatisfiedConditionProcessorBase<Li
      * @param scope            The atomic reference to hold the entity iterable.
      * @param entityCondition  The condition to be processed.
      * @param entityInContext  The entity in context.
-     * @param txn              The store transaction.
+     * @param storeTransaction              The store transaction.
      * @throws UnsatisfiedConditionException If the condition is not satisfied.
      */
     @Override
-    protected void processCondition(AtomicReference<EntityIterable> scope, LinkCondition entityCondition, Entity entityInContext, StoreTransaction txn)
+    protected void processCondition(final AtomicReference<EntityIterable> scope,
+                                    final LinkCondition entityCondition,
+                                    final Entity entityInContext,
+                                    final StoreTransaction storeTransaction)
             throws UnsatisfiedConditionException {
         String linkName = entityCondition.linkName();
         String otherEntityId = entityCondition.otherEntityId();

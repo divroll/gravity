@@ -38,7 +38,7 @@ import org.jetbrains.annotations.NotNull;
 public interface EntityStore extends Remote {
 
   /**
-   * Save an entity
+   * Save an entity.
    *
    * @param entity
    * @return the saved entity
@@ -50,7 +50,7 @@ public interface EntityStore extends Remote {
       throws DataFactoryException, DataFactoryException, NotBoundException, RemoteException;
 
   /**
-   * Save entities
+   * Save entities.
    *
    * @param entities
    * @return the saved entities
@@ -62,7 +62,7 @@ public interface EntityStore extends Remote {
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
-   * Get an entity
+   * Get an entity.
    *
    * @param query
    * @return the entity
@@ -74,7 +74,7 @@ public interface EntityStore extends Remote {
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
-   * Get entities
+   * Get entities.
    *
    * @param query
    * @return the entities
@@ -86,7 +86,7 @@ public interface EntityStore extends Remote {
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
-   * Remove entities matching the query
+   * Remove entities matching the query.
    *
    * @param query
    * @return true if the entity was removed, false otherwise
@@ -97,7 +97,7 @@ public interface EntityStore extends Remote {
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
-   * Remove entities matching the list of queries
+   * Remove entities matching the list of queries.
    *
    * @param queries
    * @return true if the entity was removed, false otherwise
@@ -108,7 +108,7 @@ public interface EntityStore extends Remote {
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
-   * Save a property
+   * Save a property.
    *
    * @param property
    * @return true if the property was saved, false otherwise
@@ -120,7 +120,7 @@ public interface EntityStore extends Remote {
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
-   * Remove a property
+   * Remove a property.
    *
    * @param property
    * @return true if the property was removed, false otherwise
@@ -132,7 +132,7 @@ public interface EntityStore extends Remote {
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
-   * Remove an entity type
+   * Remove an entity type.
    *
    * @param query
    * @return true if the entity type was removed, false otherwise
@@ -144,7 +144,7 @@ public interface EntityStore extends Remote {
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
-   * Get entity
+   * Get entity.
    *
    * @param query
    * @return the entity types

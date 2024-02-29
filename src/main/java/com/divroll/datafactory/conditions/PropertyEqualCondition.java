@@ -22,9 +22,9 @@ package com.divroll.datafactory.conditions;
 import org.immutables.value.Value;
 
 /**
- * PropertyEqualCondition is an interface that represents a condition for querying entities based on a specific property and its value.
- *
- * It extends the EntityCondition interface and provides methods for retrieving the name of the property and the property value.
+ * PropertyEqualCondition is an interface that represents a condition for querying entities based
+ * on a specific property and its value. It extends the EntityCondition interface
+ * and provides methods for retrieving the name of the property and the property value.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)

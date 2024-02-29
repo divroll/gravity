@@ -26,10 +26,12 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 
 /**
- * The EntityConditionProcessors class is responsible for storing and retrieving a list of entity processor classes
- * and finding classes in a specified package that implement or extend a given superclass or interface.
+ * The EntityConditionProcessors class is responsible for storing and retrieving a list of entity
+ * processor classes and finding classes in a specified package that implement or extend a given
+ * superclass or interface.
  *
- * The PACKAGE_NAME variable represents the package name for the classes related to entity condition processors in the data factory.
+ * The PACKAGE_NAME variable represents the package name for the classes related to entity
+ * condition processors in the data factory.
  *
  * @see EntityConditionProcessors
  * @see com.divroll.datafactory.conditions.LinkCondition
@@ -47,11 +49,14 @@ import io.github.classgraph.ScanResult;
  */
 public class EntityConditionProcessors {
     /**
-     *
+     * A List of Class objects representing the entity processor classes.
+     * Entity processors are used for processing entities based on specific conditions.
+     * These classes implement the EntityProcessor interface.
      */
-    private static final List<Class<?>> entityProcessorClasses;
+    private static final List<Class<?>> ENTITY_PROCESSOR_CLASSES;
     /**
-     * The PACKAGE_NAME variable represents the package name for the classes related to entity condition processors in the data factory.
+     * The PACKAGE_NAME variable represents the package name for the classes related to entity
+     * condition processors in the data factory.
      *
      * @see EntityConditionProcessors
      * @see com.divroll.datafactory.conditions.LinkCondition
@@ -73,7 +78,8 @@ public class EntityConditionProcessors {
         try (ScanResult scanResult = new ClassGraph()
                 .whitelistPackages(PACKAGE_NAME)
                 .scan()) {
-            entityProcessorClasses = scanResult.getClassesImplementing(UnsatisfiedConditionProcessor.class.getName())
+            ENTITY_PROCESSOR_CLASSES = scanResult
+                    .getClassesImplementing(UnsatisfiedConditionProcessor.class.getName())
                     .filter(classInfo -> classInfo.getPackageName().equals(PACKAGE_NAME))
                     .loadClasses(true);
         }
@@ -85,21 +91,24 @@ public class EntityConditionProcessors {
      * @return A list of Class objects representing the entity processor classes.
      */
     public static List<Class<?>> getEntityProcessorClasses() {
-        return entityProcessorClasses;
+        return ENTITY_PROCESSOR_CLASSES;
     }
 
     /**
-     * Finds classes in the specified package that implement or extend the given superclass or interface.
+     * Finds classes in the specified package that implement or extend the given superclass
+     * or interface.
      *
      * @param packageName The name of the package to scan for classes.
      * @param superClass  The superclass or interface that the classes should implement or extend.
      * @return A List of Class objects that implement or extend the given superclass or interface.
      */
-    private List<Class<?>> findClasses(String packageName, Class<?> superClass) {
+    private List<Class<?>> findClasses(final String packageName, final Class<?> superClass) {
         try (ScanResult scanResult = new ClassGraph()
                 .whitelistPackages(packageName)
                 .scan()) {
-            return scanResult.getClassesImplementing(superClass.getName()).loadClasses(true);
+            return scanResult
+                    .getClassesImplementing(superClass.getName())
+                    .loadClasses(true);
         }
     }
 }

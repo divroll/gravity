@@ -23,10 +23,10 @@ import jetbrains.exodus.entitystore.Entity;
 import jetbrains.exodus.entitystore.EntityIterable;
 import jetbrains.exodus.entitystore.StoreTransaction;
 import java.util.concurrent.atomic.AtomicReference;
-
 /**
- * The UnsatisfiedConditionProcessor interface defines the contract for processors that handle unsatisfied conditions.
- * It provides a method to process conditions and check if a processor can handle a specific condition.
+ * The UnsatisfiedConditionProcessor interface defines the contract for processors that handle
+ * unsatisfied conditions. It provides a method to process conditions and check if a processor can
+ * handle a specific condition.
  *
  * @param <EntityCondition> The type of entity condition that the processor can handle.
  */
@@ -49,10 +49,13 @@ public interface UnsatisfiedConditionProcessor<EntityCondition> {
      * @see com.divroll.datafactory.conditions.PropertyUniqueCondition
      * @see com.divroll.datafactory.conditions.CustomCondition
      * @see com.divroll.datafactory.conditions.CustomQueryCondition
-     * @see com.divroll.datafactory.exceptions.UnsatisfiedConditionException
-     * @throws UnsatisfiedConditionException if the condition is not satisfied
+     * @see com.divroll.datafactory.conditions.exceptions.UnsatisfiedConditionException
+     * @throws com.divroll.datafactory.conditions.exceptions.UnsatisfiedConditionException
+     * if the condition is not satisfied
      */
-    void process(AtomicReference<EntityIterable> scope, com.divroll.datafactory.conditions.EntityCondition entityCondition, Entity entityInContext, StoreTransaction txn);
+    void process(AtomicReference<EntityIterable> scope,
+                 com.divroll.datafactory.conditions.EntityCondition entityCondition,
+                 Entity entityInContext, StoreTransaction txn);
     /**
      * Checks if the processor can handle a specific condition.
      *

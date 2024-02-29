@@ -29,7 +29,8 @@ import jetbrains.exodus.entitystore.StoreTransaction;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * The PropertyEqualConditionProcessor class is a processor for handling unsatisfied PropertyEqualCondition instances.
+ * The PropertyEqualConditionProcessor class is a processor for handling unsatisfied
+ * PropertyEqualCondition instances.
  *
  * @see UnsatisfiedConditionProcessorBase
  * @see PropertyEqualCondition
@@ -38,9 +39,11 @@ import java.util.concurrent.atomic.AtomicReference;
  * @see StoreTransaction
  * @see UnsatisfiedConditionException
  */
-public class PropertyEqualConditionProcessor extends UnsatisfiedConditionProcessorBase<PropertyEqualCondition> {
+public class PropertyEqualConditionProcessor
+        extends UnsatisfiedConditionProcessorBase<PropertyEqualCondition> {
     /**
-     * PropertyEqualConditionProcessor is a processor for handling unsatisfied PropertyEqualCondition instances.
+     * PropertyEqualConditionProcessor is a processor for handling unsatisfied
+     * PropertyEqualCondition instances.
      */
     public PropertyEqualConditionProcessor() {
         super(PropertyEqualCondition.class);
@@ -51,11 +54,14 @@ public class PropertyEqualConditionProcessor extends UnsatisfiedConditionProcess
      * @param scope The reference to hold the entity iterable.
      * @param entityCondition The condition to process.
      * @param entityInContext The entity in context.
-     * @param txn The store transaction.
+     * @param storeTransaction The store transaction.
      * @throws UnsatisfiedConditionException if the condition is not satisfied.
      */
     @Override
-    protected void processCondition(AtomicReference<EntityIterable> scope, PropertyEqualCondition entityCondition, Entity entityInContext, StoreTransaction txn) {
+    protected void processCondition(final AtomicReference<EntityIterable> scope,
+                                    final PropertyEqualCondition entityCondition,
+                                    final Entity entityInContext,
+                                    final StoreTransaction storeTransaction) {
         PropertyEqualCondition equalCondition = (PropertyEqualCondition) entityCondition;
         String propertyName = equalCondition.propertyName();
         Comparable expectedPropertyValue = equalCondition.propertyValue();

@@ -31,7 +31,7 @@ public class InvalidConditionException extends DataFactoryException {
      *
      * @param condition The invalid condition.
      */
-    public InvalidConditionException(EntityCondition condition) {
+    public InvalidConditionException(final EntityCondition condition) {
         super("The " + condition.getClass().getName() + " is not a valid condition.");
     }
 }

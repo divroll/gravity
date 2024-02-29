@@ -22,8 +22,10 @@ package com.divroll.datafactory.conditions;
 import org.immutables.value.Value;
 
 /**
- * PropertyStartsWithCondition is an interface that represents a condition for querying entities based on whether a property value starts with a specified value. It extends the Entity
- *Condition interface and provides methods for retrieving the name of the property and the specified value.
+ * PropertyStartsWithCondition is an interface that represents a condition for querying entities
+ * based on whether a property value starts with a specified value.
+ * It extends the Entity Condition interface and provides methods for retrieving the name of the
+ * property and the specified value.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)

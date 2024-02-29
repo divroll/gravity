@@ -46,8 +46,23 @@ import java.util.List;
  * It provides methods to set the entity, link queries, and blob queries, and a build
  */
 public class Marshaller {
+  /**
+   * Represents an Entity object in the system.
+   * This class contains information such as the entity type, ID, namespace,
+   * property map, blobs, links, and more.
+   *
+   * It should be constructed using the appropriate builder class.
+   *
+   * Private field representing the entity.
+   */
   private Entity entity;
+  /**
+   * Represents a list of LinkQuery objects.
+   */
   private List<LinkQuery> linkQueries;
+  /**
+   * Represents a list of queries to rename blobs.
+   */
   private List<BlobQuery> blobQueries;
 
   /**
@@ -56,7 +71,7 @@ public class Marshaller {
    * @param entity the entity to add
    * @return the updated marshaller
    */
-  public Marshaller with(@NotNull Entity entity) {
+  public Marshaller with(@NotNull final Entity entity) {
     if (this.entity != null) {
       throw new IllegalArgumentException("Entity is already set");
     }
@@ -71,7 +86,7 @@ public class Marshaller {
    * @return the updated Marshaller object
    * @throws IllegalArgumentException if LinkQuery is already set
    */
-  public Marshaller with(@NotNull LinkQuery[] linkQueries) {
+  public Marshaller with(@NotNull final LinkQuery[] linkQueries) {
     if (this.linkQueries != null) {
       throw new IllegalArgumentException("LinkQuery is already set");
     }
@@ -85,7 +100,7 @@ public class Marshaller {
    * @param blobQueries an array of BlobQuery objects to add to the Marshaller
    * @return the updated Marshaller object
    */
-  public Marshaller with(@NotNull BlobQuery[] blobQueries) {
+  public Marshaller with(@NotNull final BlobQuery[] blobQueries) {
     if (this.blobQueries != null) {
       throw new IllegalArgumentException("BlobQuery is already set");
     }
@@ -94,8 +109,8 @@ public class Marshaller {
   }
 
   /**
-   * Builds a {@linkplain Entity} into a {@linkplain DataFactoryEntity} for remote transmission. This
-   * method should be called within a database {@linkplain StoreTransaction}.
+   * Builds a {@linkplain Entity} into a {@linkplain DataFactoryEntity} for remote transmission.
+   * This method should be called within a database {@linkplain StoreTransaction}.
    *
    * @return {@code entity}
    */
@@ -118,7 +133,7 @@ public class Marshaller {
     });
 
     List<DataFactoryBlob> blobs = new ArrayList<>();
-    Multimap<String,DataFactoryEntity> links = ArrayListMultimap.create();
+    Multimap<String, DataFactoryEntity> links = ArrayListMultimap.create();
 
     if (linkQueries == null) {
       linkQueries = new ArrayList<>();
@@ -161,7 +176,7 @@ public class Marshaller {
 
     String nameSpace = null;
     Comparable nameSpaceProperty = entity.getProperty(Constants.NAMESPACE_PROPERTY);
-    if(nameSpaceProperty != null) {
+    if (nameSpaceProperty != null) {
       nameSpace = String.valueOf(nameSpaceProperty);
     }
 

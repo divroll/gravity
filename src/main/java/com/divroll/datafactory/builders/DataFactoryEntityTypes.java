@@ -25,8 +25,9 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 /**
- * DataFactoryEntityTypes is an interface that represents a collection of Entity Types in a Data Factory.
- * It provides methods to retrieve the list of entity types and the count of entities.
+ * DataFactoryEntityTypes is an interface that represents a collection of Entity Types in a
+ * Data Factory. It provides methods to retrieve the list of entity types and the count of
+ * entities.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)

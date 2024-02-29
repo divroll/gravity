@@ -53,7 +53,8 @@ public class GeoPointBinding extends ComparableBinding {
    * @param output the LightOutputStream to write the object to
    * @param object the object to be written
    */
-  @Override public void writeObject(@NotNull final LightOutputStream output, @NotNull final Comparable object) {
+  @Override public void writeObject(@NotNull final LightOutputStream output,
+                                    @NotNull final Comparable object) {
     output.write(BindingUtils.writeObject(object));
   }
 

@@ -1,4 +1,4 @@
-/*
- * This package contains the core processors for the conditions.
+/**
+ * This package contains the exceptions that are thrown by the conditions package.
  */
 package com.divroll.datafactory.conditions.exceptions;
