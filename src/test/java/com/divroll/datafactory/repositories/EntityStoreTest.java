@@ -25,9 +25,9 @@ import com.divroll.datafactory.actions.ImmutableBlobRemoveAction;
 import com.divroll.datafactory.actions.ImmutableBlobRenameAction;
 import com.divroll.datafactory.actions.ImmutableBlobRenameRegexAction;
 import com.divroll.datafactory.actions.ImmutableLinkAction;
-import com.divroll.datafactory.builders.DataFactoryBlobBuilder;
-import com.divroll.datafactory.builders.DataFactoryEntity;
-import com.divroll.datafactory.builders.DataFactoryEntityBuilder;
+import com.divroll.datafactory.builders.BlobBuilder;
+import com.divroll.datafactory.builders.Entity;
+import com.divroll.datafactory.builders.EntityBuilder;
 import com.divroll.datafactory.builders.queries.BlobQueryBuilder;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityQueryBuilder;
@@ -61,13 +61,13 @@ public class EntityStoreTest {
     String environment = TestEnvironment.getEnvironment();
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
     assertNotNull(entityStore);
-    DataFactoryEntity dataFactoryEntity = entityStore.saveEntity(new DataFactoryEntityBuilder()
+    Entity entity = entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
         .putPropertyMap("foo", "bar")
         .build()).get();
-    assertNotNull(dataFactoryEntity);
-    assertNotNull(dataFactoryEntity.entityId());
+    assertNotNull(entity);
+    assertNotNull(entity.entityId());
   }
 
   @Test
@@ -76,22 +76,22 @@ public class EntityStoreTest {
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
     assertNotNull(entityStore);
     // Create with blob
-    DataFactoryEntity dataFactoryEntity = entityStore.saveEntity(new DataFactoryEntityBuilder()
+    Entity entity = entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
         .putPropertyMap("foo", "bar")
-        .addBlobs(new DataFactoryBlobBuilder()
+        .addBlobs(new BlobBuilder()
             .blobName("message")
             .blobStream(
                 new SimpleRemoteInputStream(ByteSource.wrap("Hello Word".getBytes()).openStream()))
             .build())
         .build()).get();
-    assertNotNull(dataFactoryEntity);
-    assertNotNull(dataFactoryEntity.entityId());
+    assertNotNull(entity);
+    assertNotNull(entity.entityId());
     // Get with blob
     entityStore.getEntity(new EntityQueryBuilder()
         .environment(environment)
-        .entityId(dataFactoryEntity.entityId())
+        .entityId(entity.entityId())
         .addBlobQueries(new BlobQueryBuilder()
             .blobName("message")
             .include(true)
@@ -115,10 +115,10 @@ public class EntityStoreTest {
       });
     });
     // Delete blob
-    entityStore.saveEntity(new DataFactoryEntityBuilder()
+    entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
-        .entityId(dataFactoryEntity.entityId())
+        .entityId(entity.entityId())
         .addActions(ImmutableBlobRemoveAction.builder()
             .blobNames(Arrays.asList("message"))
             .build())
@@ -126,7 +126,7 @@ public class EntityStoreTest {
     // Get with blob, expecting blob is removed
     entityStore.getEntity(new EntityQueryBuilder()
         .environment(environment)
-        .entityId(dataFactoryEntity.entityId())
+        .entityId(entity.entityId())
         .addBlobQueries(new BlobQueryBuilder()
             .blobName("message")
             .include(true)
@@ -144,11 +144,11 @@ public class EntityStoreTest {
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
     assertNotNull(entityStore);
     // Create with blob
-    DataFactoryEntity dataFactoryEntity = entityStore.saveEntity(new DataFactoryEntityBuilder()
+    Entity dataFactoryEntity = entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
         .putPropertyMap("foo", "bar")
-        .addBlobs(new DataFactoryBlobBuilder()
+        .addBlobs(new BlobBuilder()
             .blobName("message")
             .blobStream(
                 new SimpleRemoteInputStream(ByteSource.wrap("Hello Word".getBytes()).openStream()))
@@ -183,7 +183,7 @@ public class EntityStoreTest {
       });
     });
     // Rename blob
-    DataFactoryEntity entity = new DataFactoryEntityBuilder()
+    Entity entity = new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
         .entityId(dataFactoryEntity.entityId())
@@ -224,16 +224,16 @@ public class EntityStoreTest {
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
     assertNotNull(entityStore);
     // Create with blob
-    DataFactoryEntity dataFactoryEntity = entityStore.saveEntity(new DataFactoryEntityBuilder()
+    Entity dataFactoryEntity = entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
         .putPropertyMap("foo", "bar")
-        .addBlobs(new DataFactoryBlobBuilder()
+        .addBlobs(new BlobBuilder()
             .blobName("message")
             .blobStream(
                 new SimpleRemoteInputStream(ByteSource.wrap("Should not be replaced".getBytes()).openStream()))
             .build())
-        .addBlobs(new DataFactoryBlobBuilder()
+        .addBlobs(new BlobBuilder()
             .blobName("123")
             .blobStream(
                 new SimpleRemoteInputStream(ByteSource.wrap("Should be replaced".getBytes()).openStream()))
@@ -242,7 +242,7 @@ public class EntityStoreTest {
     assertNotNull(dataFactoryEntity);
     assertNotNull(dataFactoryEntity.entityId());
     // Rename blob with regex
-    DataFactoryEntity entity = new DataFactoryEntityBuilder()
+    Entity entity = new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
         .entityId(dataFactoryEntity.entityId())
@@ -376,17 +376,17 @@ public class EntityStoreTest {
     String environment = TestEnvironment.getEnvironment();
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
     assertNotNull(entityStore);
-    DataFactoryEntity dataFactoryEntity = entityStore.saveEntity(new DataFactoryEntityBuilder()
+    Entity entity = entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
         .putPropertyMap("foo", "fooBar")
         .build()).get();
-    assertNotNull(dataFactoryEntity);
-    assertNotNull(dataFactoryEntity.entityId());
+    assertNotNull(entity);
+    assertNotNull(entity.entityId());
 
-    dataFactoryEntity = entityStore.saveEntity(new DataFactoryEntityBuilder()
+    entity = entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
-        .entityId(dataFactoryEntity.entityId())
+        .entityId(entity.entityId())
         .putPropertyMap("hasFooBaz", true)
         .addConditions(new PropertyStartsWithConditionBuilder()
             .propertyName("foo")
@@ -400,27 +400,27 @@ public class EntityStoreTest {
     String environment = TestEnvironment.getEnvironment();
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
     assertNotNull(entityStore);
-    DataFactoryEntity dataFactoryEntity = entityStore.saveEntity(new DataFactoryEntityBuilder()
+    Entity entity = entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
         .putPropertyMap("foo", "fooBar")
         .build()).get();
-    assertNotNull(dataFactoryEntity);
-    assertNotNull(dataFactoryEntity.entityId());
+    assertNotNull(entity);
+    assertNotNull(entity.entityId());
     // Update entity if property "starts with", else fail
-    String entityId = dataFactoryEntity.entityId();
-    dataFactoryEntity = entityStore.saveEntity(new DataFactoryEntityBuilder()
+    String entityId = entity.entityId();
+    entity = entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
-        .entityId(dataFactoryEntity.entityId())
+        .entityId(entity.entityId())
         .putPropertyMap("hasFooBar", true)
         .addConditions(new PropertyStartsWithConditionBuilder()
             .propertyName("foo")
             .startsWith("fooBar")
             .build())
         .build()).get();
-    assertNotNull(dataFactoryEntity);
-    assertNotNull(dataFactoryEntity.entityId());
-    assertEquals(entityId, dataFactoryEntity.entityId());
+    assertNotNull(entity);
+    assertNotNull(entity.entityId());
+    assertEquals(entityId, entity.entityId());
     // Get entity
     EntityQuery entityQuery = new EntityQueryBuilder()
         .environment(environment)
@@ -437,21 +437,21 @@ public class EntityStoreTest {
     String environment = TestEnvironment.getEnvironment();
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
     assertNotNull(entityStore);
-    DataFactoryEntity dataFactoryEntity = entityStore.saveEntity(new DataFactoryEntityBuilder()
+    Entity entity = entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
         .putPropertyMap("foo", "bar")
         .build()).get();
-    assertNotNull(dataFactoryEntity);
-    assertNotNull(dataFactoryEntity.entityId());
+    assertNotNull(entity);
+    assertNotNull(entity.entityId());
     EntityQuery query = new EntityQueryBuilder()
         .environment(environment)
-        .entityId(dataFactoryEntity.entityId())
+        .entityId(entity.entityId())
         .build();
-    DataFactoryEntity savedEntity = entityStore.getEntity(query).get();
+    Entity savedEntity = entityStore.getEntity(query).get();
     assertNotNull(savedEntity);
-    assertEquals(dataFactoryEntity.entityId(), savedEntity.entityId());
-    assertEquals(dataFactoryEntity.propertyMap().get("foo"), savedEntity.propertyMap().get("foo"));
+    assertEquals(entity.entityId(), savedEntity.entityId());
+    assertEquals(entity.propertyMap().get("foo"), savedEntity.propertyMap().get("foo"));
   }
 
   @Test(expected = EntityRemovedInDatabaseException.class)
@@ -459,7 +459,7 @@ public class EntityStoreTest {
     String environment = TestEnvironment.getEnvironment();
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
     assertNotNull(entityStore);
-    DataFactoryEntity dataFactoryEntity = entityStore.saveEntity(new DataFactoryEntityBuilder()
+    Entity entity = entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
         .putPropertyMap("foo", "bar")
@@ -469,6 +469,6 @@ public class EntityStoreTest {
             .isSet(true)
             .build())
         .build()).get();
-    assertNotNull(dataFactoryEntity);
+    assertNotNull(entity);
   }
 }

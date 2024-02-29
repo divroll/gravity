@@ -23,7 +23,7 @@ import java.io.Serializable;
 import org.immutables.value.Value;
 
 /**
- * Represents a query to rename a blob.
+ * Represents a blob query.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)

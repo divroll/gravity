@@ -20,6 +20,7 @@
 package com.divroll.datafactory.builders.queries;
 
 import com.divroll.datafactory.Constants;
+import com.divroll.datafactory.builders.Entity;
 import com.divroll.datafactory.builders.TransactionFilter;
 import com.divroll.datafactory.conditions.EntityCondition;
 import java.io.Serializable;
@@ -29,7 +30,7 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 /**
- * Represents a query to retrieve an entity.
+ * Represents a query to an entity.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
@@ -75,7 +76,7 @@ public interface EntityQuery extends Serializable {
   /**
    * Indicates the {@code linkNames} to use in the query.
    *
-   * @return names of the links of {@linkplain com.divroll.datafactory.builders.DataFactoryEntity}
+   * @return names of the links of {@linkplain Entity}
    * to query
    */
   @Nullable
@@ -87,7 +88,7 @@ public interface EntityQuery extends Serializable {
   /**
    * Indicates the {@code blobNames} to use in the query.
    *
-   * @return names of the blobs of {@linkplain com.divroll.datafactory.builders.DataFactoryEntity}
+   * @return names of the blobs of {@linkplain Entity}
    * to query
    */
   @Nullable

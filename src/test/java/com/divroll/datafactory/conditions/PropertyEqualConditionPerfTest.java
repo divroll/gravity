@@ -21,8 +21,8 @@ package com.divroll.datafactory.conditions;
 
 import com.divroll.datafactory.DataFactory;
 import com.divroll.datafactory.TestEnvironment;
-import com.divroll.datafactory.builders.DataFactoryEntities;
-import com.divroll.datafactory.builders.DataFactoryEntityBuilder;
+import com.divroll.datafactory.builders.Entities;
+import com.divroll.datafactory.builders.EntityBuilder;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityQueryBuilder;
 import com.divroll.datafactory.repositories.EntityStore;
@@ -48,13 +48,13 @@ public class PropertyEqualConditionPerfTest {
     String environment = TestEnvironment.getEnvironment();
     long start = System.currentTimeMillis();
     for (int i = 0; i < 1000; i++) {
-      entityStore.saveEntity(new DataFactoryEntityBuilder()
+      entityStore.saveEntity(new EntityBuilder()
           .environment(environment)
           .entityType("Foo")
           .putPropertyMap("foo", "bar")
           .build()).get();
     }
-    entityStore.saveEntity(new DataFactoryEntityBuilder()
+    entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
         .putPropertyMap("baz", "fuu")
@@ -70,7 +70,7 @@ public class PropertyEqualConditionPerfTest {
             .build())
         .build();
     //System.out.println(new Gson().toJson(entityQuery));
-    DataFactoryEntities entities = entityStore.getEntities(entityQuery).get();
+    Entities entities = entityStore.getEntities(entityQuery).get();
     time = System.currentTimeMillis() - start;
     LOG.info("Time to get complete (ms): " + time);
     assertEquals(1L, entities.entities().size());

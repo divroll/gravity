@@ -19,9 +19,8 @@
  */
 package com.divroll.datafactory;
 
-import com.divroll.datafactory.builders.DataFactoryEntity;
-import com.divroll.datafactory.builders.DataFactoryEntityBuilder;
-import com.divroll.datafactory.exceptions.DataFactoryException;
+import com.divroll.datafactory.builders.Entity;
+import com.divroll.datafactory.builders.EntityBuilder;
 import com.divroll.datafactory.repositories.EntityStore;
 
 import java.rmi.NotBoundException;
@@ -69,13 +68,13 @@ public class DataFactoryClientTest {
     EntityStore entityStore = client.getEntityStore();
     Assert.assertNotNull(entityStore);
 
-    DataFactoryEntity entity = new DataFactoryEntityBuilder()
+    Entity entity = new EntityBuilder()
             .environment(TestEnvironment.getEnvironment())
             .entityType("Foo")
             .putPropertyMap("foo", "bar")
             .build();
 
-    DataFactoryEntity dataFactoryEntity = entityStore.saveEntity(entity).get();
+    Entity dataFactoryEntity = entityStore.saveEntity(entity).get();
     Assert.assertNotNull(dataFactoryEntity);
     Assert.assertNotNull(dataFactoryEntity.entityId());
     Assert.assertEquals("bar", dataFactoryEntity.propertyMap().get("foo"));

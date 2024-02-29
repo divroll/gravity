@@ -21,6 +21,8 @@ package com.divroll.datafactory.builders.queries;
 
 import java.io.Serializable;
 import javax.annotation.Nullable;
+
+import com.divroll.datafactory.builders.Entity;
 import org.immutables.value.Value;
 
 /**
@@ -38,7 +40,7 @@ public interface LinkQuery extends Serializable {
 
   /**
    * Indicates to include the
-   * {@linkplain com.divroll.datafactory.builders.DataFactoryEntity} body in the query response.
+   * {@linkplain Entity} body in the query response.
    *
    * @return  True if the linked entity body will be included in the query response,
    *          false otherwise

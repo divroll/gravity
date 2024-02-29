@@ -30,15 +30,15 @@ import org.immutables.value.Value;
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
-public interface DataFactoryEntities extends Serializable {
+public interface Entities extends Serializable {
   /**
    *
-   * Returns a list of DataFactoryEntity objects.
+   * Returns a list of Entity objects.
    *
-   * @return the list of DataFactoryEntity objects
+   * @return the list of Entity objects
    */
   @Value.Default
-  default List<DataFactoryEntity> entities() {
+  default List<Entity> entities() {
     return new ArrayList<>();
   }
   /**
@@ -49,7 +49,7 @@ public interface DataFactoryEntities extends Serializable {
   @Nullable
   Integer offset();
   /**
-   * Returns the maximum value for the 'max' attribute in the DataFactoryEntities class.
+   * Returns the maximum value for the 'max' attribute in the Entities class.
    *
    * @return the maximum value for the 'max' attribute, or null if not set
    */

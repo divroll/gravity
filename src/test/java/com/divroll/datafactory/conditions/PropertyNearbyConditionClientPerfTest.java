@@ -20,9 +20,9 @@
 package com.divroll.datafactory.conditions;
 
 import com.divroll.datafactory.*;
-import com.divroll.datafactory.builders.DataFactoryEntities;
-import com.divroll.datafactory.builders.DataFactoryEntity;
-import com.divroll.datafactory.builders.DataFactoryEntityBuilder;
+import com.divroll.datafactory.builders.Entities;
+import com.divroll.datafactory.builders.Entity;
+import com.divroll.datafactory.builders.EntityBuilder;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityQueryBuilder;
 import com.divroll.datafactory.repositories.EntityStore;
@@ -79,20 +79,20 @@ public class PropertyNearbyConditionClientPerfTest {
     long start = System.currentTimeMillis();
 
     for (int i = 0; i < 999; i++) {
-      entityStore.saveEntity(new DataFactoryEntityBuilder()
+      entityStore.saveEntity(new EntityBuilder()
           .environment(environment)
           .entityType("Room")
           .putPropertyMap("geoLocation", new GeoPoint(120.954228, 14.301893))
           .build()).get();
     }
 
-    entityStore.saveEntity(new DataFactoryEntityBuilder()
+    entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("geoLocation", new GeoPoint(120.976187, 14.581310))
         .build()).get();
 
-    DataFactoryEntities dataFactoryEntities =
+    Entities dataFactoryEntities =
         entityStore.getEntities(new EntityQueryBuilder()
             .environment(environment)
             .entityType("Room")
@@ -104,7 +104,7 @@ public class PropertyNearbyConditionClientPerfTest {
     long time = System.currentTimeMillis() - start;
     LOG.info("Time to save complete (ms): " + time);
     start = System.currentTimeMillis();
-    List<DataFactoryEntity> matched = new ArrayList<>();
+    List<Entity> matched = new ArrayList<>();
     List<Long> times = new ArrayList<>();
 
     boolean hasMore = true;
@@ -124,7 +124,7 @@ public class PropertyNearbyConditionClientPerfTest {
           .offset(offset)
           .max(max)
           .build();
-      DataFactoryEntities entities = entityStore.getEntities(entityQuery).get();
+      Entities entities = entityStore.getEntities(entityQuery).get();
       matched.addAll(entities.entities());
       time = System.currentTimeMillis() - start;
       times.add(time);
@@ -148,7 +148,7 @@ public class PropertyNearbyConditionClientPerfTest {
     String environment = TestEnvironment.getEnvironment();
     EntityStore entityStore = DataFactoryClient.getInstance(TestEnvironment.getDomain(), TestEnvironment.getPort()).getEntityStore();
 
-    DataFactoryEntity firstLocation = new DataFactoryEntityBuilder()
+    Entity firstLocation = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("address", "Room 123, 456 Street, 789 Avenue")
@@ -157,7 +157,7 @@ public class PropertyNearbyConditionClientPerfTest {
     firstLocation = entityStore.saveEntity(firstLocation).get();
     assertNotNull(firstLocation.entityId());
     for(int i=0;i<10000;i++){
-      DataFactoryEntity secondLocation = new DataFactoryEntityBuilder()
+      Entity secondLocation = new EntityBuilder()
           .environment(environment)
           .entityType("Room")
           .putPropertyMap("address", "Room 456, 789 Street, 012 Avenue")
@@ -166,7 +166,7 @@ public class PropertyNearbyConditionClientPerfTest {
       secondLocation = entityStore.saveEntity(secondLocation).get();
       //assertNotNull(secondLocation.entityId());
     }
-    DataFactoryEntity thirdLocation = new DataFactoryEntityBuilder()
+    Entity thirdLocation = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("address", "Room 456, 789 Street, 012 Avenue")
@@ -186,7 +186,7 @@ public class PropertyNearbyConditionClientPerfTest {
             .useGeoHash(true)
             .build())
         .build();
-    DataFactoryEntities entities = entityStore.getEntities(entityQuery).get();
+    Entities entities = entityStore.getEntities(entityQuery).get();
     long time = System.currentTimeMillis() - start;
     LOG.info("Time to complete query (ms): " + time);
     assertNotNull(entities);

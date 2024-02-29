@@ -22,9 +22,9 @@ package com.divroll.datafactory.builders.queries;
 import java.io.Serializable;
 import javax.annotation.Nullable;
 import org.immutables.value.Value;
-
+import com.divroll.datafactory.builders.Entity;
 /**
- * Represents a query to retrieve a property.
+ * Represents a query to retrieve a {@linkplain Entity} property.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)

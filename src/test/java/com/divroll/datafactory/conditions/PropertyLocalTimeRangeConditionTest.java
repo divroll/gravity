@@ -22,8 +22,8 @@ package com.divroll.datafactory.conditions;
 import com.divroll.datafactory.DataFactory;
 import com.divroll.datafactory.LocalTimeRange;
 import com.divroll.datafactory.TestEnvironment;
-import com.divroll.datafactory.builders.DataFactoryEntities;
-import com.divroll.datafactory.builders.DataFactoryEntityBuilder;
+import com.divroll.datafactory.builders.Entities;
+import com.divroll.datafactory.builders.EntityBuilder;
 import com.divroll.datafactory.builders.queries.EntityQueryBuilder;
 import com.divroll.datafactory.repositories.EntityStore;
 import java.rmi.NotBoundException;
@@ -37,35 +37,35 @@ public class PropertyLocalTimeRangeConditionTest {
   public void testInRangeCondition() throws RemoteException, NotBoundException {
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
     String environment = TestEnvironment.getEnvironment();
-    entityStore.saveEntity(new DataFactoryEntityBuilder()
+    entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("SUNDAY",
             new LocalTimeRange(LocalTime.parse("07:00"), LocalTime.parse("18:00")))
         .build()).get();
 
-    entityStore.saveEntity(new DataFactoryEntityBuilder()
+    entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("SUNDAY",
             new LocalTimeRange(LocalTime.parse("08:00"), LocalTime.parse("22:00")))
         .build()).get();
 
-    entityStore.saveEntity(new DataFactoryEntityBuilder()
+    entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("SUNDAY",
             new LocalTimeRange(LocalTime.parse("01:00"), LocalTime.parse("06:00")))
         .build()).get();
 
-    entityStore.saveEntity(new DataFactoryEntityBuilder()
+    entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("MONDAY",
             new LocalTimeRange(LocalTime.parse("07:00"), LocalTime.parse("23:59")))
         .build()).get();
 
-    DataFactoryEntities dataFactoryEntities = entityStore.getEntities(new EntityQueryBuilder()
+    Entities entities = entityStore.getEntities(new EntityQueryBuilder()
         .environment(environment)
         .entityType("Room")
         .addConditions(new PropertyLocalTimeRangeConditionBuilder()
@@ -74,11 +74,11 @@ public class PropertyLocalTimeRangeConditionTest {
             .upper(LocalTime.parse("11:00"))
             .build())
         .build()).get();
-    Assert.assertNotNull(dataFactoryEntities);
-    Assert.assertNotNull(dataFactoryEntities.entities());
-    Assert.assertEquals(2L, dataFactoryEntities.count().longValue());
+    Assert.assertNotNull(entities);
+    Assert.assertNotNull(entities.entities());
+    Assert.assertEquals(2L, entities.count().longValue());
 
-    DataFactoryEntities dataFactoryEntities2 = entityStore.getEntities(new EntityQueryBuilder()
+    Entities entities2 = entityStore.getEntities(new EntityQueryBuilder()
         .environment(environment)
         .entityType("Room")
         .addConditions(new PropertyLocalTimeRangeConditionBuilder()
@@ -87,11 +87,11 @@ public class PropertyLocalTimeRangeConditionTest {
             .upper(LocalTime.parse("20:00"))
             .build())
         .build()).get();
-    Assert.assertNotNull(dataFactoryEntities2);
-    Assert.assertNotNull(dataFactoryEntities2.entities());
-    Assert.assertEquals(1L, dataFactoryEntities2.count().longValue());
+    Assert.assertNotNull(entities2);
+    Assert.assertNotNull(entities2.entities());
+    Assert.assertEquals(1L, entities2.count().longValue());
 
-    DataFactoryEntities dataFactoryEntities3 = entityStore.getEntities(new EntityQueryBuilder()
+    Entities entities3 = entityStore.getEntities(new EntityQueryBuilder()
         .environment(environment)
         .entityType("Room")
         .addConditions(new PropertyLocalTimeRangeConditionBuilder()
@@ -100,11 +100,11 @@ public class PropertyLocalTimeRangeConditionTest {
             .upper(LocalTime.parse("06:00"))
             .build())
         .build()).get();
-    Assert.assertNotNull(dataFactoryEntities3);
-    Assert.assertNotNull(dataFactoryEntities3.entities());
-    Assert.assertEquals(0L, dataFactoryEntities3.count().longValue());
+    Assert.assertNotNull(entities3);
+    Assert.assertNotNull(entities3.entities());
+    Assert.assertEquals(0L, entities3.count().longValue());
 
-    DataFactoryEntities dataFactoryEntities4 = entityStore.getEntities(new EntityQueryBuilder()
+    Entities entities4 = entityStore.getEntities(new EntityQueryBuilder()
         .environment(environment)
         .entityType("Room")
         .addConditions(new PropertyLocalTimeRangeConditionBuilder()
@@ -113,8 +113,8 @@ public class PropertyLocalTimeRangeConditionTest {
             .upper(LocalTime.parse("23:59"))
             .build())
         .build()).get();
-    Assert.assertNotNull(dataFactoryEntities4);
-    Assert.assertNotNull(dataFactoryEntities4.entities());
-    Assert.assertEquals(1L, dataFactoryEntities4.count().longValue());
+    Assert.assertNotNull(entities4);
+    Assert.assertNotNull(entities4.entities());
+    Assert.assertEquals(1L, entities4.count().longValue());
   }
 }

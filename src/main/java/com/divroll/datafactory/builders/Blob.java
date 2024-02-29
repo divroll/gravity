@@ -26,7 +26,7 @@ import org.immutables.value.Value;
 
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
-public interface DataFactoryBlob extends Serializable {
+public interface Blob extends Serializable {
   /**
    * Retrieves the name of the blob.
    *
@@ -65,9 +65,9 @@ public interface DataFactoryBlob extends Serializable {
   }
 
   /**
-   * Retrieves the count of a DataFactoryBlob.
+   * Retrieves the count of a Blob.
    *
-   * @return The count of the DataFactoryBlob, or null if the count is unknown.
+   * @return The count of the Blob, or null if the count is unknown.
    */
   @Nullable
   Long count();

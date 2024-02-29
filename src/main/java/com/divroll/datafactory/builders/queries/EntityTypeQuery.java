@@ -24,6 +24,9 @@ import java.io.Serializable;
 import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
+/**
+ * Represents a query to retrieve an entity type.
+ */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
 public interface EntityTypeQuery extends Serializable {

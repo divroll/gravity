@@ -21,9 +21,8 @@ package com.divroll.datafactory.conditions;
 
 import com.divroll.datafactory.DataFactory;
 import com.divroll.datafactory.TestEnvironment;
-import com.divroll.datafactory.builders.DataFactoryEntities;
-import com.divroll.datafactory.builders.DataFactoryEntity;
-import com.divroll.datafactory.builders.DataFactoryEntityBuilder;
+import com.divroll.datafactory.builders.Entities;
+import com.divroll.datafactory.builders.EntityBuilder;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityQueryBuilder;
 import com.divroll.datafactory.repositories.EntityStore;
@@ -54,7 +53,7 @@ public class PropertyContainsConditionPerfTest {
     keywords.addItem("banana");
     long start = System.currentTimeMillis();
     for (int i = 0; i < 1000; i++) {
-      entityStore.saveEntity(new DataFactoryEntityBuilder()
+      entityStore.saveEntity(new EntityBuilder()
           .environment(environment)
           .entityType("Foo")
           .putPropertyMap("keywords", keywords)
@@ -64,7 +63,7 @@ public class PropertyContainsConditionPerfTest {
     newKeywords.addItem("apple");
     newKeywords.addItem("banana");
     newKeywords.addItem("carrot");
-    entityStore.saveEntity(new DataFactoryEntityBuilder()
+    entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
         .entityType("Foo")
         .putPropertyMap("keywords", newKeywords)
@@ -80,7 +79,7 @@ public class PropertyContainsConditionPerfTest {
             .innerPropertyValue("carrot")
             .build())
         .build();
-    DataFactoryEntities entities = entityStore.getEntities(entityQuery).get();
+    Entities entities = entityStore.getEntities(entityQuery).get();
     time = System.currentTimeMillis() - start;
     LOG.info("Time to get complete (ms): " + time);
     assertEquals(1L, entities.entities().size());

@@ -24,14 +24,14 @@ import com.divroll.datafactory.Marshaller;
 import com.divroll.datafactory.Unmarshaller;
 import com.divroll.datafactory.actions.PropertyRemoveAction;
 import com.divroll.datafactory.actions.PropertyRenameAction;
-import com.divroll.datafactory.builders.DataFactoryEntities;
-import com.divroll.datafactory.builders.DataFactoryEntitiesBuilder;
-import com.divroll.datafactory.builders.DataFactoryEntityTypeBuilder;
-import com.divroll.datafactory.builders.DataFactoryEntityTypesBuilder;
-import com.divroll.datafactory.builders.DataFactoryEntity;
-import com.divroll.datafactory.builders.DataFactoryProperty;
-import com.divroll.datafactory.builders.DataFactoryEntityType;
-import com.divroll.datafactory.builders.DataFactoryEntityTypes;
+import com.divroll.datafactory.builders.Entities;
+import com.divroll.datafactory.builders.EntitiesBuilder;
+import com.divroll.datafactory.builders.Entity;
+import com.divroll.datafactory.builders.Property;
+import com.divroll.datafactory.builders.EntityType;
+import com.divroll.datafactory.builders.EntityTypeBuilder;
+import com.divroll.datafactory.builders.EntityTypes;
+import com.divroll.datafactory.builders.EntityTypesBuilder;
 import com.divroll.datafactory.builders.queries.BlobQuery;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityTypeQuery;
@@ -51,7 +51,6 @@ import com.google.common.collect.FluentIterable;
 import com.healthmarketscience.rmiio.RemoteInputStreamClient;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import jetbrains.exodus.entitystore.Entity;
 import jetbrains.exodus.entitystore.EntityId;
 import jetbrains.exodus.entitystore.EntityIterable;
 import jetbrains.exodus.entitystore.StoreTransaction;
@@ -137,50 +136,50 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   }
 
   /**
-   * Saves a DataFactoryEntity and returns an Option of the saved entity.
+   * Saves a Entity and returns an Option of the saved entity.
    *
-   * @param entity The DataFactoryEntity to be saved. Cannot be null.
-   * @return  An Option of the saved DataFactoryEntity.
+   * @param entity The Entity to be saved. Cannot be null.
+   * @return  An Option of the saved Entity.
    *          Returns None if the entity could not be saved.
    * @throws DataFactoryException if there is an error in the data factory.
    * @throws NotBoundException    if a remote object is not bound to the specified name in
    *                              the registry.
    * @throws RemoteException      if a remote communication error occurs.
    */
-  @Override public Option<DataFactoryEntity> saveEntity(@NotNull final DataFactoryEntity entity)
+  @Override public Option<Entity> saveEntity(@NotNull final Entity entity)
       throws DataFactoryException, NotBoundException, RemoteException {
-    DataFactoryEntities dataFactoryEntities = saveEntities(new DataFactoryEntity[] {entity}).get();
-    return Option.of(dataFactoryEntities.entities().stream().findFirst().get());
+    Entities entities = saveEntities(new Entity[] {entity}).get();
+    return Option.of(entities.entities().stream().findFirst().get());
   }
 
   /**
-   * Saves an array of DataFactoryEntities.
+   * Saves an array of Entities.
    *
-   * @param entities the array of DataFactoryEntities to be saved
-   * @return  an Option containing a DataFactoryEntities object
+   * @param entities the array of Entities to be saved
+   * @return  an Option containing a Entities object
    *          if the save operation was successful, otherwise an empty Option
    * @throws DataFactoryException if an error occurs during the save operation
    * @throws NotBoundException if the entity store is not bound
    * @throws RemoteException if a remote communication error occurs
    */
   @Override
-  public Option<DataFactoryEntities> saveEntities(@NotNull final DataFactoryEntity[] entities)
+  public Option<Entities> saveEntities(@NotNull final Entity[] entities)
       throws DataFactoryException, NotBoundException, RemoteException {
-    Map<String, List<DataFactoryEntity>> envIdOrderedEntities = sort(entities);
+    Map<String, List<Entity>> envIdOrderedEntities = sort(entities);
     Iterator<String> it = envIdOrderedEntities.keySet().iterator();
-    AtomicReference<DataFactoryEntities> finalResult = new AtomicReference<>(null);
+    AtomicReference<Entities> finalResult = new AtomicReference<>(null);
     while (it.hasNext()) {
       String dir = it.next();
-      List<DataFactoryEntity> dataFactoryEntityList = envIdOrderedEntities.get(dir);
+      List<Entity> entityList = envIdOrderedEntities.get(dir);
       getDatabaseManager().transactPersistentEntityStore(dir, false, txn -> {
 
-        List<DataFactoryEntity> resultEntities = new ArrayList<>();
-        dataFactoryEntityList.forEach(entity -> {
+        List<Entity> resultEntities = new ArrayList<>();
+        entityList.forEach(entity -> {
 
           // Build an entity in context of a referenced scoped entities based on the
           // namespace
           final AtomicReference<EntityIterable> reference = new AtomicReference<>();
-          final Entity entityInContext = Unmarshaller.buildContexedEntity(entity, reference, txn);
+          final jetbrains.exodus.entitystore.Entity entityInContext = Unmarshaller.buildContexedEntity(entity, reference, txn);
 
           // Filter the scoped entities based on the namespace
           reference.set(
@@ -213,7 +212,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
               .with(entityInContext)
               .build());
         });
-        finalResult.set(new DataFactoryEntitiesBuilder()
+        finalResult.set(new EntitiesBuilder()
             .entities(resultEntities)
             .build());
       });
@@ -225,15 +224,15 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * Retrieves an entity from the DataFactory system based on the provided entity query.
    *
    * @param query The entity query used to retrieve the entity.
-   * @return  An Option object containing the retrieved DataFactoryEntity if it exists,
+   * @return  An Option object containing the retrieved Entity if it exists,
    *          otherwise an empty Option object.
    * @throws DataFactoryException If there was an error retrieving the entity.
    * @throws NotBoundException if the entity is not bound.
    * @throws RemoteException if a communication error occurred during the remote call.
    */
-  @Override public Option<DataFactoryEntity> getEntity(@NotNull final EntityQuery query)
+  @Override public Option<Entity> getEntity(@NotNull final EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
-    Option<DataFactoryEntities> optional = getEntities(query);
+    Option<Entities> optional = getEntities(query);
     if (optional.isDefined()) {
       return Option.of(optional.get().entities().stream().findFirst().get());
     } else {
@@ -245,20 +244,20 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * Retrieves entities from the data factory based on the provided query parameters.
    *
    * @param query The query object containing the parameters for retrieving entities.
-   * @return An Option wrapping a DataFactoryEntities object that contains the retrieved entities.
+   * @return An Option wrapping a Entities object that contains the retrieved entities.
    * @throws DataFactoryException if an error occurs while retrieving the entities.
    * @throws NotBoundException if the data factory is not bound.
    * @throws RemoteException if a network error occurs during the remote communication.
    */
   @Override
-  public Option<DataFactoryEntities> getEntities(@NotNull final EntityQuery query)
+  public Option<Entities> getEntities(@NotNull final EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
 
     String dir = query.environment();
     AtomicReference<String> entityType = new AtomicReference<>(query.entityType());
     String nameSpace = query.nameSpace();
 
-    List<DataFactoryEntity> remoteEntities = new ArrayList<>();
+    List<Entity> remoteEntities = new ArrayList<>();
 
     AtomicReference<Long> count = new AtomicReference<>(0L);
 
@@ -281,7 +280,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
       if (query.entityId() != null) {
         // Query by id encompasses name spacing
         EntityId idOfEntity = txn.toEntityId(query.entityId());
-        final Entity entity = txn.getEntity(idOfEntity);
+        final jetbrains.exodus.entitystore.Entity entity = txn.getEntity(idOfEntity);
         entityType.set(entity.getType());
         remoteEntities.add(new Marshaller().with(entity)
             .with(FluentIterable.from(query.blobQueries()).toArray(BlobQuery.class))
@@ -294,7 +293,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
         count.set(result.get().size());
         result.set(result.get().skip(query.offset()).take(query.max()));
 
-        for (Entity entity : result.get()) {
+        for (jetbrains.exodus.entitystore.Entity entity : result.get()) {
           final Map<String, Comparable> comparableMap = new LinkedHashMap<>();
           for (String property : entity.getPropertyNames()) {
             Comparable value = entity.getProperty(property);
@@ -319,7 +318,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
       }
     });
 
-    return Option.of(new DataFactoryEntitiesBuilder()
+    return Option.of(new EntitiesBuilder()
         .entities(remoteEntities)
         .offset(query.offset())
         .max(query.max())
@@ -377,9 +376,9 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
 
           // Remove the entities
           final boolean[] hasError = {false};
-          for (Entity entity : result) {
+          for (jetbrains.exodus.entitystore.Entity entity : result) {
             entity.getLinkNames().forEach(linkName -> {
-              Entity linked = entity.getLink(linkName);
+              jetbrains.exodus.entitystore.Entity linked = entity.getLink(linkName);
               entity.deleteLink(linkName, linked);
             });
 
@@ -404,15 +403,15 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   }
 
   /**
-   * Saves a DataFactoryProperty.
+   * Saves a Property.
    *
-   * @param property The DataFactoryProperty to be saved.
+   * @param property The Property to be saved.
    * @return true if the property was successfully saved, false otherwise.
    * @throws DataFactoryException If there is an error in the data factory.
    * @throws NotBoundException If the data factory is not bound.
    * @throws RemoteException If a remote connection error occurs.
    */
-  @Override public Boolean saveProperty(@NotNull final DataFactoryProperty property)
+  @Override public Boolean saveProperty(@NotNull final Property property)
       throws DataFactoryException, NotBoundException, RemoteException {
     String dir = property.environment();
     String entityType = property.entityType();
@@ -460,7 +459,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * @throws NotBoundException if the DataFactory is not bound.
    * @throws RemoteException if there is a remote communication error.
    */
-  @Override public Boolean removeProperty(@NotNull final DataFactoryProperty property)
+  @Override public Boolean removeProperty(@NotNull final Property property)
       throws DataFactoryException, NotBoundException, RemoteException {
     String dir = property.environment();
     String entityType = property.entityType();
@@ -521,9 +520,9 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
         reference.set(txn.getAll(entityType));
       }
       EntityIterable result = reference.get();
-      for (Entity entity : result) {
+      for (jetbrains.exodus.entitystore.Entity entity : result) {
         entity.getLinkNames().forEach(linkName -> {
-          Entity linked = entity.getLink(linkName);
+          jetbrains.exodus.entitystore.Entity linked = entity.getLink(linkName);
           entity.deleteLink(linkName, linked);
         });
         deleteEntityLinks(entity, txn);
@@ -535,9 +534,9 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   /**
    *
    */
-  @Override public Option<DataFactoryEntityTypes> getEntityTypes(final EntityTypeQuery query)
+  @Override public Option<EntityTypes> getEntityTypes(final EntityTypeQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
-    AtomicReference<DataFactoryEntityTypes> atomicReference = new AtomicReference<>();
+    AtomicReference<EntityTypes> atomicReference = new AtomicReference<>();
     getDatabaseManager().transactPersistentEntityStore(query.environment(), true, txn -> {
       List<String> entityTypes = txn.getEntityTypes();
       Long count = null;
@@ -545,16 +544,16 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
         EntityIterable entities = txn.getAll(query.entityType());
         count = entities.size();
       }
-      List<DataFactoryEntityType> dataFactoryEntityTypeList = new ArrayList<>();
+      List<EntityType> entityTypeList = new ArrayList<>();
       if (entityTypes != null) {
         for (String entityType : entityTypes) {
-          dataFactoryEntityTypeList.add(new DataFactoryEntityTypeBuilder()
+          entityTypeList.add(new EntityTypeBuilder()
               .entityTypeName(entityType)
               .build());
         }
       }
-      DataFactoryEntityTypes dataFactoryEntityTypes = new DataFactoryEntityTypesBuilder()
-          .entityTypes(dataFactoryEntityTypeList)
+      EntityTypes dataFactoryEntityTypes = new EntityTypesBuilder()
+          .entityTypes(entityTypeList)
           .entityCount(count)
           .build();
       atomicReference.set(dataFactoryEntityTypes);
@@ -569,7 +568,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
    * @param storeTransaction The transaction object used to interact with the persistent store.
    *                         Cannot be null.
    */
-  private void deleteEntityLinks(final Entity entity, final StoreTransaction storeTransaction) {
+  private void deleteEntityLinks(final jetbrains.exodus.entitystore.Entity entity, final StoreTransaction storeTransaction) {
     // Note: The following code block may have performance issues due to the nested loops.
     // It retrieves all link names and for each entity type, it finds and deletes the links.
     PersistentStoreTransaction currentTransaction
@@ -578,7 +577,7 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
             .getAllLinkNames(currentTransaction);
     for (final String entityType1 : storeTransaction.getEntityTypes()) {
       for (final String linkName : allLinkNames) {
-        for (final Entity referrer : storeTransaction.findLinks(entityType1, entity, linkName)) {
+        for (final jetbrains.exodus.entitystore.Entity referrer : storeTransaction.findLinks(entityType1, entity, linkName)) {
           referrer.deleteLink(linkName, entity);
         }
       }
@@ -586,21 +585,21 @@ public class EntityStoreImpl extends StoreBaseImpl implements EntityStore {
   }
 
   /**
-   * Sort an array of {@linkplain DataFactoryEntity} by Application ID.
+   * Sort an array of {@linkplain Entity} by Application ID.
    *
-   * @param entities the array of DataFactoryEntity objects to be sorted
+   * @param entities the array of Entity objects to be sorted
    * @return a Map object containing the sorted entities mapped to their respective directories
    */
-  private static Map<String, List<DataFactoryEntity>> sort(final DataFactoryEntity[] entities) {
-    Map<String, List<DataFactoryEntity>> dirOrderedEntities = new HashMap<>();
+  private static Map<String, List<Entity>> sort(final Entity[] entities) {
+    Map<String, List<Entity>> dirOrderedEntities = new HashMap<>();
     Arrays.asList(entities).forEach(remoteEntity -> {
       String dir = remoteEntity.environment();
-      List<DataFactoryEntity> dataFactoryEntityUpdates = dirOrderedEntities.get(dir);
-      if (dataFactoryEntityUpdates == null) {
-        dataFactoryEntityUpdates = new ArrayList<>();
+      List<Entity> entityUpdates = dirOrderedEntities.get(dir);
+      if (entityUpdates == null) {
+        entityUpdates = new ArrayList<>();
       }
-      dataFactoryEntityUpdates.add(remoteEntity);
-      dirOrderedEntities.put(dir, dataFactoryEntityUpdates);
+      entityUpdates.add(remoteEntity);
+      dirOrderedEntities.put(dir, entityUpdates);
     });
     return dirOrderedEntities;
   }

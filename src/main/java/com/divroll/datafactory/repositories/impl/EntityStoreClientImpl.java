@@ -19,10 +19,10 @@
  */
 package com.divroll.datafactory.repositories.impl;
 
-import com.divroll.datafactory.builders.DataFactoryEntities;
-import com.divroll.datafactory.builders.DataFactoryEntity;
-import com.divroll.datafactory.builders.DataFactoryEntityTypes;
-import com.divroll.datafactory.builders.DataFactoryProperty;
+import com.divroll.datafactory.builders.Entities;
+import com.divroll.datafactory.builders.Entity;
+import com.divroll.datafactory.builders.EntityTypes;
+import com.divroll.datafactory.builders.Property;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityTypeQuery;
 import com.divroll.datafactory.exceptions.DataFactoryException;
@@ -82,31 +82,31 @@ public class EntityStoreClientImpl implements EntityStore {
   }
 
   /**
-   * Saves the given DataFactoryEntity.
+   * Saves the given Entity.
    *
-   * @param entity The DataFactoryEntity to be saved. Cannot be null.
-   * @return An Option containing the saved DataFactoryEntity, or None if the save operation
+   * @param entity The Entity to be saved. Cannot be null.
+   * @return An Option containing the saved Entity, or None if the save operation
    * failed or the entity is invalid.
    * @throws DataFactoryException if there is an error in the data factory.
    * @throws NotBoundException if the EntityStore is not bound.
    * @throws RemoteException if a communication-related error occurs.
    */
-  @Override public Option<DataFactoryEntity> saveEntity(@NotNull final DataFactoryEntity entity)
+  @Override public Option<Entity> saveEntity(@NotNull final Entity entity)
       throws DataFactoryException, NotBoundException, RemoteException {
     return getEntityStore().saveEntity(entity);
   }
 
   /**
-   * Saves the given array of DataFactoryEntity objects.
+   * Saves the given array of Entity objects.
    *
-   * @param entities an array of DataFactoryEntity objects to be saved
-   * @return an Option containing the saved DataFactoryEntities or None if an error occurs
+   * @param entities an array of Entity objects to be saved
+   * @return an Option containing the saved Entities or None if an error occurs
    * @throws DataFactoryException if there is an error in the data factory system
    * @throws NotBoundException if the data factory is not bound
    * @throws RemoteException if a remote communication error occurs
    */
   @Override
-  public Option<DataFactoryEntities> saveEntities(@NotNull final DataFactoryEntity[] entities)
+  public Option<Entities> saveEntities(@NotNull final Entity[] entities)
       throws DataFactoryException, NotBoundException, RemoteException {
     return getEntityStore().saveEntities(entities);
   }
@@ -115,14 +115,14 @@ public class EntityStoreClientImpl implements EntityStore {
    * Retrieves an entity from the data factory system based on the given query.
    *
    * @param query The entity query used to retrieve the entity. Cannot be null.
-   * @return An {@code Option<DataFactoryEntity>} object representing the entity if found,
+   * @return An {@code Option<Entity>} object representing the entity if found,
    * otherwise an empty {@code Option}.
    * @throws DataFactoryException If there is an error retrieving the entity from
    * the data factory system.
    * @throws NotBoundException If the entity is not bound in the data factory system.
    * @throws RemoteException If a remote exception occurs during the retrieval of the entity.
    */
-  @Override public Option<DataFactoryEntity> getEntity(@NotNull final EntityQuery query)
+  @Override public Option<Entity> getEntity(@NotNull final EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
     return getEntityStore().getEntity(query);
   }
@@ -136,7 +136,7 @@ public class EntityStoreClientImpl implements EntityStore {
    * @throws NotBoundException if the entity store is not bound
    * @throws RemoteException if a remote exception occurs during the operation
    */
-  @Override public Option<DataFactoryEntities> getEntities(@NotNull final EntityQuery query)
+  @Override public Option<Entities> getEntities(@NotNull final EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
     return getEntityStore().getEntities(query);
   }
@@ -170,29 +170,29 @@ public class EntityStoreClientImpl implements EntityStore {
   }
 
   /**
-   * Saves a DataFactoryProperty to the entity store.
+   * Saves a Property to the entity store.
    *
-   * @param property The DataFactoryProperty to be saved.
+   * @param property The Property to be saved.
    * @return true if the property was saved successfully, false otherwise.
    * @throws DataFactoryException If there is an error in the data factory.
    * @throws NotBoundException If the entity store is not bound.
    * @throws RemoteException If a remote exception occurs.
    */
-  @Override public Boolean saveProperty(@NotNull final DataFactoryProperty property)
+  @Override public Boolean saveProperty(@NotNull final Property property)
       throws DataFactoryException, NotBoundException, RemoteException {
     return getEntityStore().saveProperty(property);
   }
 
   /**
-   * Removes a DataFactoryProperty from the entity store.
+   * Removes a Property from the entity store.
    *
-   * @param property The DataFactoryProperty to be removed. Cannot be null.
+   * @param property The Property to be removed. Cannot be null.
    * @return true if the property was removed successfully, false otherwise.
    * @throws DataFactoryException If there is an error in the data factory.
    * @throws NotBoundException If the entity store is not bound.
    * @throws RemoteException If a remote exception occurs during the removal process.
    */
-  @Override public Boolean removeProperty(@NotNull final DataFactoryProperty property)
+  @Override public Boolean removeProperty(@NotNull final Property property)
       throws DataFactoryException, NotBoundException, RemoteException {
     return getEntityStore().removeProperty(property);
   }
@@ -216,13 +216,13 @@ public class EntityStoreClientImpl implements EntityStore {
    *
    * @param query The EntityTypeQuery object specifying the criteria for the entity types
    *             to retrieve. Cannot be null.
-   * @return An Option<DataFactoryEntityTypes> representing the retrieved entity types,
+   * @return An Option<EntityTypes> representing the retrieved entity types,
    * or None if no entity types match the query.
    * @throws DataFactoryException If there is an error in the data factory.
    * @throws NotBoundException If the entity store is not bound.
    * @throws RemoteException If a remote exception occurs during the retrieval process.
    */
-  @Override public Option<DataFactoryEntityTypes> getEntityTypes(final EntityTypeQuery query)
+  @Override public Option<EntityTypes> getEntityTypes(final EntityTypeQuery query)
       throws DataFactoryException, NotBoundException, RemoteException {
       return getEntityStore().getEntityTypes(query);
   }

@@ -21,8 +21,8 @@ package com.divroll.datafactory.conditions;
 
 import com.divroll.datafactory.DataFactory;
 import com.divroll.datafactory.TestEnvironment;
-import com.divroll.datafactory.builders.DataFactoryEntity;
-import com.divroll.datafactory.builders.DataFactoryEntityBuilder;
+import com.divroll.datafactory.builders.Entity;
+import com.divroll.datafactory.builders.EntityBuilder;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityQueryBuilder;
 import com.divroll.datafactory.repositories.EntityStore;
@@ -49,14 +49,14 @@ public class PropertyContainsConditionTest {
     keywords.addItem("room");
     keywords.addItem("street");
     keywords.addItem("avenue");
-    DataFactoryEntity dataFactoryEntity = new DataFactoryEntityBuilder()
+    Entity entity = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("address", "Room 123, 456 Street, 789 Avenue")
         .putPropertyMap("keywords", keywords)
         .build();
-    dataFactoryEntity = entityStore.saveEntity(dataFactoryEntity).get();
-    assertNotNull(dataFactoryEntity.entityId());
+    entity = entityStore.saveEntity(entity).get();
+    assertNotNull(entity.entityId());
     EntityQuery entityQuery = new EntityQueryBuilder()
         .environment(environment)
         .entityType("Room")
@@ -65,9 +65,9 @@ public class PropertyContainsConditionTest {
             .innerPropertyValue("room")
             .build())
         .build();
-    DataFactoryEntity entityWithKeywords = entityStore.getEntity(entityQuery).get();
+    Entity entityWithKeywords = entityStore.getEntity(entityQuery).get();
     assertNotNull(entityWithKeywords);
-    assertEquals(dataFactoryEntity.entityId(), entityWithKeywords.entityId());
+    assertEquals(entity.entityId(), entityWithKeywords.entityId());
   }
 
   @Test(expected = NoSuchElementException.class)
@@ -78,14 +78,14 @@ public class PropertyContainsConditionTest {
     keywords.addItem("room");
     keywords.addItem("street");
     keywords.addItem("avenue");
-    DataFactoryEntity dataFactoryEntity = new DataFactoryEntityBuilder()
+    Entity entity = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("address", "Room 123, 456 Street, 789 Avenue")
         .putPropertyMap("keywords", keywords)
         .build();
-    dataFactoryEntity = entityStore.saveEntity(dataFactoryEntity).get();
-    assertNotNull(dataFactoryEntity.entityId());
+    entity = entityStore.saveEntity(entity).get();
+    assertNotNull(entity.entityId());
     EntityQuery entityQuery = new EntityQueryBuilder()
         .environment(environment)
         .entityType("Room")
@@ -94,7 +94,7 @@ public class PropertyContainsConditionTest {
             .innerPropertyValue("unknown")
             .build())
         .build();
-    DataFactoryEntity entityWithKeywords = entityStore.getEntity(entityQuery).get();
+    Entity entityWithKeywords = entityStore.getEntity(entityQuery).get();
     assertNull(entityWithKeywords);
   }
 }
