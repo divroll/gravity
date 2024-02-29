@@ -19,7 +19,7 @@
  */
 package com.divroll.datafactory.actions;
 
-import com.divroll.datafactory.builders.DataFactoryEntity;
+import com.divroll.datafactory.builders.Entity;
 import java.io.Serializable;
 import org.immutables.value.Value;
 
@@ -40,7 +40,7 @@ public interface LinkNewEntityAction extends EntityAction, Serializable {
    *
    * @return The new entity to be linked.
    */
-  DataFactoryEntity newEntity();
+  Entity newEntity();
 
   /**
    * Returns whether the link is set or not.

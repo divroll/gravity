@@ -33,7 +33,7 @@ import com.divroll.datafactory.actions.OppositeLinkRemoveAction;
 import com.divroll.datafactory.actions.PropertyCopyAction;
 import com.divroll.datafactory.actions.PropertyIndexAction;
 import com.divroll.datafactory.actions.PropertyRemoveAction;
-import com.divroll.datafactory.builders.DataFactoryEntity;
+import com.divroll.datafactory.builders.Entity;
 import com.divroll.datafactory.builders.TransactionFilter;
 import com.divroll.datafactory.conditions.BlobExistsCondition;
 import com.divroll.datafactory.conditions.CustomQueryCondition;
@@ -60,7 +60,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import jetbrains.exodus.entitystore.Entity;
+
 import jetbrains.exodus.entitystore.EntityId;
 import jetbrains.exodus.entitystore.EntityIterable;
 import jetbrains.exodus.entitystore.PersistentEntityStore;
@@ -73,7 +73,7 @@ import org.jetbrains.annotations.NotNull;
 import static com.divroll.datafactory.exceptions.Throwing.rethrow;
 
 /**
- * Unmarshaller for unmarshalling {@linkplain DataFactoryEntity} into {@linkplain Entity}
+ * Unmarshaller for unmarshalling {@linkplain Entity} into {@linkplain jetbrains.exodus.entitystore.Entity}
  * within the context of the scoped entities.
  */
 public class Unmarshaller {
@@ -95,12 +95,12 @@ public class Unmarshaller {
    * </p>
    *
    * <pre>
-   * DataFactoryEntity dataFactoryEntity = new DataFactoryEntity();
+   * Entity entity = new Entity();
    * </pre>
    *
    * @see Unmarshaller
    */
-  private DataFactoryEntity dataFactoryEntity;
+  private Entity entity;
   /**
    * Represents a store transaction.
    */
@@ -113,49 +113,49 @@ public class Unmarshaller {
    * @param storeTransaction  The store transaction to set.
    * @return  The updated instance of the Unmarshaller.
    */
-  public Unmarshaller with(@NotNull final DataFactoryEntity entity,
+  public Unmarshaller with(@NotNull final Entity entity,
                            @NotNull final StoreTransaction storeTransaction) {
-    this.dataFactoryEntity = entity;
+    this.entity = entity;
     this.storeTransaction = storeTransaction;
     return this;
   }
 
   /**
-   * Builds an Entity based on the specified DataFactoryEntity and transaction.
+   * Builds an Entity based on the specified Entity and transaction.
    *
    * @return  The built Entity.
-   * @throws  IllegalArgumentException If the DataFactoryEntity is not set.
+   * @throws  IllegalArgumentException If the Entity is not set.
    */
-  public Entity build() {
-    if (dataFactoryEntity == null) {
+  public jetbrains.exodus.entitystore.Entity build() {
+    if (entity == null) {
       new IllegalArgumentException("Must set RemoteEntity to unmarshall into Entity");
     }
-    Entity newEntity = storeTransaction.newEntity(dataFactoryEntity.entityType());
+    jetbrains.exodus.entitystore.Entity newEntity = storeTransaction.newEntity(entity.entityType());
     AtomicReference reference
-            = new AtomicReference<>(storeTransaction.getAll(dataFactoryEntity.entityType()));
-    buildContexedEntity(dataFactoryEntity, reference, storeTransaction);
-    processActions(dataFactoryEntity, reference, newEntity, storeTransaction);
+            = new AtomicReference<>(storeTransaction.getAll(entity.entityType()));
+    buildContexedEntity(entity, reference, storeTransaction);
+    processActions(entity, reference, newEntity, storeTransaction);
     throw new IllegalArgumentException("Not yet implemented");
   }
 
   /**
    * Builds an Entity in the context of the scoped entities based on the namespace of the given
-   * DataFactoryEntity.
+   * Entity.
    *
-   * @param entity           The DataFactoryEntity to build the Entity from. Cannot be null.
+   * @param entity           The Entity to build the Entity from. Cannot be null.
    * @param referenceToScope The AtomicReference to hold the scoped entities. Cannot be null.
    * @param storeTransaction The StoreTransaction to use for building the Entity. Cannot be null.
    * @return The built Entity.
    * @throws IllegalArgumentException If the specified entity is not found in the scoped entities
    * and the namespace is not null.
    */
-  public static Entity buildContexedEntity(
-          @NotNull final DataFactoryEntity entity,
+  public static jetbrains.exodus.entitystore.Entity buildContexedEntity(
+          @NotNull final Entity entity,
           @NotNull final AtomicReference<EntityIterable> referenceToScope,
           @NotNull final StoreTransaction storeTransaction) {
     findEntityInCurrentScope(entity, referenceToScope, storeTransaction);
 
-    final Entity entityInContext = getEntityFromTransaction(entity, storeTransaction);
+    final jetbrains.exodus.entitystore.Entity entityInContext = getEntityFromTransaction(entity, storeTransaction);
 
     throwIfEntityNotFoundInScopedNamespace(entity, entityInContext, referenceToScope.get());
 
@@ -282,9 +282,9 @@ public class Unmarshaller {
   }
 
   /**
-   * Process conditions without modifying the {@linkplain Entity} with the main function throw a
+   * Process conditions without modifying the {@linkplain jetbrains.exodus.entitystore.Entity} with the main function throw a
    * {@linkplain UnsatisfiedConditionException} when condition is not met with the context of the
-   * {@linkplain Entity}.
+   * {@linkplain jetbrains.exodus.entitystore.Entity}.
    *
    * @param scope           The AtomicReference to hold the EntityIterable being filtered.
    * @param conditions      The list of conditions to process.
@@ -295,7 +295,7 @@ public class Unmarshaller {
   public static void processUnsatisfiedConditions(
       @NotNull final AtomicReference<EntityIterable> scope,
       @NotNull final List<EntityCondition> conditions,
-      @NotNull final Entity entityInContext,
+      @NotNull final jetbrains.exodus.entitystore.Entity entityInContext,
       @NotNull final StoreTransaction txn)
       throws UnsatisfiedConditionException {
     conditions.forEach(rethrow(entityCondition -> {
@@ -333,17 +333,17 @@ public class Unmarshaller {
   /**
    * Processes a list of actions on an entity.
    *
-   * @param dataFactoryEntity The DataFactoryEntity associated with the entity.
+   * @param entity The Entity associated with the entity.
    * @param reference        An AtomicReference to the EntityIterable used for reference.
    * @param entityInContext  The entity on which the actions are performed.
    * @param storeTransaction              The StoreTransaction associated with the entity.
    * @return The modified entityInContext after processing the actions.
    */
-  public static Entity processActions(@NotNull final DataFactoryEntity dataFactoryEntity,
-                                      @NotNull final AtomicReference<EntityIterable> reference,
-                                      @NotNull final Entity entityInContext,
-                                      @NotNull final StoreTransaction storeTransaction) {
-    dataFactoryEntity.actions().forEach(
+  public static jetbrains.exodus.entitystore.Entity processActions(@NotNull final Entity entity,
+                                                                   @NotNull final AtomicReference<EntityIterable> reference,
+                                                                   @NotNull final jetbrains.exodus.entitystore.Entity entityInContext,
+                                                                   @NotNull final StoreTransaction storeTransaction) {
+    entity.actions().forEach(
         rethrow(action -> {
           if (action instanceof LinkAction) {
             processLinkAction(action, entityInContext, storeTransaction);
@@ -368,7 +368,7 @@ public class Unmarshaller {
                     action,
                     entityInContext,
                     storeTransaction,
-                    dataFactoryEntity);
+                    entity);
           } else if (action instanceof PropertyRemoveAction) {
             processPropertyRemoveAction(action, entityInContext);
           } else if (action instanceof CustomAction) {
@@ -388,7 +388,7 @@ public class Unmarshaller {
    * @param storeTransaction   The StoreTransaction associated with the entity.
    */
   private static void processLinkAction(final EntityAction action,
-                                        final Entity entityInContext,
+                                        final jetbrains.exodus.entitystore.Entity entityInContext,
                                         final StoreTransaction storeTransaction) {
     LinkAction linkAction = (LinkAction) action;
     String targetId = linkAction.otherEntityId();
@@ -396,7 +396,7 @@ public class Unmarshaller {
     Boolean isSet = linkAction.isSet();
     if (targetId != null && linkName != null) {
       EntityId targetEntityId = storeTransaction.toEntityId(targetId);
-      Entity targetEntity = storeTransaction.getEntity(targetEntityId);
+      jetbrains.exodus.entitystore.Entity targetEntity = storeTransaction.getEntity(targetEntityId);
       if (isSet) {
         entityInContext.getLinks(linkName).forEach(otherEntity -> {
           entityInContext.deleteLink(linkName, otherEntity);
@@ -416,7 +416,7 @@ public class Unmarshaller {
    * @param storeTransaction the transaction object for accessing the store
    */
   private static void processOppositeLinkAction(final EntityAction action,
-                                                final Entity entityInContext,
+                                                final jetbrains.exodus.entitystore.Entity entityInContext,
                                                 final StoreTransaction storeTransaction) {
     OppositeLinkAction oppositeLinkAction = (OppositeLinkAction) action;
     String linkName = oppositeLinkAction.linkName();
@@ -425,9 +425,9 @@ public class Unmarshaller {
     Boolean isSet = oppositeLinkAction.isSet();
     if (sourceId != null && linkName != null && oppositeLinkName != null) {
       EntityId sourceEntityId = storeTransaction.toEntityId(sourceId);
-      Entity sourceEntity = storeTransaction.getEntity(sourceEntityId);
+      jetbrains.exodus.entitystore.Entity sourceEntity = storeTransaction.getEntity(sourceEntityId);
       if (isSet) {
-        Entity otherEntity = sourceEntity.getLink(oppositeLinkName);
+        jetbrains.exodus.entitystore.Entity otherEntity = sourceEntity.getLink(oppositeLinkName);
         if (otherEntity != null) {
           otherEntity.deleteLink(linkName, sourceEntity);
         }
@@ -449,13 +449,13 @@ public class Unmarshaller {
    * @param storeTransaction The StoreTransaction associated with the entity.
    */
   private static void processLinkRemoveAction(final EntityAction action,
-                                              final Entity entityInContext,
+                                              final jetbrains.exodus.entitystore.Entity entityInContext,
                                               final StoreTransaction storeTransaction) {
     LinkRemoveAction linkRemoveAction = (LinkRemoveAction) action;
     String targetId = linkRemoveAction.otherEntityId();
     String linkName = linkRemoveAction.linkName();
     EntityId targetEntityId = storeTransaction.toEntityId(targetId);
-    Entity targetEntity = storeTransaction.getEntity(targetEntityId);
+    jetbrains.exodus.entitystore.Entity targetEntity = storeTransaction.getEntity(targetEntityId);
     entityInContext.deleteLink(linkName, targetEntity);
   }
 
@@ -467,7 +467,7 @@ public class Unmarshaller {
    * @param storeTransaction the transaction to access the store and perform the actions
    */
   private static void processOppositeLinkRemoveAction(final EntityAction action,
-                                                      final Entity entityInContext,
+                                                      final jetbrains.exodus.entitystore.Entity entityInContext,
                                                       final StoreTransaction storeTransaction) {
     OppositeLinkRemoveAction removeAction = (OppositeLinkRemoveAction) action;
     String linkName = removeAction.linkName();
@@ -494,13 +494,13 @@ public class Unmarshaller {
    * @param storeTransaction The StoreTransaction for performing database operations.
    */
   private static void processLinkNewEntityAction(final EntityAction action,
-                                                 final Entity entityInContext,
+                                                 final jetbrains.exodus.entitystore.Entity entityInContext,
                                                  final StoreTransaction storeTransaction) {
     LinkNewEntityAction newLinkAction = (LinkNewEntityAction) action;
     String linkName = newLinkAction.linkName();
     Boolean isSet = newLinkAction.isSet();
-    DataFactoryEntity newDataFactoryEntity = newLinkAction.newEntity();
-    Entity targetEntity = new Unmarshaller().with(newDataFactoryEntity, storeTransaction).build();
+    Entity newEntity = newLinkAction.newEntity();
+    jetbrains.exodus.entitystore.Entity targetEntity = new Unmarshaller().with(newEntity, storeTransaction).build();
     if (isSet) {
       entityInContext.getLinks(linkName).forEach(otherEntity -> {
         entityInContext.deleteLink(linkName, otherEntity);
@@ -518,7 +518,7 @@ public class Unmarshaller {
    * @param entityInContext the entity in which the action is performed
    */
   private static void processBlobRenameAction(final EntityAction action,
-                                              final Entity entityInContext) {
+                                              final jetbrains.exodus.entitystore.Entity entityInContext) {
     BlobRenameAction blobRenameAction = (BlobRenameAction) action;
     String blobName = blobRenameAction.blobName();
     String newBlobName = blobRenameAction.newBlobName();
@@ -535,7 +535,7 @@ public class Unmarshaller {
    * @param entityInContext The entity object within which the blobs will be renamed.
    */
   private static void processBlobRenameRegexAction(final EntityAction action,
-                                                   final Entity entityInContext) {
+                                                   final jetbrains.exodus.entitystore.Entity entityInContext) {
     BlobRenameRegexAction blobRenameRegexAction = (BlobRenameRegexAction) action;
     String regexPattern = blobRenameRegexAction.regexPattern();
     String replacement = blobRenameRegexAction.replacement();
@@ -558,7 +558,7 @@ public class Unmarshaller {
    * @param entityInContext the Entity on which the BlobRemoveAction will be performed
    */
   private static void processBlobRemoveAction(final EntityAction action,
-                                              final Entity entityInContext) {
+                                              final jetbrains.exodus.entitystore.Entity entityInContext) {
     BlobRemoveAction blobRemoveAction = (BlobRemoveAction) action;
     blobRemoveAction.blobNames().forEach(entityInContext::deleteBlob);
   }
@@ -572,14 +572,14 @@ public class Unmarshaller {
    * @param reference         the reference to the EntityIterable object
    */
   private static void processPropertyCopyAction(final EntityAction action,
-                                                final Entity entityInContext,
+                                                final jetbrains.exodus.entitystore.Entity entityInContext,
                                                 final StoreTransaction storeTransaction,
                                                 final AtomicReference<EntityIterable> reference) {
     PropertyCopyAction propertyCopyAction = (PropertyCopyAction) action;
     String copyProperty = propertyCopyAction.propertyName();
     Boolean copyFirst = propertyCopyAction.first();
     if (copyFirst) {
-      Entity first = reference.get()
+      jetbrains.exodus.entitystore.Entity first = reference.get()
               .intersect(
                       storeTransaction.getAll(entityInContext.getType())
               ).getFirst();
@@ -587,7 +587,7 @@ public class Unmarshaller {
         entityInContext.setProperty(copyProperty, first.getProperty(copyProperty));
       }
     } else {
-      Entity last = reference.get()
+      jetbrains.exodus.entitystore.Entity last = reference.get()
               .intersect(
                       storeTransaction.getAll(entityInContext.getType()))
               .getLast();
@@ -603,16 +603,16 @@ public class Unmarshaller {
    * @param action                  The EntityAction object.
    * @param entityInContext         The Entity object in context.
    * @param storeTransaction        The StoreTransaction object.
-   * @param dataFactoryEntity       The DataFactoryEntity object.
+   * @param entity       The Entity object.
    */
   private static void processPropertyIndexAction(final EntityAction action,
-                                                 final Entity entityInContext,
+                                                 final jetbrains.exodus.entitystore.Entity entityInContext,
                                                  final StoreTransaction storeTransaction,
-                                                 final DataFactoryEntity dataFactoryEntity) {
+                                                 final Entity entity) {
     PropertyIndexAction propertyIndexAction = (PropertyIndexAction) action;
     String propertyName = propertyIndexAction.propertyName();
     String entityInContextType = entityInContext.getType();
-    Comparable propertyValue = dataFactoryEntity.propertyMap().get(propertyName);
+    Comparable propertyValue = entity.propertyMap().get(propertyName);
     EntityIterable result
             = storeTransaction.find(entityInContextType, propertyName, propertyValue);
     if (!result.isEmpty()) {
@@ -627,7 +627,7 @@ public class Unmarshaller {
    * @param entityInContext the entity from which the property is to be removed
    */
   private static void processPropertyRemoveAction(final EntityAction action,
-                                                  final Entity entityInContext) {
+                                                  final jetbrains.exodus.entitystore.Entity entityInContext) {
     PropertyRemoveAction propertyRemoveAction = (PropertyRemoveAction) action;
     String propertyName = propertyRemoveAction.propertyName();
     entityInContext.deleteProperty(propertyName);
@@ -640,7 +640,7 @@ public class Unmarshaller {
    * @param entityInContext The entity on which the custom action needs to be performed.
    */
   private static void processCustomAction(final EntityAction action,
-                                          final Entity entityInContext) {
+                                          final jetbrains.exodus.entitystore.Entity entityInContext) {
     CustomAction customAction = (CustomAction) action;
     customAction.execute(entityInContext);
   }
@@ -730,13 +730,13 @@ public class Unmarshaller {
   }
 
   /**
-   * Finds the entity in the current scope based on the given DataFactoryEntity.
+   * Finds the entity in the current scope based on the given Entity.
    *
-   * @param entity  The DataFactoryEntity to find in the current scope.
+   * @param entity  The Entity to find in the current scope.
    * @param scope   The AtomicReference to hold the scoped entities.
    * @param txn     The StoreTransaction to use for finding the entity.
    */
-  private static void findEntityInCurrentScope(@NotNull final DataFactoryEntity entity,
+  private static void findEntityInCurrentScope(@NotNull final Entity entity,
                                                @NotNull final AtomicReference<EntityIterable> scope,
                                                @NotNull final StoreTransaction txn) {
     if (entity.nameSpace() != null && entity.entityType() != null) {
@@ -751,14 +751,14 @@ public class Unmarshaller {
   }
 
   /**
-   * Gets the Entity from the given DataFactoryEntity and StoreTransaction.
+   * Gets the Entity from the given Entity and StoreTransaction.
    *
-   * @param entity The DataFactoryEntity to get the Entity from.
+   * @param entity The Entity to get the Entity from.
    * @param txn    The StoreTransaction to use for getting the Entity.
-   * @return The Entity from the given DataFactoryEntity and StoreTransaction.
+   * @return The Entity from the given Entity and StoreTransaction.
    */
-  private static Entity getEntityFromTransaction(@NotNull final DataFactoryEntity entity,
-                                                 @NotNull final StoreTransaction txn) {
+  private static jetbrains.exodus.entitystore.Entity getEntityFromTransaction(@NotNull final Entity entity,
+                                                                              @NotNull final StoreTransaction txn) {
     return entity.entityId() != null
             ? txn.getEntity(txn.toEntityId(entity.entityId()))
             : txn.newEntity(entity.entityType());
@@ -767,12 +767,12 @@ public class Unmarshaller {
   /**
    * Throws an IllegalArgumentException if the entity is not found in the scoped namespace.
    *
-   * @param entity           The DataFactoryEntity to check.
+   * @param entity           The Entity to check.
    * @param entityInContext  The Entity to check.
    * @param entityIterable   The EntityIterable to check.
    */
-  private static void throwIfEntityNotFoundInScopedNamespace(final DataFactoryEntity entity,
-                                                             final Entity entityInContext,
+  private static void throwIfEntityNotFoundInScopedNamespace(final Entity entity,
+                                                             final jetbrains.exodus.entitystore.Entity entityInContext,
                                                              final EntityIterable entityIterable) {
     if (entityIterable != null
             && entityIterable.indexOf(entityInContext) == -1

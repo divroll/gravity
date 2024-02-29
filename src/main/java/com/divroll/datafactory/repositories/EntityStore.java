@@ -19,10 +19,10 @@
  */
 package com.divroll.datafactory.repositories;
 
-import com.divroll.datafactory.builders.DataFactoryEntities;
-import com.divroll.datafactory.builders.DataFactoryEntity;
-import com.divroll.datafactory.builders.DataFactoryEntityTypes;
-import com.divroll.datafactory.builders.DataFactoryProperty;
+import com.divroll.datafactory.builders.Entities;
+import com.divroll.datafactory.builders.Entity;
+import com.divroll.datafactory.builders.EntityTypes;
+import com.divroll.datafactory.builders.Property;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityTypeQuery;
 import com.divroll.datafactory.exceptions.DataFactoryException;
@@ -46,7 +46,7 @@ public interface EntityStore extends Remote {
    * @throws NotBoundException
    * @throws RemoteException
    */
-  Option<DataFactoryEntity> saveEntity(@NotNull DataFactoryEntity entity)
+  Option<Entity> saveEntity(@NotNull Entity entity)
       throws DataFactoryException, DataFactoryException, NotBoundException, RemoteException;
 
   /**
@@ -58,7 +58,7 @@ public interface EntityStore extends Remote {
    * @throws NotBoundException
    * @throws RemoteException
    */
-  Option<DataFactoryEntities> saveEntities(@NotNull DataFactoryEntity[] entities)
+  Option<Entities> saveEntities(@NotNull Entity[] entities)
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
@@ -70,7 +70,7 @@ public interface EntityStore extends Remote {
    * @throws NotBoundException
    * @throws RemoteException
    */
-  Option<DataFactoryEntity> getEntity(@NotNull EntityQuery query)
+  Option<Entity> getEntity(@NotNull EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
@@ -82,7 +82,7 @@ public interface EntityStore extends Remote {
    * @throws NotBoundException
    * @throws RemoteException
    */
-  Option<DataFactoryEntities> getEntities(@NotNull EntityQuery query)
+  Option<Entities> getEntities(@NotNull EntityQuery query)
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
@@ -116,7 +116,7 @@ public interface EntityStore extends Remote {
    * @throws NotBoundException
    * @throws RemoteException
    */
-  Boolean saveProperty(@NotNull DataFactoryProperty property)
+  Boolean saveProperty(@NotNull Property property)
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
@@ -128,7 +128,7 @@ public interface EntityStore extends Remote {
    * @throws NotBoundException
    * @throws RemoteException
    */
-  Boolean removeProperty(@NotNull DataFactoryProperty property)
+  Boolean removeProperty(@NotNull Property property)
       throws DataFactoryException, NotBoundException, RemoteException;
 
   /**
@@ -152,6 +152,6 @@ public interface EntityStore extends Remote {
    * @throws NotBoundException
    * @throws RemoteException
    */
-  Option<DataFactoryEntityTypes> getEntityTypes(EntityTypeQuery query)
+  Option<EntityTypes> getEntityTypes(EntityTypeQuery query)
       throws DataFactoryException, NotBoundException, RemoteException;
 }

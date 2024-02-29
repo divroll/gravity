@@ -19,18 +19,37 @@
  */
 package com.divroll.datafactory.builders;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.immutables.value.Value;
+
 /**
- * DataFactoryEntityType is an interface that represents an entity type in a Data Factory.
- * It provides methods to retrieve the name of the entity type.
+ * EntityTypes is an interface that represents a collection of Entity Types in a
+ * Data Factory. It provides methods to retrieve the list of entity types and the count of
+ * entities.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
-public interface DataFactoryEntityType {
+public interface EntityTypes {
   /**
-   * Returns the name of the entity type.
+   * Returns the list of entity types.
    *
-   * @return the name of the entity type as a String.
+   * @return the list of entity types as a List<EntityType>.
    */
-  String entityTypeName();
+  @Value.Default
+  default List<EntityType> entityTypes() {
+    return new ArrayList<>();
+  }
+
+  /**
+   * Retrieves the count of entities.
+   *
+   * @return the count of entities as a Long, or null if not available
+   */
+  @Nullable
+  @Value.Default
+  default Long entityCount() {
+    return -1L;
+  }
 }

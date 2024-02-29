@@ -21,8 +21,8 @@ package com.divroll.datafactory.actions;
 
 import com.divroll.datafactory.DataFactory;
 import com.divroll.datafactory.TestEnvironment;
-import com.divroll.datafactory.builders.DataFactoryEntity;
-import com.divroll.datafactory.builders.DataFactoryEntityBuilder;
+import com.divroll.datafactory.builders.Entity;
+import com.divroll.datafactory.builders.EntityBuilder;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityQueryBuilder;
 import com.divroll.datafactory.repositories.EntityStore;
@@ -41,22 +41,22 @@ public class CustomActionTest {
   public void testCustomAction() throws Exception {
     String environment = TestEnvironment.getEnvironment();
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    DataFactoryEntity dataFactoryEntity = new DataFactoryEntityBuilder()
+    Entity entity = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("likes", 10)
         .build();
-    dataFactoryEntity = entityStore.saveEntity(dataFactoryEntity).get();
-    entityStore.saveEntity(new DataFactoryEntityBuilder()
+    entity = entityStore.saveEntity(entity).get();
+    entityStore.saveEntity(new EntityBuilder()
         .environment(environment)
-        .entityId(dataFactoryEntity.entityId())
+        .entityId(entity.entityId())
         .addActions(new IncrementLikesAction(2990))
         .build());
     EntityQuery entityQuery = new EntityQueryBuilder()
         .environment(environment)
-        .entityId(dataFactoryEntity.entityId())
+        .entityId(entity.entityId())
         .build();
-    DataFactoryEntity updatedEntity = entityStore.getEntity(entityQuery).get();
+    Entity updatedEntity = entityStore.getEntity(entityQuery).get();
     assertEquals(3000, updatedEntity.propertyMap().get("likes"));
   }
 }

@@ -47,8 +47,8 @@ public class BlobRemoveActionTest extends BaseTest {
     /**
      * Test case for the method testBlobRemove.
      * The method tests a scenario where an entity's blob is removed.
-     * It creates a DataFactoryEntity with a blob, then removes the blob using the entityStore.
-     * The method asserts that the blob is removed from the saved DataFactoryEntity.
+     * It creates a Entity with a blob, then removes the blob using the entityStore.
+     * The method asserts that the blob is removed from the saved Entity.
      *
      * @throws Exception if an error occurs during the test
      */
@@ -57,20 +57,20 @@ public class BlobRemoveActionTest extends BaseTest {
         String environment = getEnvironment();
 
         // Create a blob we can test
-        DataFactoryEntity dataFactoryEntity = createEntityWithBlob(environment);
+        Entity entity = createEntityWithBlob(environment);
 
-        String entityId = dataFactoryEntity.entityId();
-        String entityType = dataFactoryEntity.entityType();
-        String[] blobNames = dataFactoryEntity.blobNames();
+        String entityId = entity.entityId();
+        String entityType = entity.entityType();
+        String[] blobNames = entity.blobNames();
 
         assertNotNull(entityId);
         assertNotNull(entityType);
         assertNotNull(blobNames);
         assertTrue(Arrays.asList(blobNames).contains("photo"));
 
-        DataFactoryEntity singleEntityWithBlob = entityStore.getEntity(new EntityQueryBuilder()
+        Entity singleEntityWithBlob = entityStore.getEntity(new EntityQueryBuilder()
                 .environment(environment)
-                .entityId(dataFactoryEntity.entityId())
+                .entityId(entity.entityId())
                 .addBlobQueries(new BlobQueryBuilder()
                         .blobName("photo")
                         .include(true)
@@ -92,13 +92,13 @@ public class BlobRemoveActionTest extends BaseTest {
                         .build())
                 .build();
 
-        DataFactoryEntities entities = entityStore.getEntities(entityQuery).get();
+        Entities entities = entityStore.getEntities(entityQuery).get();
 
         assertNotNull(entities);
         assertTrue(entities.count() == 1);
         assertNotNull(entities.entities());
 
-        DataFactoryEntity entityWithBlob = entities.entities().stream().findFirst().get();
+        Entity entityWithBlob = entities.entities().stream().findFirst().get();
         assertNotNull(entityWithBlob);
         assertNotNull(entityWithBlob.entityId());
         assertNotNull(entityWithBlob.entityType());
@@ -111,7 +111,7 @@ public class BlobRemoveActionTest extends BaseTest {
          assertTrue(wasRemoved);
 
          // Get the entity by blob name to test
-         DataFactoryEntities shouldBeEmpty = entityStore.getEntities(entityQuery).get();
+         Entities shouldBeEmpty = entityStore.getEntities(entityQuery).get();
          assertNotNull(shouldBeEmpty);
          assertTrue(shouldBeEmpty.count() == 0);
     }
@@ -119,11 +119,11 @@ public class BlobRemoveActionTest extends BaseTest {
     /**
      * Test case for the method testRemoveBlobWithAction.
      * The method tests a scenario where an entity's blob is replaced with a new blob effectively removing the old blob.
-     * It creates a DataFactoryEntity with a blob, then creates a BlobRemoveAction with the blob name "photo".
-     * The BlobRemoveAction is added as an action to the DataFactoryEntity.
-     * A new blob named "newPhoto" is added to the DataFactoryEntity.
-     * The DataFactoryEntity is saved using the entityStore.
-     * The method asserts that the old blob "photo" is removed and the new blob "newPhoto" is present in the saved DataFactoryEntity.
+     * It creates a Entity with a blob, then creates a BlobRemoveAction with the blob name "photo".
+     * The BlobRemoveAction is added as an action to the Entity.
+     * A new blob named "newPhoto" is added to the Entity.
+     * The Entity is saved using the entityStore.
+     * The method asserts that the old blob "photo" is removed and the new blob "newPhoto" is present in the saved Entity.
      *
      * @throws Exception if an error occurs during the test
      */
@@ -131,25 +131,25 @@ public class BlobRemoveActionTest extends BaseTest {
     public void testRemoveBlobWithAction() throws Exception {
         String environment = getEnvironment();
 
-        DataFactoryEntity dataFactoryEntity = createEntityWithBlob(environment);
-        assertNotNull(dataFactoryEntity.entityId());
+        Entity entity = createEntityWithBlob(environment);
+        assertNotNull(entity.entityId());
 
         // Test a scenario where the entity will be replaced with a new blob effectively removing the old blob
         BlobRemoveAction blobRemoveAction = ImmutableBlobRemoveAction.builder()
                 .addAllBlobNames(Arrays.asList("photo"))
                 .build();
 
-        dataFactoryEntity = new DataFactoryEntityBuilder()
+        entity = new EntityBuilder()
                 .environment(environment)
                 .entityType(ENTITY_TYPE)
-                .entityId(dataFactoryEntity.entityId())
+                .entityId(entity.entityId())
                 .addActions(blobRemoveAction)
-                .addBlobs(new DataFactoryBlobBuilder()
+                .addBlobs(new BlobBuilder()
                         .blobName("newPhoto")
                         .blobStream(new SimpleRemoteInputStream(ByteSource.wrap("New Mock Image".getBytes()).openStream()))
                         .build())
                 .build();
-        String[] blobName = entityStore.saveEntity(dataFactoryEntity).get().blobNames();
+        String[] blobName = entityStore.saveEntity(entity).get().blobNames();
 
         // Test if the blob was removed
         assertFalse(Arrays.asList(blobName).contains("photo"));
@@ -160,7 +160,7 @@ public class BlobRemoveActionTest extends BaseTest {
     public void testFalseOnNonExistentBlobRemove() throws Exception {
         String environment = getEnvironment();
 
-        DataFactoryEntity dataFactoryEntity = createEntityWithBlob(environment);
+        Entity entity = createEntityWithBlob(environment);
 
         EntityQuery entityQuery = new EntityQueryBuilder()
                 .environment(environment)
@@ -190,8 +190,8 @@ public class BlobRemoveActionTest extends BaseTest {
         String environment = getEnvironment();
 
         // Create an entity with multiple blobs
-        DataFactoryEntity dataFactoryEntity = createEntityWithMultipleBlobs(environment);
-        assertNotNull(dataFactoryEntity.entityId());
+        Entity entity = createEntityWithMultipleBlobs(environment);
+        assertNotNull(entity.entityId());
 
         // Create a query with multiple non-existing blob names
         EntityQuery entityQuery = new EntityQueryBuilder()
@@ -220,16 +220,16 @@ public class BlobRemoveActionTest extends BaseTest {
                 .build();
 
         // Get the entity by blob names to test
-        DataFactoryEntities shouldNotBeEmpty = entityStore.getEntities(existingBlobsQuery).get();
+        Entities shouldNotBeEmpty = entityStore.getEntities(existingBlobsQuery).get();
 
         // Assert that the entity with multiple blobs is still intact and was not affected
         assertNotNull(shouldNotBeEmpty);
         assertTrue(shouldNotBeEmpty.count() == 1);
-        assertEquals(shouldNotBeEmpty.entities().stream().findFirst().get().entityId(), dataFactoryEntity.entityId());
+        assertEquals(shouldNotBeEmpty.entities().stream().findFirst().get().entityId(), entity.entityId());
     }
 
     /**
-     * This method tests the removal of multiple blobs from a DataFactoryEntity at once.
+     * This method tests the removal of multiple blobs from a Entity at once.
      * It creates an entity with multiple blobs and then removes those blobs using the entityStore.
      * The method asserts that the blobs were successfully removed from the entity.
      *
@@ -240,7 +240,7 @@ public class BlobRemoveActionTest extends BaseTest {
         String environment = getEnvironment();
 
         // Create an entity with multiple blobs
-        DataFactoryEntity dataFactoryEntity = createEntityWithMultipleBlobs(environment);
+        Entity entity = createEntityWithMultipleBlobs(environment);
 
         // Build the query that will be used for both checking the entity with blobs and removing them later
         EntityQuery entityQuery = new EntityQueryBuilder()
@@ -257,14 +257,14 @@ public class BlobRemoveActionTest extends BaseTest {
         assertTrue(wereRemoved);
 
         // Get the entity by blob names to test
-        DataFactoryEntities shouldBeEmpty = entityStore.getEntities(entityQuery).get();
+        Entities shouldBeEmpty = entityStore.getEntities(entityQuery).get();
         assertNotNull(shouldBeEmpty);
         assertTrue(shouldBeEmpty.count() == 0);
     }
 
     /**
-     * Test case for removing a blob from an empty DataFactoryEntity.
-     * It creates an empty DataFactoryEntity and attempts to remove a non-existing blob.
+     * Test case for removing a blob from an empty Entity.
+     * It creates an empty Entity and attempts to remove a non-existing blob.
      * The method asserts that the removal is not successful.
      *
      * @throws Exception if an error occurs during the test
@@ -273,7 +273,7 @@ public class BlobRemoveActionTest extends BaseTest {
     public void testRemoveBlobFromEmptyEntity() throws Exception {
         String environment = getEnvironment();
 
-        DataFactoryEntity emptyEntity = new DataFactoryEntityBuilder()
+        Entity emptyEntity = new EntityBuilder()
                 .environment(environment)
                 .entityType(ENTITY_TYPE)
                 .build();
@@ -318,66 +318,66 @@ public class BlobRemoveActionTest extends BaseTest {
     }
 
     /**
-     * Creates a DataFactoryEntity with multiple blobs.
+     * Creates a Entity with multiple blobs.
      *
-     * @return The created DataFactoryEntity.
+     * @return The created Entity.
      * @throws IOException If an I/O error occurs.
      * @throws NotBoundException If the object being called is not bound to this registry.
      */
-    private DataFactoryEntity createEntityWithMultipleBlobs(String environment) throws IOException, NotBoundException {
-        DataFactoryBlob blob1 = new DataFactoryBlobBuilder()
+    private Entity createEntityWithMultipleBlobs(String environment) throws IOException, NotBoundException {
+        Blob blob1 = new BlobBuilder()
                 .blobName("photo1")
                 .blobStream(new SimpleRemoteInputStream(ByteSource.wrap("Mock Image 1".getBytes()).openStream()))
                 .build();
-        DataFactoryBlob blob2 = new DataFactoryBlobBuilder()
+        Blob blob2 = new BlobBuilder()
                 .blobName("photo2")
                 .blobStream(new SimpleRemoteInputStream(ByteSource.wrap("Mock Image 2".getBytes()).openStream()))
                 .build();
-        DataFactoryBlob blob3 = new DataFactoryBlobBuilder()
+        Blob blob3 = new BlobBuilder()
                 .blobName("photo3")
                 .blobStream(new SimpleRemoteInputStream(ByteSource.wrap("Mock Image 3".getBytes()).openStream()))
                 .build();
-        DataFactoryEntity dataFactoryEntity = new DataFactoryEntityBuilder()
+        Entity entity = new EntityBuilder()
                 .environment(environment)
                 .entityType(ENTITY_TYPE)
                 .addBlobs(blob1, blob2, blob3)
                 .build();
-        dataFactoryEntity = entityStore.saveEntity(dataFactoryEntity).get();
-        return dataFactoryEntity;
+        entity = entityStore.saveEntity(entity).get();
+        return entity;
     }
 
     /**
-     * Creates a DataFactoryEntity with a blob.
+     * Creates a Entity with a blob.
      *
-     * @return The created DataFactoryEntity.
+     * @return The created Entity.
      * @throws IOException If an I/O error occurs.
      * @throws NotBoundException If the object being called is not bound to this registry.
      */
-    private DataFactoryEntity createEntityWithBlob(String environment) throws IOException, NotBoundException {
-        DataFactoryBlob blob = new DataFactoryBlobBuilder()
+    private Entity createEntityWithBlob(String environment) throws IOException, NotBoundException {
+        Blob blob = new BlobBuilder()
                 .blobName("photo")
                 .blobStream(new SimpleRemoteInputStream(ByteSource.wrap("Mock Image".getBytes()).openStream()))
                 .build();
-        DataFactoryEntity dataFactoryEntity = new DataFactoryEntityBuilder()
+        Entity entity = new EntityBuilder()
                 .environment(environment)
                 .entityType(ENTITY_TYPE)
                 .addBlobs(blob)
                 .build();
-        dataFactoryEntity = entityStore.saveEntity(dataFactoryEntity).get();
-        return dataFactoryEntity;
+        entity = entityStore.saveEntity(entity).get();
+        return entity;
     }
 
     /**
-     * Retrieves the content of a blob with the specified name from the provided DataFactoryEntity.
+     * Retrieves the content of a blob with the specified name from the provided Entity.
      *
-     * @param entityWithBlob The DataFactoryEntity that contains the blob.
+     * @param entityWithBlob The Entity that contains the blob.
      * @param blobName The name of the blob.
      * @return The content of the blob as a string, or null if the blob is not found.
      * @throws Exception if an error occurs while retrieving the blob content.
      */
-    private String getBlobString(DataFactoryEntity entityWithBlob, String blobName) throws Exception {
+    private String getBlobString(Entity entityWithBlob, String blobName) throws Exception {
         String blobString = null;
-        for (DataFactoryBlob b : entityWithBlob.blobs()) {
+        for (Blob b : entityWithBlob.blobs()) {
             if (b.blobName().equals(blobName)) {
                 RemoteInputStream remoteInputStream = b.blobStream();
                 blobString =

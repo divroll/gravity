@@ -19,10 +19,10 @@
  */
 package com.divroll.datafactory;
 
-import com.divroll.datafactory.builders.DataFactoryBlob;
-import com.divroll.datafactory.builders.DataFactoryBlobBuilder;
-import com.divroll.datafactory.builders.DataFactoryEntity;
-import com.divroll.datafactory.builders.DataFactoryEntityBuilder;
+import com.divroll.datafactory.builders.Blob;
+import com.divroll.datafactory.builders.Entity;
+import com.divroll.datafactory.builders.BlobBuilder;
+import com.divroll.datafactory.builders.EntityBuilder;
 import com.divroll.datafactory.builders.queries.BlobQuery;
 import com.divroll.datafactory.builders.queries.LinkQuery;
 import com.divroll.datafactory.properties.EmbeddedArrayIterable;
@@ -31,7 +31,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
-import jetbrains.exodus.entitystore.Entity;
 import jetbrains.exodus.entitystore.EntityIterable;
 import jetbrains.exodus.entitystore.StoreTransaction;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The Marshaller class is used to build a DataFactoryEntity for remote transmission.
+ * The Marshaller class is used to build a Entity for remote transmission.
  * It provides methods to set the entity, link queries, and blob queries, and a build
  */
 public class Marshaller {
@@ -55,7 +54,7 @@ public class Marshaller {
    *
    * Private field representing the entity.
    */
-  private Entity entity;
+  private jetbrains.exodus.entitystore.Entity entity;
   /**
    * Represents a list of LinkQuery objects.
    */
@@ -71,7 +70,7 @@ public class Marshaller {
    * @param entity the entity to add
    * @return the updated marshaller
    */
-  public Marshaller with(@NotNull final Entity entity) {
+  public Marshaller with(@NotNull final jetbrains.exodus.entitystore.Entity entity) {
     if (this.entity != null) {
       throw new IllegalArgumentException("Entity is already set");
     }
@@ -109,13 +108,13 @@ public class Marshaller {
   }
 
   /**
-   * Builds a {@linkplain Entity} into a {@linkplain DataFactoryEntity} for remote transmission.
+   * Builds a {@linkplain jetbrains.exodus.entitystore.Entity} into a {@linkplain Entity} for remote transmission.
    * This method should be called within a database {@linkplain StoreTransaction}.
    *
    * @return {@code entity}
    */
-  public DataFactoryEntity build() {
-    final DataFactoryEntityBuilder builder = new DataFactoryEntityBuilder();
+  public Entity build() {
+    final EntityBuilder builder = new EntityBuilder();
 
     entity.getPropertyNames().forEach(propertyName -> {
       Comparable propertyValue = entity.getProperty(propertyName);
@@ -132,8 +131,8 @@ public class Marshaller {
       }
     });
 
-    List<DataFactoryBlob> blobs = new ArrayList<>();
-    Multimap<String, DataFactoryEntity> links = ArrayListMultimap.create();
+    List<Blob> blobs = new ArrayList<>();
+    Multimap<String, Entity> links = ArrayListMultimap.create();
 
     if (linkQueries == null) {
       linkQueries = new ArrayList<>();
@@ -165,7 +164,7 @@ public class Marshaller {
         if (blobQuery.blobName().equals(blobName) && blobQuery.include()) {
           InputStream blobStream = entity.getBlob(blobName);
           Long blobSize = entity.getBlobSize(blobName);
-          blobs.add(new DataFactoryBlobBuilder()
+          blobs.add(new BlobBuilder()
               .blobName(blobName)
               .blobStream(new SimpleRemoteInputStream(blobStream))
               .blobSize(blobSize)

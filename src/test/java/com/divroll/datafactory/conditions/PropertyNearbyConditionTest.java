@@ -23,9 +23,9 @@ import com.divroll.datafactory.DataFactory;
 import com.divroll.datafactory.GeoHash;
 import com.divroll.datafactory.GeoPoint;
 import com.divroll.datafactory.TestEnvironment;
-import com.divroll.datafactory.builders.DataFactoryEntities;
-import com.divroll.datafactory.builders.DataFactoryEntity;
-import com.divroll.datafactory.builders.DataFactoryEntityBuilder;
+import com.divroll.datafactory.builders.Entities;
+import com.divroll.datafactory.builders.Entity;
+import com.divroll.datafactory.builders.EntityBuilder;
 import com.divroll.datafactory.builders.queries.EntityQuery;
 import com.divroll.datafactory.builders.queries.EntityQueryBuilder;
 import com.divroll.datafactory.repositories.EntityStore;
@@ -49,7 +49,7 @@ public class PropertyNearbyConditionTest {
   public void testNearbyCondition() throws Exception {
     String environment = TestEnvironment.getEnvironment();
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    DataFactoryEntity firstLocation = new DataFactoryEntityBuilder()
+    Entity firstLocation = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("address", "Room 123, 456 Street, 789 Avenue")
@@ -57,7 +57,7 @@ public class PropertyNearbyConditionTest {
         .build();
     firstLocation = entityStore.saveEntity(firstLocation).get();
     assertNotNull(firstLocation.entityId());
-    DataFactoryEntity secondLocation = new DataFactoryEntityBuilder()
+    Entity secondLocation = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("address", "Room 456, 789 Street, 012 Avenue")
@@ -65,7 +65,7 @@ public class PropertyNearbyConditionTest {
         .build();
     secondLocation = entityStore.saveEntity(secondLocation).get();
     assertNotNull(secondLocation.entityId());
-    DataFactoryEntity thirdLocation = new DataFactoryEntityBuilder()
+    Entity thirdLocation = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("address", "Room 456, 789 Street, 012 Avenue")
@@ -84,7 +84,7 @@ public class PropertyNearbyConditionTest {
             .distance(100.0)
             .build())
         .build();
-    DataFactoryEntities entities = entityStore.getEntities(entityQuery).get();
+    Entities entities = entityStore.getEntities(entityQuery).get();
     long time = System.currentTimeMillis() - start;
     LOG.info("Time to complete (ms): " + time);
     assertNotNull(entities);
@@ -95,14 +95,14 @@ public class PropertyNearbyConditionTest {
   public void testNearbyConditionShouldBeZero() throws Exception {
     String environment = TestEnvironment.getEnvironment();
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    DataFactoryEntity dataFactoryEntity = new DataFactoryEntityBuilder()
+    Entity entity = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("address", "Room 456, 789 Street, 012 Avenue")
         .putPropertyMap("geoLocation", new GeoPoint(120.984293, 14.535238))
         .build();
-    dataFactoryEntity = entityStore.saveEntity(dataFactoryEntity).get();
-    assertNotNull(dataFactoryEntity.entityId());
+    entity = entityStore.saveEntity(entity).get();
+    assertNotNull(entity.entityId());
     EntityQuery entityQuery = new EntityQueryBuilder()
         .environment(environment)
         .entityType("Room")
@@ -113,7 +113,7 @@ public class PropertyNearbyConditionTest {
             .distance(200.0)
             .build())
         .build();
-    DataFactoryEntities entities = entityStore.getEntities(entityQuery).get();
+    Entities entities = entityStore.getEntities(entityQuery).get();
     assertNotNull(entities);
     assertEquals(0, entities.entities().size());
   }
@@ -122,7 +122,7 @@ public class PropertyNearbyConditionTest {
   public void testNearbyConditionUseGeoHash() throws Exception {
     String environment = TestEnvironment.getEnvironment();
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    DataFactoryEntity firstLocation = new DataFactoryEntityBuilder()
+    Entity firstLocation = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("address", "Room 123, 456 Street, 789 Avenue")
@@ -130,7 +130,7 @@ public class PropertyNearbyConditionTest {
         .build();
     firstLocation = entityStore.saveEntity(firstLocation).get();
     assertNotNull(firstLocation.entityId());
-    DataFactoryEntity secondLocation = new DataFactoryEntityBuilder()
+    Entity secondLocation = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("address", "Room 456, 789 Street, 012 Avenue")
@@ -138,7 +138,7 @@ public class PropertyNearbyConditionTest {
         .build();
     secondLocation = entityStore.saveEntity(secondLocation).get();
     assertNotNull(secondLocation.entityId());
-    DataFactoryEntity thirdLocation = new DataFactoryEntityBuilder()
+    Entity thirdLocation = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("address", "Room 456, 789 Street, 012 Avenue")
@@ -158,7 +158,7 @@ public class PropertyNearbyConditionTest {
             .useGeoHash(true)
             .build())
         .build();
-    DataFactoryEntities entities = entityStore.getEntities(entityQuery).get();
+    Entities entities = entityStore.getEntities(entityQuery).get();
     long time = System.currentTimeMillis() - start;
     LOG.info("Time to complete (ms): " + time);
     assertNotNull(entities);
@@ -169,14 +169,14 @@ public class PropertyNearbyConditionTest {
   public void testNearbyConditionUseGeoHashShouldBeZero() throws Exception {
     String environment = TestEnvironment.getEnvironment();
     EntityStore entityStore = DataFactory.getInstance().getEntityStore();
-    DataFactoryEntity dataFactoryEntity = new DataFactoryEntityBuilder()
+    Entity entity = new EntityBuilder()
         .environment(environment)
         .entityType("Room")
         .putPropertyMap("address", "Room 456, 789 Street, 012 Avenue")
         .putPropertyMap("geoLocation", new GeoHash(120.984293, 14.535238).toString())
         .build();
-    dataFactoryEntity = entityStore.saveEntity(dataFactoryEntity).get();
-    assertNotNull(dataFactoryEntity.entityId());
+    entity = entityStore.saveEntity(entity).get();
+    assertNotNull(entity.entityId());
     EntityQuery entityQuery = new EntityQueryBuilder()
         .environment(environment)
         .entityType("Room")
@@ -188,7 +188,7 @@ public class PropertyNearbyConditionTest {
             .useGeoHash(true)
             .build())
         .build();
-    DataFactoryEntities entities = entityStore.getEntities(entityQuery).get();
+    Entities entities = entityStore.getEntities(entityQuery).get();
     assertNotNull(entities);
     assertEquals(0, entities.entities().size());
   }

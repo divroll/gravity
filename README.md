@@ -61,13 +61,13 @@ Thus, it follows the concept of _all-or-nothing_.
 ##### Save Operation
 
 ```java
-DataFactoryEntity dataFactoryEntity = new DataFactoryEntityBuilder()
+DataFactoryEntity entity = new DataFactoryEntityBuilder()
     .environment(PROD_ENVIRONMENT)
     .entityType("Room")
     .putPropertyMap("address", "Room 123, 456 Street, 789 Avenue")
     .build();
 
-dataFactoryEntity = entityStore.saveEntity(dataFactoryEntity).get();
+entity = entityStore.saveEntity(entity).get();
 ```
 
 #### Actions
@@ -79,7 +79,7 @@ but custom actions can also be used. An example implementation can be found [her
 ```java
 entityStore.saveEntity(new DataFactoryEntityBuilder()
     .environment(PROD_ENVIRONMENT)
-    .entityId(dataFactoryEntity.entityId())
+    .entityId(entity.entityId())
     .addActions(new IncrementLikesAction(100))
     .build());
 ```
@@ -92,9 +92,9 @@ off-the-shelf which can be found [here](https://sourcegraph.com/github.com/divro
 however it also possible to create custom conditions as such:
 
 ```java
-dataFactoryEntity = entityStore.saveEntity(new DataFactoryEntityBuilder()
+entity = entityStore.saveEntity(new DataFactoryEntityBuilder()
     .environment(PROD_ENVIRONMENT)
-    .entityId(dataFactoryEntity.entityId())
+    .entityId(entity.entityId())
     .addConditions(new HasBeenLikedThisWeekCondition())
     .addActions(new IncrementLikesAction(100))
     .build()).get();

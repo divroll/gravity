@@ -35,23 +35,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DataFactoryEntity represents an entity in the data factory system.
+ * Entity represents an entity in the data factory system.
  * It contains information such as the entity type, ID, namespace, property map, blobs,
  * links, and more. This is an immutable interface, which means the attributes cannot be modified
- * once set. Use the DataFactoryEntityBuilder to construct instances of this interface.
+ * once set. Use the EntityBuilder to construct instances of this interface.
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PRIVATE)
-public interface DataFactoryEntity extends Serializable {
+public interface Entity extends Serializable {
 
   /**
-   * Checks if the DataFactoryEntity has at least either an Entity Type or ID.
+   * Checks if the Entity has at least either an Entity Type or ID.
    *
-   * @return The DataFactoryEntity object.
+   * @return The Entity object.
    * @throws IllegalStateException if both the Entity Type and ID are null or empty.
    */
   @Value.Check
-  default DataFactoryEntity check() {
+  default Entity check() {
     Preconditions.checkState(
         !((entityType() == null
                 || entityType().isEmpty()) && (entityId() == null
@@ -72,7 +72,7 @@ public interface DataFactoryEntity extends Serializable {
   }
 
   /**
-   * Retrieves the entity type of a DataFactoryEntity.
+   * Retrieves the entity type of a Entity.
    *
    * @return The entity type as a String. Returns null if no entity type is set.
    */
@@ -80,7 +80,7 @@ public interface DataFactoryEntity extends Serializable {
   String entityType();
 
   /**
-   * Retrieves the namespace of a DataFactoryEntity.
+   * Retrieves the namespace of a Entity.
    *
    * @return The namespace as a String. Returns null if no namespace is set.
    */
@@ -96,7 +96,7 @@ public interface DataFactoryEntity extends Serializable {
   String entityId();
 
   /**
-   * Returns the property map of a DataFactoryEntity.
+   * Returns the property map of a Entity.
    *
    * @return The property map as a {@code Map<String, Comparable>} object.
    * Returns a new empty {@code LinkedHashMap} if no properties are set.
@@ -108,32 +108,32 @@ public interface DataFactoryEntity extends Serializable {
   }
 
   /**
-   * Retrieves the list of blobs associated with the DataFactoryEntity.
+   * Retrieves the list of blobs associated with the Entity.
    *
-   * @return The list of DataFactoryBlob objects. Returns an empty list if no blobs are associated
+   * @return The list of Blob objects. Returns an empty list if no blobs are associated
    * with the entity. The returned list is nullable.
    */
   @Nullable
   @Value.Default
-  default List<DataFactoryBlob> blobs() {
+  default List<Blob> blobs() {
     return new ArrayList<>();
   }
 
   /**
-   * Retrieves the links associated with the DataFactoryEntity.
+   * Retrieves the links associated with the Entity.
    *
-   * @return The Multimap of links, where the key is a String and the value is a DataFactoryEntity.
+   * @return The Multimap of links, where the key is a String and the value is a Entity.
    * Returns an empty Multimap if no links are associated with the entity.
    * The returned Multimap is nullable.
    */
   @Nullable
   @Value.Default
-  default Multimap<String, DataFactoryEntity> links() {
+  default Multimap<String, Entity> links() {
     return ArrayListMultimap.create();
   }
 
   /**
-   * Retrieves the array of blob names associated with the DataFactoryEntity.
+   * Retrieves the array of blob names associated with the Entity.
    *
    * @return The array of blob names as a String array.
    *         The array is nullable and returns null if no blob names are associated with the entity.
@@ -145,7 +145,7 @@ public interface DataFactoryEntity extends Serializable {
   }
 
   /**
-   * Retrieves the array of link names associated with the DataFactoryEntity.
+   * Retrieves the array of link names associated with the Entity.
    *
    * @return The array of link names as a String array.
    *         The array is nullable and returns null if no link names are associated with the entity.
@@ -157,7 +157,7 @@ public interface DataFactoryEntity extends Serializable {
   }
 
   /**
-   * Retrieves the list of actions performed on the DataFactoryEntity.
+   * Retrieves the list of actions performed on the Entity.
    *
    * @return The list of EntityAction objects as a List.
    *         The list is nullable and returns a new empty ArrayList if no actions
@@ -170,7 +170,7 @@ public interface DataFactoryEntity extends Serializable {
   }
 
   /**
-   * Retrieves the list of transaction filters applied to the DataFactoryEntity.
+   * Retrieves the list of transaction filters applied to the Entity.
    *
    * @return  The list of TransactionFilter objects as a List.
    *          The list is nullable and returns a new empty ArrayList if no filters
@@ -183,7 +183,7 @@ public interface DataFactoryEntity extends Serializable {
   }
 
   /**
-   * Retrieves the list of conditions applied to the DataFactoryEntity.
+   * Retrieves the list of conditions applied to the Entity.
    *
    * @return The list of EntityConditions as a List of EntityCondition objects.
    *         This method returns a new empty ArrayList if no conditions are applied.
